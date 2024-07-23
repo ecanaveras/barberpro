@@ -1,0 +1,44 @@
+.customer-view .content-div {
+    display: flex;
+}
+
+.customer-view .customer-grid {
+    flex: 1
+}
+
+.customer-view .customer-view-detail{
+    flex: 300px;
+    padding: var(--lumo-space-m)
+}
+
+.customer-detail-view {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    position: relative; /* Permite el uso de z-index */
+    z-index: 10; /* Asegura que el div esté por encima de otros elementos */
+    padding: 20px; /* Opcional: Padding para el contenido del div */
+    border-radius: 8px; /* Opcional: Bordes redondeados */
+    z-index: 100;
+    display: none;
+    transition: opacity 0.1s ease-out;
+}
+
+.customer-detail-view.visible {
+    max-width: 400px;
+    display: block; /* Mostrar el div */
+    opacity: 1; /* Totalmente visible */
+}
+
+.div-content-item {
+    display: flex;
+    align-items: center;
+    gap: var(--lumo-space-m);
+    line-height: var(--lumo-line-height-s);
+}
+
+.icon-item{
+    border-radius: var(--lumo-border-radius-s);
+    background-color: var(--lumo-contrast-10pct);
+    padding: var(--lumo-space-m);
+    box-sizing: content-box;
+}

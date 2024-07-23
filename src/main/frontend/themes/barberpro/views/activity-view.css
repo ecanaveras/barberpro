@@ -1,0 +1,22 @@
+.content-feed:hover {
+    background: var(--lumo-contrast-10pct);
+}
+
+/* Estilo base para el div deslizable */
+.slide-in-div {
+    position: fixed;
+    top: 0;
+    right: -350px; /* Ajusta el valor según el ancho del div */
+    width: 300px; /* Ajusta el valor según el ancho del div */
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    background-color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    transition: right 0.1s ease-out;
+    z-index: 10; /* Asegura que el div esté por encima de otros elementos */
+    padding: 20px; /* Opcional: Padding para el contenido del div */
+}
+
+/* Clase para hacer visible el div con deslizamiento */
+.slide-in-div.visible {
+    right: 0; /* El div se mueve desde la izquierda a la vista */
+}
