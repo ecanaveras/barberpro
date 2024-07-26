@@ -1,6 +1,7 @@
 package com.piantic.ecp.gdel.application.ui.views.forms;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.utils.generics.FormEvents;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -54,8 +55,8 @@ public class ProfileForm extends FormLayout {
         cancel.addClickListener(e -> setVisible(false));
 
         save.addClickListener(e -> validateAndSave());
-        delete.addClickListener(e -> fireEvent(new DeleteEvent(this, binder.getBean())));
-        cancel.addClickListener(e -> fireEvent(new CloseEvent(this)));
+        delete.addClickListener(e -> fireEvent(new FormEvents.SaveEvent(this, binder.getBean())));
+        cancel.addClickListener(e -> fireEvent(new FormEvents.CloseEvent(this)));
 
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
     }
@@ -66,10 +67,9 @@ public class ProfileForm extends FormLayout {
 
     private void validateAndSave(){
         if(binder.isValid()){
-            fireEvent(new SaveEvent(this, binder.getBean()));
+            fireEvent(new FormEvents.SaveEvent(this, binder.getBean()));
         }
     }
-
 
     //Events
     public static abstract class ProfileFormEvent extends ComponentEvent<ProfileForm>{
@@ -104,9 +104,9 @@ public class ProfileForm extends FormLayout {
         }
     }
 
+
     public <T extends ComponentEvent<?>> Registration addListener(Class<T> event, ComponentEventListener<T> listener){
         return getEventBus().addListener(event, listener);
     }
-
 
 }

@@ -1,32 +1,37 @@
-.customer-view .content-div {
+.customer-view {
     display: flex;
+    gap: 0;
+    overflow: hidden;
 }
 
-.customer-view .customer-grid {
-    flex: 1
+.customer-view .content-left {
+    flex: 1;
+    border-right: 1px solid var(--lumo-contrast-10pct);
+    overflow: hidden;
 }
 
-.customer-view .customer-view-detail{
-    flex: 300px;
-    padding: var(--lumo-space-m)
-}
-
-.customer-detail-view {
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+.content-right {
+    overflow: hidden;
     position: relative; /* Permite el uso de z-index */
     z-index: 10; /* Asegura que el div esté por encima de otros elementos */
-    padding: 20px; /* Opcional: Padding para el contenido del div */
-    border-radius: 8px; /* Opcional: Bordes redondeados */
-    z-index: 100;
-    display: none;
-    transition: opacity 0.1s ease-out;
+    transition: width 0.5s ease-in-out;
+    width: 0px;
 }
 
-.customer-detail-view.visible {
-    max-width: 400px;
-    display: block; /* Mostrar el div */
-    opacity: 1; /* Totalmente visible */
+.content-right.visible {
+    width: 400px;
+}
+
+.content-right.visible .customer-detail-view {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.content-right .customer-detail-view {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
 }
 
 .div-content-item {
@@ -36,9 +41,54 @@
     line-height: var(--lumo-line-height-s);
 }
 
-.icon-item{
+.icon-item {
     border-radius: var(--lumo-border-radius-s);
     background-color: var(--lumo-contrast-10pct);
     padding: var(--lumo-space-m);
     box-sizing: content-box;
 }
+
+.star-icon {
+    color: orange;
+}
+
+.customer-detail-view .back-button {
+    display: none;
+}
+
+@media all and (max-width: 800px) {
+    .content-left.viewing {
+        display: none;
+    }
+
+    .customer-detail-view .back-button {
+        display: flex;
+    }
+
+}
+
+.view-header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--lumo-space-m);
+    padding: var(--lumo-space-s);
+    padding-left: 0px;
+    min-height: var(--lumo-size-m);
+}
+
+.customer-detail-view H4 {
+    font-size: var(--lumo-font-size-m);
+    color: var(--lumo-contrast-60pct);
+    margin-top: var(--lumo-space-s);
+}
+
+.customer-detail-view H3 {
+    color: var(--lumo-contrast-70pct);
+}
+
+.content-left a {
+    font-weight: bold;
+}
+

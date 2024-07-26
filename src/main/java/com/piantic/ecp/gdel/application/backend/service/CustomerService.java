@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +51,11 @@ public class CustomerService {
     }
 
     public Customer findByCustomerId(Long id) {
-        return customerRepository.findById(id).get();
+        Optional<Customer> customer = customerRepository.findById(id);
+        if(customer.isPresent()) {
+            return customer.get();
+        }
+        return null;
     }
 
 
@@ -63,7 +68,7 @@ public class CustomerService {
                 Customer customer = new Customer();
                 customer.setName(name);
                 customer.setFavorite(name.contains("o"));
-                customer.setPhone("300 " + new Random(25).nextInt());
+                customer.setPhone("300 " + new Random().nextInt(1000));
                 return customer;
             }).collect(Collectors.toList()));
         }

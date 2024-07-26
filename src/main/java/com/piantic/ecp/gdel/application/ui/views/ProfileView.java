@@ -3,7 +3,6 @@ package com.piantic.ecp.gdel.application.ui.views;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
-import com.piantic.ecp.gdel.application.ui.views.dialog.FindDialogView;
 import com.piantic.ecp.gdel.application.ui.views.forms.ProfileForm;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -28,7 +27,6 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 @Route("profiles")
 public class ProfileView extends VerticalLayout {
 
-    private final CustomerService customerService;
     private ProfileForm profileForm;
     private final ProfileService profileService;
     Grid<Profile> grid = new Grid<>(Profile.class);
@@ -36,7 +34,6 @@ public class ProfileView extends VerticalLayout {
     Div content = new Div();
 
     public ProfileView(ProfileService profileService, CustomerService customerService) {
-        this.customerService = customerService;
         this.profileService = profileService;
         addClassName("profile-view");
         setSizeFull();
@@ -68,23 +65,25 @@ public class ProfileView extends VerticalLayout {
         Button btnAdd = new Button(LineAwesomeIcon.PLUS_SOLID.create(), e -> addProfile());
 
 
-
-        HorizontalLayout toolbar = new HorizontalLayout(filterText, btnAdd, new Button(LineAwesomeIcon.ENVELOPE_OPEN.create(), e-> openFindDialog()));
+        HorizontalLayout toolbar = new HorizontalLayout(filterText, btnAdd, new Button(LineAwesomeIcon.ENVELOPE_OPEN.create(), e -> {
+        }));
+//        HorizontalLayout toolbar = new HorizontalLayout(filterText, btnAdd, new Button(LineAwesomeIcon.ENVELOPE_OPEN.create(), e -> openFindDialog()));
         toolbar.addClassName("toolbar");
         return toolbar;
 
     }
 
+    /*
     private void openFindDialog() {
         //Dialog
         FindDialogView dialogView = new FindDialogView(customerService);
         dialogView.addOpenedChangeListener(listener -> {
-            if(!listener.isOpened()){
-                Notification.show("Id seleccionado: "+dialogView.getIdSelected());
+            if (!listener.isOpened()) {
+                Notification.show("Id seleccionado: " + dialogView.getIdSelected());
             }
         });
         dialogView.open();
-    }
+    }*/
 
     private void configureGrid() {
         grid.addClassName("profile-grid");
@@ -121,8 +120,9 @@ public class ProfileView extends VerticalLayout {
 
     }
 
-    private void saveProfile(ProfileForm.SaveEvent evt){
-        profileService.save(evt.getProfile());
+    private void saveProfile(ProfileForm.SaveEvent evt) {
+        //profileService.save((Profile) evt.getData());
+        profileService.save((Profile) evt.getProfile());
         Notification notification = new Notification();
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS, NotificationVariant.LUMO_PRIMARY);
         notification.show("Perfil Guardado");
@@ -130,15 +130,15 @@ public class ProfileView extends VerticalLayout {
         closeEditor();
     }
 
-    private void deleteProfile(ProfileForm.DeleteEvent evt){
-        ConfirmDialog confirmDialog = new ConfirmDialog("Eliminar a \""+evt.getProfile().getNameProfile()+"\"?",
+    private void deleteProfile(ProfileForm.DeleteEvent evt) {
+        ConfirmDialog confirmDialog = new ConfirmDialog("Eliminar a \"" + evt.getProfile().getNameProfile() + "\"?",
                 "¿Desea borrar el registro?",
-                "Eliminar", e-> {
+                "Eliminar", e -> {
             profileService.delete(evt.getProfile());
             updateList();
             closeEditor();
-        }, "Cancelar", e -> e.getSource().close() );
-        confirmDialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName() +" " +ButtonVariant.LUMO_PRIMARY.getVariantName());
+        }, "Cancelar", e -> e.getSource().close());
+        confirmDialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName() + " " + ButtonVariant.LUMO_PRIMARY.getVariantName());
         confirmDialog.setCloseOnEsc(true);
         confirmDialog.open();
 
@@ -151,7 +151,7 @@ public class ProfileView extends VerticalLayout {
             profileForm.setVisible(true);
             profileForm.addClassName("visible");
             addClassName("editing");
-        }else {
+        } else {
             closeEditor();
         }
     }
