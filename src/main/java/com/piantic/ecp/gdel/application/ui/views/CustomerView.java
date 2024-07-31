@@ -109,11 +109,12 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
     private void configureGrid() {
         grid.addClassName("customer-grid");
         grid.setSizeFull();
-        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(customer ->
                 new Anchor(String.format("/customer/%d", customer.getId()), customer.getName())
-        ).setKey("name1").setAutoWidth(true).setHeader("Nombre").getStyle().set("min-width", "200px");
-        grid.addColumn(Customer::getPhone).setHeader("Teléfono");
+        ).setKey("name1").setAutoWidth(true).setHeader("Nombre").setSortable(true).getStyle().set("min-width", "200px");
+        grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
+        grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
         grid.addComponentColumn(customer -> {
             SvgIcon star = LineAwesomeIcon.STAR_SOLID.create();
             star.addClassName("star-icon");

@@ -9,7 +9,9 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -21,7 +23,8 @@ public class CustomerForm extends Dialog {
 
     FormLayout formLayout = new FormLayout();
     TextField name = new TextField("Nombre");
-    TextField phone = new TextField("Telefono");
+    TextField phone = new TextField("Télefono");
+    EmailField email = new EmailField("Email");
     Checkbox favorite = new Checkbox("Favorito", false);
 
     Button save = new Button("Guardar");
@@ -36,10 +39,23 @@ public class CustomerForm extends Dialog {
 
         save.setEnabled(false);
 
-        formLayout.add(name, phone, favorite);
+        //Textfields
+        name.setPrefixComponent(LineAwesomeIcon.USER_CIRCLE.create());
+        name.setAutofocus(true);
+
+        phone.setPrefixComponent(VaadinIcon.PHONE.create());
+        phone.setPattern("-?[0-9]*");
+        phone.setAllowedCharPattern("[0-9()+-]");
+
+        email.setPrefixComponent(VaadinIcon.AT.create());
+
+
+        //Form
+        formLayout.add(name, email, phone, favorite);
         formLayout.setColspan(name, 2);
         formLayout.setColspan(phone, 1);
         formLayout.setColspan(favorite, 1);
+        formLayout.setColspan(email, 2);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
 
         setButtons();

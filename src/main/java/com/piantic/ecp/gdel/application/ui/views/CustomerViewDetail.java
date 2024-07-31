@@ -74,12 +74,12 @@ public class CustomerViewDetail extends VerticalLayout {
         content.add(contactInfo);
 
         content.add(cardItem(LineAwesomeIcon.PHONE_SOLID.create(), "Telefono", customer.getPhone()));
+        content.add(cardItem(LineAwesomeIcon.AT_SOLID.create(), "Email", customer.getEmail()));
 
         content.add(activityInfo);
 
+        //TODO Agregar Actividad reciente
 
-        //TODO Actividad
-        //add(cardItem(LineAwesomeIcon.PHONE_SOLID.create(), "Telefono", customer.getPhone()));
 
         add(content);
     }

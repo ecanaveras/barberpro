@@ -2,6 +2,7 @@ package com.piantic.ecp.gdel.application.backend.entity;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.type.TrueFalseConverter;
@@ -14,6 +15,9 @@ public class Customer extends AbstractEntity implements Cloneable {
     private String name;
 
     private String phone;
+
+    @Email
+    private String email;
 
     @Convert(converter = TrueFalseConverter.class)
     private Boolean favorite;
@@ -32,6 +36,14 @@ public class Customer extends AbstractEntity implements Cloneable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public @Email String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email String email) {
+        this.email = email;
     }
 
     public Boolean isFavorite() {
