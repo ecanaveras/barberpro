@@ -24,7 +24,7 @@ import com.vaadin.flow.router.Route;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 @PageTitle("Perfiles | BarberPro")
-@Route("profiles")
+@Route("profile")
 public class ProfileView extends VerticalLayout {
 
     private ProfileForm profileForm;

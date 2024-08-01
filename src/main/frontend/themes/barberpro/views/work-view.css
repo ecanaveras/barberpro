@@ -1,0 +1,15 @@
+.work-grid .work-grid-service-div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--lumo-space-s);
+}
+
+.work-grid .work-grid-service {
+    gap: 0;
+
+}
+
+.work-form {
+    max-width: 400px;
+}
