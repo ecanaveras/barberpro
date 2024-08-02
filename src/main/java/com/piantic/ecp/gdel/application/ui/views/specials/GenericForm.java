@@ -1,19 +1,15 @@
 package com.piantic.ecp.gdel.application.ui.views.specials;
 
-import com.piantic.ecp.gdel.application.backend.repository.CloseEventListener;
-import com.piantic.ecp.gdel.application.backend.repository.SaveEventListener;
+import com.piantic.ecp.gdel.application.backend.utils.generics.CloseEventListener;
+import com.piantic.ecp.gdel.application.backend.utils.generics.SaveEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextArea;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 public class GenericForm<T> extends Dialog {

@@ -1,7 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views.forms;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.utils.generics.FormEvents;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
