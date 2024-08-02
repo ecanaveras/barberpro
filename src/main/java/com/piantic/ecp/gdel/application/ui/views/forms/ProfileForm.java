@@ -54,8 +54,8 @@ public class ProfileForm extends FormLayout {
         cancel.addClickListener(e -> setVisible(false));
 
         save.addClickListener(e -> validateAndSave());
-        delete.addClickListener(e -> fireEvent(new FormEvents.SaveEvent(this, binder.getBean())));
-        cancel.addClickListener(e -> fireEvent(new FormEvents.CloseEvent(this)));
+        delete.addClickListener(e -> fireEvent(new ProfileForm.SaveEvent(this, binder.getBean())));
+        cancel.addClickListener(e -> fireEvent(new ProfileForm.CloseEvent(this)));
 
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
     }
@@ -66,7 +66,7 @@ public class ProfileForm extends FormLayout {
 
     private void validateAndSave(){
         if(binder.isValid()){
-            fireEvent(new FormEvents.SaveEvent(this, binder.getBean()));
+            fireEvent(new ProfileForm.SaveEvent(this, binder.getBean()));
         }
     }
 
