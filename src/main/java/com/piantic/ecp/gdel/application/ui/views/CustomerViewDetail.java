@@ -49,7 +49,7 @@ public class CustomerViewDetail extends VerticalLayout {
     }
 
     public void updateUI(Long id) {
-        System.out.printf("Customer: %d\n", id);
+//        System.out.printf("Customer: %d\n", id);
         if (id == null) {
             return;
         }

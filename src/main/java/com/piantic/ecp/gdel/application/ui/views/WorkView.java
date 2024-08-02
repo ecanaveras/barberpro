@@ -1,11 +1,8 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
-import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.service.WorkService;
-import com.piantic.ecp.gdel.application.ui.views.forms.CustomerForm;
 import com.piantic.ecp.gdel.application.ui.views.forms.WorkForm;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -15,10 +12,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -28,8 +22,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.text.DecimalFormat;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @PageTitle("Servicios | BarberPro")
 @Route("service")
@@ -73,7 +65,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
         btnAdd.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         btnAdd.setTooltipText("Agregar...");
         btnAdd.addClickListener(click -> {
-            openFormDialog(null);
+            openFormDialog(new Work());
         });
 
         HorizontalLayout toolbar = new HorizontalLayout(txtFilter, btnAdd);
@@ -104,8 +96,8 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
 
     private void openFormDialog(Work work) {
         WorkForm workForm = new WorkForm();
-        workForm.setWork(work != null ? work : new Work());
-        workForm.addListener(WorkForm.SaveEvent.class, e -> {
+        workForm.setEntity(work);
+        workForm.setSaveEventListener(e -> {
             this.saveWork(e);
             workForm.close();
         });
@@ -161,8 +153,8 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
         count.setText(String.valueOf(workService.count()));
     }
 
-    public void saveWork(WorkForm.SaveEvent saveEvent) {
-        workService.save(saveEvent.getWork());
+    public void saveWork(Work work) {
+        workService.save(work);
         updateList();
         Notification.show("Servicio Guardado!");
     }
@@ -185,7 +177,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
         GridContextMenu<Work> menu = grid.addContextMenu();
         Span new1 = new Span("Nuevo");
         new1.setClassName(LumoUtility.TextColor.PRIMARY);
-        menu.addItem(new HorizontalLayout(new1, LineAwesomeIcon.MAGIC_SOLID.create()), e -> openFormDialog(null));
+        menu.addItem(new HorizontalLayout(new1, LineAwesomeIcon.MAGIC_SOLID.create()), e -> openFormDialog(new Work()));
         menu.addItem("Editar", e -> openFormDialog(e.getItem().get()));
         menu.addItem("Detalles", e -> showDetail(e.getItem().get().getId()));
         menu.add(new Hr());

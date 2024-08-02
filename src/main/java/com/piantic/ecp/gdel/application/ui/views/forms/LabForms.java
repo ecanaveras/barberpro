@@ -9,20 +9,16 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-public class WorkForm extends GenericForm<Work> {
+public class LabForms extends GenericForm<Work> {
 
-    private TextField title = new TextField("Servicio");
-    private TextField description = new TextField("Descripción");
-    private NumberField price = new NumberField("Precio");
-    private NumberField commissions = new NumberField("Comisión");
-    private TextArea observations = new TextArea("Observación");
+    private TextField title = new TextField("Title");
+    private TextField description = new TextField("Description");
+    private NumberField price = new NumberField("Price");
+    private NumberField commissions = new NumberField("Commissions");
+    private TextArea observations = new TextArea("Observations");
 
-    public WorkForm() {
+    public LabForms() {
         super();
-        addClassName("work-form");
-
-        setHeaderTitle("Nuevo Servicio");
-
         binder.bindInstanceFields(this);
 
         title.setPrefixComponent(LineAwesomeIcon.MAGIC_SOLID.create());
@@ -44,9 +40,9 @@ public class WorkForm extends GenericForm<Work> {
         commissions.setAutoselect(true);
 
         // Simulations
-        TextField gain = new TextField("Ganancia Neta");
+        TextField gain = new TextField("Final Gain");
         gain.setEnabled(false);
-        TextField commission = new TextField("Comision Neta");
+        TextField commission = new TextField("Final Commission");
         commission.setEnabled(false);
 
         commissions.setValueChangeMode(ValueChangeMode.LAZY);
@@ -68,5 +64,7 @@ public class WorkForm extends GenericForm<Work> {
         formLayout.setColspan(commission, 1);
         formLayout.setColspan(observations, 2);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
+
+        setHeaderTitle("Nuevo Registro");
     }
 }

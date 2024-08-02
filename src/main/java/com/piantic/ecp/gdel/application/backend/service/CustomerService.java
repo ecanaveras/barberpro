@@ -62,8 +62,8 @@ public class CustomerService {
     @PostConstruct
     public void populateTestData() {
         if (customerRepository.count() == 0) {
-            Random r = new Random(0);
-            List<Customer> profiles = customerRepository.findAll();
+//            Random r = new Random(0);
+//            List<Customer> profiles = customerRepository.findAll();
             customerRepository.saveAll(Stream.of("Adolfo Paquecho", "Henry Cavil", "Fabio Díaz").map(name -> {
                 Customer customer = new Customer();
                 customer.setName(name);

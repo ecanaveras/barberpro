@@ -22,12 +22,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import org.springframework.context.annotation.Scope;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 @PageTitle("Clientes | BarberPro")
 @Route("customer")
-@Scope("prototype")
 public class CustomerView extends HorizontalLayout implements HasUrlParameter<Long> {
 
     private final TextField txtFilter;
@@ -67,7 +65,7 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         btnAdd = new Button(LineAwesomeIcon.USER_PLUS_SOLID.create());
         btnAdd.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         btnAdd.addClickListener(click -> {
-            openFormDialog(null);
+            openFormDialog(new Customer());
         });
 
         HorizontalLayout toolbar = new HorizontalLayout(txtFilter, btnAdd);
@@ -93,13 +91,13 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         add(contentLeft);
         add(contentRight);
 
-        System.out.println("Reloadedddd");
+//        System.out.println("Reloadedddd");
     }
 
     private void openFormDialog(Customer customer) {
         CustomerForm formCustomer = new CustomerForm();
-        formCustomer.setCustomer(customer != null ? customer : new Customer());
-        formCustomer.addListener(CustomerForm.SaveEvent.class, e -> {
+        formCustomer.setEntity(customer);
+        formCustomer.setSaveEventListener(e -> {
             this.saveCustomer(e);
             formCustomer.close();
         });
@@ -131,8 +129,8 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         count.setText(String.valueOf(customerService.count()));
     }
 
-    public void saveCustomer(CustomerForm.SaveEvent saveEvent) {
-        customerService.save(saveEvent.getCustomer());
+    public void saveCustomer(Customer customer) {
+        customerService.save(customer);
         updateList();
         Notification.show("Cliente Guardado!");
     }
@@ -153,7 +151,7 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
 
     private void createMenu() {
         GridContextMenu<Customer> menu = grid.addContextMenu();
-        menu.addItem(new HorizontalLayout(new Span("Nuevo"), LineAwesomeIcon.USER_PLUS_SOLID.create()), e -> openFormDialog(null));
+        menu.addItem(new HorizontalLayout(new Span("Nuevo"), LineAwesomeIcon.USER_PLUS_SOLID.create()), e -> openFormDialog(new Customer()));
         menu.addItem("Editar", e -> openFormDialog(e.getItem().get()));
         menu.addItem("Detalles", e -> showDetail(e.getItem().get().getId()));
         menu.add(new Hr());

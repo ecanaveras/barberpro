@@ -42,7 +42,7 @@ public class WorkService {
 
     public void save(Work work) {
         if (work == null) {
-            LOGGER.log(Level.SEVERE, "Cliente es nulo, asegurese que los datos sean correctos");
+            LOGGER.log(Level.SEVERE, "Servicio es nulo, asegurese que los datos sean correctos");
             return;
         }
         workRepository.save(work);
@@ -51,17 +51,18 @@ public class WorkService {
     @PostConstruct
     public void populateTestData() {
         if (workRepository.count() == 0) {
-            Random r = new Random(0);
-            List<Work> works = workRepository.findAll();
-            workRepository.saveAll(Stream.of("Corte de Cabello", "Barba", "Cejas").map(name -> {
-                Work work = new Work();
-                work.setTitle(name);
-                work.setPrice(new Random().nextDouble(20000));
-                work.setDescription("Lorem ipsum dolor sit amet");
-                work.setObservations("Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet");
-                work.setCommissions(new Random().nextDouble(0.10));
-                return work;
-            }).collect(Collectors.toList()));
+            //Random r = new Random(0);
+            //List<Work> works = workRepository.findAll();
+            workRepository.saveAll(Stream.of("Corte de Cabello", "Barba", "Cejas")
+                    .map(name -> {
+                        Work work = new Work();
+                        work.setTitle(name);
+                        work.setPrice(new Random().nextDouble(20000));
+                        work.setDescription("Lorem ipsum dolor sit amet");
+                        work.setObservations("Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet");
+                        work.setCommissions(new Random().nextDouble(0.10));
+                        return work;
+                    }).collect(Collectors.toList()));
         }
     }
 }
