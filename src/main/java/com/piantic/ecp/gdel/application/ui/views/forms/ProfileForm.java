@@ -28,7 +28,7 @@ public class ProfileForm extends FormLayout {
 
     Binder<Profile> binder = new BeanValidationBinder<>(Profile.class);
 
-    public ProfileForm(){
+    public ProfileForm() {
         addClassName("profile-form");
 
         binder.bindInstanceFields(this);
@@ -42,7 +42,7 @@ public class ProfileForm extends FormLayout {
         add(btns);
     }
 
-    private void setButtons(){
+    private void setButtons() {
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         delete.setIcon(LineAwesomeIcon.TRASH_ALT.create());
@@ -60,24 +60,24 @@ public class ProfileForm extends FormLayout {
         binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
     }
 
-    public void setProfile(Profile profile){
+    public void setProfile(Profile profile) {
         binder.setBean(profile);
     }
 
-    private void validateAndSave(){
-        if(binder.isValid()){
+    private void validateAndSave() {
+        if (binder.isValid()) {
             fireEvent(new ProfileForm.SaveEvent(this, binder.getBean()));
         }
     }
 
     //Events
-    public static abstract class ProfileFormEvent extends ComponentEvent<ProfileForm>{
+    public static abstract class ProfileFormEvent extends ComponentEvent<ProfileForm> {
 
         private Profile profile;
 
         protected ProfileFormEvent(ProfileForm source, Profile profile) {
             super(source, false);
-            this.profile=profile;
+            this.profile = profile;
         }
 
         public Profile getProfile() {
@@ -97,14 +97,14 @@ public class ProfileForm extends FormLayout {
         }
     }
 
-    public static class CloseEvent extends ProfileFormEvent{
+    public static class CloseEvent extends ProfileFormEvent {
         public CloseEvent(ProfileForm source) {
             super(source, null);
         }
     }
 
 
-    public <T extends ComponentEvent<?>> Registration addListener(Class<T> event, ComponentEventListener<T> listener){
+    public <T extends ComponentEvent<?>> Registration addListener(Class<T> event, ComponentEventListener<T> listener) {
         return getEventBus().addListener(event, listener);
     }
 
