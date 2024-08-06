@@ -110,14 +110,14 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(customer ->
                 new Anchor(String.format("/customer/%d", customer.getId()), customer.getName())
-        ).setKey("name1").setAutoWidth(true).setHeader("Nombre").setSortable(true).getStyle().set("min-width", "200px");
+        ).setKey("name1").setAutoWidth(true).setHeader("Nombre").setSortable(true).setComparator(Customer::getName).getStyle().set("min-width", "200px");
         grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
         grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
         grid.addComponentColumn(customer -> {
             SvgIcon star = LineAwesomeIcon.STAR_SOLID.create();
             star.addClassName("star-icon");
             return customer != null && customer.isFavorite() ? star : null;
-        }).setHeader("Favorito").setWidth("6rem");
+        }).setHeader("Favorito").setSortable(true).setComparator(Customer::isFavorite).setWidth("6rem");
 
         createMenu();
 

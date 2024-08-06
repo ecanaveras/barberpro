@@ -5,6 +5,7 @@ import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.repository.WorkRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.util.List;
 import java.util.Random;
@@ -57,6 +58,12 @@ public class WorkService {
                     .map(name -> {
                         Work work = new Work();
                         work.setTitle(name);
+                        if (name.equals("Corte de Cabello"))
+                            work.setImage(LineAwesomeIcon.CUT_SOLID.getSvgName());
+                        if (name.equals("Barba"))
+                            work.setImage(LineAwesomeIcon.AFFILIATETHEME.getSvgName());
+                        if (name.equals("Cejas"))
+                            work.setImage(LineAwesomeIcon.GLASSES_SOLID.getSvgName());
                         work.setPrice(new Random().nextDouble(20000));
                         work.setDescription("Lorem ipsum dolor sit amet");
                         work.setObservations("Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet");

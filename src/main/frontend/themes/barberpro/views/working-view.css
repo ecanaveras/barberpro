@@ -1,0 +1,83 @@
+.working-view {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.div-left, .div-right {
+    min-width: 400px;
+    margin-top: 0.5rem;
+    border-radius: 10px;
+    border: 1px solid var(--lumo-primary-color);
+    padding: var(--lumo-space-s);
+}
+
+.div-left {
+    margin-left: 0.5rem;
+}
+
+.div-right {
+    border: 1px solid var(--lumo-success-color);
+    margin-left: var(--lumo-space-s);
+}
+
+
+.btn-delete-item, .check-service {
+    margin-left: auto;
+}
+
+.item-service-avatar {
+    border-radius: 50%;
+    background-color: var(--lumo-primary-color);
+    max-width: 30px;
+    display: inline-block;
+    padding: var(--lumo-space-s);
+    margin-right: var(--lumo-space-s);
+}
+
+.item-service {
+    color: white;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: var(--lumo-space-xs);
+    padding-top: var(--lumo-space-xs);
+}
+
+.item-service.added > .item-service-avatar{
+    background-color: var(--lumo-success-color);
+}
+
+.mini-form > vaadin-number-field {
+    max-width: 40px;
+    margin-left: 4px;
+    margin-right: 4px;
+
+    > input-vaadin-number-field {
+        text-align: center;
+    }
+}
+
+@media all and (max-height: 800px) {
+
+    .div-left, .div-right {
+        max-height: 300px;
+    }
+
+    .div-left > vaadin-grid{
+        max-height: 300px;
+    }
+
+    .div-right > vaadin-grid{
+        max-height: 300px;
+    }
+
+    .content-left.viewing {
+        display: none;
+    }
+
+    .customer-detail-view .back-button {
+        display: flex;
+    }
+
+}
