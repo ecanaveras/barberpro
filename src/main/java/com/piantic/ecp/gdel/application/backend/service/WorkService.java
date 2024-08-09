@@ -54,7 +54,7 @@ public class WorkService {
         if (workRepository.count() == 0) {
             //Random r = new Random(0);
             //List<Work> works = workRepository.findAll();
-            workRepository.saveAll(Stream.of("Corte de Cabello", "Barba", "Cejas")
+            workRepository.saveAll(Stream.of("Corte de Cabello", "Barba", "Cejas", "Manicure", "Pelicure", "Propina", "Bebida")
                     .map(name -> {
                         Work work = new Work();
                         work.setTitle(name);

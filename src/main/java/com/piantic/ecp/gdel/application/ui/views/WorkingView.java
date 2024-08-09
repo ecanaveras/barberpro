@@ -6,10 +6,13 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.dnd.GridDropMode;
+import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H5;
@@ -17,10 +20,14 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import jakarta.validation.constraints.NotNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -29,31 +36,45 @@ import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
 @Route("working")
-public class WorkingView extends Div {
+public class WorkingView extends Div implements BeforeEnterObserver {
 
     Grid<WorkAdded> gridservices = new Grid<>(WorkAdded.class, false);
     Grid<WorkAdded> gridsales = new Grid<>(WorkAdded.class, false);
     WorkService workService;
+    Div divtoolbar = new Div();
     Div divleft = new Div();
     Div divright = new Div();
     Div divfooter = new Div();
     Span total = new Span();
 
     WorkAdded dragitem;
-    WorkAdded workAdded;
 
     GridListDataView<WorkAdded> dataviewleft = gridservices.getListDataView();
     GridListDataView<WorkAdded> dataviewright = gridsales.getListDataView();
+
+    Editor<WorkAdded> editorsales = gridsales.getEditor();
+
+    //Preferents
+    private boolean showbuttons = false;
 
     public WorkingView(WorkService workService) {
         addClassName("working-view");
 
         this.workService = workService;
 
+        divleft.addClassName("div-toolbar");
         divleft.addClassName("div-left");
         divright.addClassName("div-right");
+        divfooter.addClassName("div-footer");
+
+        //Carga información local de preferencias.
+        loadInfoLocalStorage();
 
         configureGrids();
+
+        dataviewright.addItemCountChangeListener(event -> {
+            updateInfo();
+        });
 
         divleft.add(gridservices);
 
@@ -61,7 +82,26 @@ public class WorkingView extends Div {
 
         divfooter.add(new H3("Total: $"), total);
 
-        add(divleft, divright, divfooter);
+        configureToolbar();
+
+        add(divtoolbar, divleft, divright, divfooter);
+
+    }
+
+    private void configureToolbar() {
+        HorizontalLayout toolbar = new HorizontalLayout();
+        MenuBar menuBar = new MenuBar();
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
+        MenuItem menuItem = menuBar.addItem(LineAwesomeIcon.BARS_SOLID.create());
+        SubMenu showbtns = menuItem.getSubMenu();
+        showbtns.addItem(new HorizontalLayout(new Span("Mostrar Botones"), showbuttons ? LineAwesomeIcon.CHECK_SOLID.create() : new Span("")), event -> {
+            WebStorage.setItem("working.grid.show_buttons", String.valueOf(!showbuttons));
+            this.getUI().ifPresent(ui -> ui.navigate(WorkingView.class));
+        });
+
+        toolbar.add(menuBar);
+
+        divtoolbar.add(toolbar);
     }
 
 
@@ -80,8 +120,20 @@ public class WorkingView extends Div {
             return getIconItem(service.getServicio(), itemservice);
         });
         gridservices.addComponentColumn(service -> {
-            return service.isAdded() ? markIcon() : null;
-        }).setAutoWidth(true).setFlexGrow(0);
+            return service.getCant() > 0 ? markIcon() : new Span("");
+        }).setWidth("60px").setFlexGrow(0);
+        gridservices.addColumn(
+                new ComponentRenderer<>(Button::new, (btn, work_item) -> {
+                    btn.addClassName("btn-add-item");
+                    btn.setIcon(LineAwesomeIcon.PLUS_SOLID.create());
+//                    btn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_TERTIARY);
+                    //Agregar el elemento
+                    btn.addClickListener(e -> {
+                        dragitem = work_item;
+                        addServiceGrid();
+                    });
+                })
+        ).setAutoWidth(true).setFlexGrow(0).setVisible(showbuttons);
 
         //Double Touch
         gridservices.addItemDoubleClickListener(e -> {
@@ -100,7 +152,6 @@ public class WorkingView extends Div {
             dragitem = null;
             gridservices.setDropMode(null);
             gridsales.setDropMode(null);
-            updateFooter();
         });
 
 
@@ -123,16 +174,37 @@ public class WorkingView extends Div {
                     //Elimina el elemento
                     btn.addClickListener(e -> {
                         dragitem = work_item;
-                        dragitem.setAdded(false);
-                        dragitem.setCant(0);
-                        dataviewright.removeItem(dragitem);
-                        dataviewleft.refreshItem(dragitem);
-                        dragitem = null;
-                        dataviewleft.refreshAll();
-                        updateFooter();
+                        deleteServiceGrid();
                     });
                 })
-        ).setAutoWidth(true).setFlexGrow(0);
+        ).setKey("action").setAutoWidth(true).setFlexGrow(0).setVisible(showbuttons);
+
+
+
+        /*
+        Grid.Column<WorkAdded> deleteColum = gridsales.addComponentColumn(workAdded ->{
+            return new Span("");
+        });
+        deleteColum.setFlexGrow(0).setFrozenToEnd(true).setAutoWidth(true);
+
+        //BtnDeleteRow
+        Button btn = new Button(LineAwesomeIcon.TRASH_ALT.create());
+        btn.addClassName("btn-delete-item");
+        btn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_TERTIARY);
+        //Elimina el elemento
+        btn.addClickListener(e -> {
+            dragitem = editorsales.getItem();
+            deleteServiceGrid();
+        });
+
+
+        gridsales.asSingleSelect().addValueChangeListener(event -> {
+            if(editorsales.isOpen()){
+                editorsales.cancel();
+            }
+            gridsales.getEditor().editItem(event.getValue());
+            deleteColum.setEditorComponent(btn);
+        });*/
 
 
         gridsales.addDropListener(e -> {
@@ -143,16 +215,46 @@ public class WorkingView extends Div {
     }
 
     private void addServiceGrid() {
-        dragitem.setAdded(true);
+//        dragitem.setAdded(true);
         dragitem.setCant(dragitem.getCant() + 1);
-        dataviewleft.refreshItem(dragitem);
         dataviewright.addItem(dragitem);
-        updateFooter();
+        dataviewleft.refreshItem(dragitem);
+        dataviewright.refreshItem(dragitem);
+        updateInfo();
+
+        // ## ANIIMATION
+        /*gridsales.getElement().executeJs(
+                "const row = this.shadowRoot.querySelector('[part~=\"row\"][index=\"$0\"]');" +
+                        "if (row) {" +
+                        "    row.classList.add('animated-row');" +
+                        "    setTimeout(() => row.classList.remove('animated-row'), 2000);" +
+                        "}", dataviewright.getItemIndex(dragitem).get()        );*/
+
         dragitem = null;
     }
 
+    private void removeService(WorkAdded work) {
+        dragitem = work;
+        if (work.getCant() > 1) {
+            dragitem.setCant(dragitem.getCant() - 1);
+            dataviewright.refreshItem(dragitem);
+            dataviewleft.refreshItem(dragitem);
+        } else {
+            deleteServiceGrid();
+        }
+    }
 
-    private void updateFooter() {
+    private void deleteServiceGrid() {
+//        dragitem.setAdded(false);
+        dragitem.setCant(0);
+        dataviewleft.refreshItem(dragitem);
+        dataviewright.removeItem(dragitem);
+        dragitem = null;
+        updateInfo();
+    }
+
+
+    private void updateInfo() {
         Double val = gridsales.getListDataView()
                 .getItems()
                 .toList()
@@ -173,6 +275,7 @@ public class WorkingView extends Div {
             Avatar avatar = new Avatar();
             avatar.addClassName("avatar-service");
             avatar.setName(work.getTitle());
+            div.addClassName("avatar");
             div.add(avatar);
         }
         itemservice.add(div);
@@ -198,13 +301,30 @@ public class WorkingView extends Div {
         return icon;
     }
 
+    //Mini Formulario
     private Component createForm(WorkAdded work) {
         Div div = new Div();
         div.addClassName("mini-form");
         Button minus = new Button(VaadinIcon.MINUS.create());
+        minus.addClickListener(event -> {
+            removeService(work);
+        });
         Button plus = new Button(VaadinIcon.PLUS.create());
         NumberField cant = new NumberField();
+        cant.addValueChangeListener(event -> {
+            if (cant == null) {
+                return;
+            }
+            cant.getElement().getClassList().add("animated-numberfield");
+
+            // Usar un temporizador para eliminar la clase después de la animación
+            cant.getElement().executeJs(
+                    "setTimeout(() => $0.classList.remove('animated-numberfield'), 500);", cant.getElement()
+            );
+        });
+        cant.addClassName("number-service");
         cant.setStep(1);
+        cant.setReadOnly(true);
         cant.setValue(Double.valueOf(work.cant));
         div.add(minus, cant, plus);
         return div;
@@ -212,6 +332,19 @@ public class WorkingView extends Div {
 
     private String formatNumber(Double number) {
         return new DecimalFormat("#,###.##").format(number);
+    }
+
+
+    private void loadInfoLocalStorage() {
+        //TODO Accer diccionario de opciones
+        WebStorage.getItem("working.grid.show_buttons", value -> {
+            showbuttons = Boolean.parseBoolean(value);
+        });
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        loadInfoLocalStorage();
     }
 
 
