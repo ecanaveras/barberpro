@@ -1,21 +1,20 @@
-.working-view {
+.working-view-content {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
     height: 100vh;
+    gap: 0.5rem;
 }
 
 .div-left, .div-right {
     min-width: 280px;
+    height: 70vh;
     /*margin-top: 0.5rem;*/
     /*margin: var(--lumo-space-xs);*/
     border-radius: 10px;
     padding: var(--lumo-space-s);
     flex: 1 1 auto;
-    margin-left: var(--lumo-space-s);
-    margin-right: var(--lumo-space-s);
-
 }
 
 .div-left {
@@ -34,6 +33,13 @@
     align-self: flex-end; /* El footer se alinea al final del contenedor */
 }
 
+div.no-visible {
+    display: none;
+}
+
+vaadin-grid {
+    height: 100%;
+}
 
 .btn-delete-item, .check-service {
     margin-left: auto;

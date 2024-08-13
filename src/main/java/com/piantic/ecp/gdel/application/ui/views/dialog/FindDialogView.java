@@ -1,7 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views.dialog;
 
-import com.piantic.ecp.gdel.application.backend.entity.Customer;
-import com.piantic.ecp.gdel.application.backend.service.CustomerService;
+import com.piantic.ecp.gdel.application.backend.utils.generics.GenericService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -11,21 +10,29 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-public class FindDialogView extends Dialog {
+public class FindDialogView<T> extends Dialog {
 
     TextField txtFilter = new TextField();
-    Grid<Customer> grid = new Grid<>(Customer.class);
-    CustomerService findService;
+    Grid<T> grid;
+    GenericService<T> findService;
     Long idSelected;
+    String searchField;
+    Boolean redirect;
+    String routerLink;
 
-    public FindDialogView(CustomerService findService) {
+
+    public FindDialogView(GenericService<T> findService, Class<T> entityClass, String searchField) {
         addClassName("find-dialog");
         this.findService = findService;
+        this.grid = new Grid<>(entityClass);
+        this.searchField = searchField;
 
-        setWidth("600px");
-        setHeight("800px");
+
+        setMinWidth("400px");
+        setMinHeight("400px");
+
         setHeaderTitle("Buscando...");
-        Button btnCloseDialog = new Button(LineAwesomeIcon.TIMES_CIRCLE.create(), e-> this.close());
+        Button btnCloseDialog = new Button(LineAwesomeIcon.TIMES_CIRCLE.create(), e -> this.close());
         btnCloseDialog.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_CONTRAST);
         getHeader().add(btnCloseDialog);
         setResizable(true);
@@ -45,21 +52,20 @@ public class FindDialogView extends Dialog {
 
     private void configureGrid() {
         grid.addClassName("grid-dialog");
+        findValue();
         grid.setColumns("name");
         grid.setSizeFull();
         grid.setMaxHeight("90%");
-        grid.asSingleSelect().addValueChangeListener(e-> selectedData(e.getValue().getId()));
-        findValue();
+        grid.asSingleSelect().addValueChangeListener(e -> selectedData(findService.getId(e.getValue())));
     }
 
     private void findValue() {
         grid.setItems(findService.findAll(txtFilter.getValue()));
     }
 
-    private void selectedData(Long id){
+    private void selectedData(Long id) {
         this.idSelected = id;
         this.close();
-        System.out.printf("Seleccionado: "+id);
     }
 
     public Long getIdSelected() {

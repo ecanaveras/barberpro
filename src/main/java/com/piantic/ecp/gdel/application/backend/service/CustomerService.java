@@ -2,6 +2,7 @@ package com.piantic.ecp.gdel.application.backend.service;
 
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.repository.CustomerRepository;
+import com.piantic.ecp.gdel.application.backend.utils.generics.GenericService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class CustomerService {
+public class CustomerService implements GenericService<Customer> {
     public static final Logger LOGGER = Logger.getLogger(ProfileService.class.getName());
     private CustomerRepository customerRepository;
 
@@ -56,6 +57,10 @@ public class CustomerService {
             return customer.get();
         }
         return null;
+    }
+
+    public Long getId(Customer customer){
+        return customer.getId();
     }
 
 

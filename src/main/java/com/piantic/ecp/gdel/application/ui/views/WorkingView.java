@@ -1,7 +1,10 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
+import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.service.WorkService;
+import com.piantic.ecp.gdel.application.ui.views.dialog.FindDialogView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
@@ -23,12 +26,12 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.validation.constraints.NotNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
@@ -36,15 +39,19 @@ import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
 @Route("working")
-public class WorkingView extends Div implements BeforeEnterObserver {
+public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
+
+    CustomerService customerService;
+    WorkService workService;
 
     Grid<WorkAdded> gridservices = new Grid<>(WorkAdded.class, false);
     Grid<WorkAdded> gridsales = new Grid<>(WorkAdded.class, false);
-    WorkService workService;
+
     Div divtoolbar = new Div();
     Div divleft = new Div();
     Div divright = new Div();
     Div divfooter = new Div();
+    Div divfinal = new Div();
     Span total = new Span();
 
     WorkAdded dragitem;
@@ -57,15 +64,19 @@ public class WorkingView extends Div implements BeforeEnterObserver {
     //Preferents
     private boolean showbuttons = false;
 
-    public WorkingView(WorkService workService) {
-        addClassName("working-view");
+    public WorkingView(WorkService workService, CustomerService customerService) {
+        addClassName("working-view-main");
+        setSizeFull();
 
         this.workService = workService;
+        this.customerService = customerService;
 
         divleft.addClassName("div-toolbar");
         divleft.addClassName("div-left");
         divright.addClassName("div-right");
         divfooter.addClassName("div-footer");
+
+        divfinal.addClassName("div-final");
 
         //Carga información local de preferencias.
         loadInfoLocalStorage();
@@ -73,7 +84,7 @@ public class WorkingView extends Div implements BeforeEnterObserver {
         configureGrids();
 
         dataviewright.addItemCountChangeListener(event -> {
-            updateInfo();
+            refreshTotaltoPay();
         });
 
         divleft.add(gridservices);
@@ -84,12 +95,42 @@ public class WorkingView extends Div implements BeforeEnterObserver {
 
         configureToolbar();
 
-        add(divtoolbar, divleft, divright, divfooter);
+        Div content = new Div();
+        content.addClassName("working-view-content");
+
+        content.add(divleft, divright, divfooter, divfinal);
+
+        //Title
+        H3 title = new H3("Trabajando...");
+        //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
+        HorizontalLayout contentTitle = new HorizontalLayout(title);
+        contentTitle.setAlignSelf(Alignment.BASELINE);
+        add(contentTitle, divtoolbar, content);
 
     }
 
     private void configureToolbar() {
         HorizontalLayout toolbar = new HorizontalLayout();
+        Button btnContinuar = new Button("Continuar", VaadinIcon.CHECK.create());
+        btnContinuar.addClickListener(event -> {
+            FindDialogView<Customer> findCustomer =
+                    new FindDialogView<>(customerService,
+                            Customer.class,
+                            "name");
+            findCustomer.addDetachListener(detachEvent -> {
+                if (findCustomer.getIdSelected() != null) {
+                    WorkFinishView vfinal = new WorkFinishView(dataviewright.getItems());
+                    vfinal.setCloseEventListener(() -> controlShowViews(false));
+                    divfinal.add(vfinal);
+                    controlShowViews(true);
+                }
+            });
+
+
+            findCustomer.open();
+
+        });
+
         MenuBar menuBar = new MenuBar();
         menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
         MenuItem menuItem = menuBar.addItem(LineAwesomeIcon.BARS_SOLID.create());
@@ -99,7 +140,7 @@ public class WorkingView extends Div implements BeforeEnterObserver {
             this.getUI().ifPresent(ui -> ui.navigate(WorkingView.class));
         });
 
-        toolbar.add(menuBar);
+        toolbar.add(btnContinuar, menuBar);
 
         divtoolbar.add(toolbar);
     }
@@ -129,16 +170,14 @@ public class WorkingView extends Div implements BeforeEnterObserver {
 //                    btn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_TERTIARY);
                     //Agregar el elemento
                     btn.addClickListener(e -> {
-                        dragitem = work_item;
-                        addServiceGrid();
+                        addServiceGrid(work_item);
                     });
                 })
         ).setAutoWidth(true).setFlexGrow(0).setVisible(showbuttons);
 
         //Double Touch
         gridservices.addItemDoubleClickListener(e -> {
-            dragitem = e.getItem();
-            addServiceGrid();
+            addServiceGrid(e.getItem());
         });
 
 
@@ -179,8 +218,6 @@ public class WorkingView extends Div implements BeforeEnterObserver {
                 })
         ).setKey("action").setAutoWidth(true).setFlexGrow(0).setVisible(showbuttons);
 
-
-
         /*
         Grid.Column<WorkAdded> deleteColum = gridsales.addComponentColumn(workAdded ->{
             return new Span("");
@@ -197,7 +234,6 @@ public class WorkingView extends Div implements BeforeEnterObserver {
             deleteServiceGrid();
         });
 
-
         gridsales.asSingleSelect().addValueChangeListener(event -> {
             if(editorsales.isOpen()){
                 editorsales.cancel();
@@ -206,21 +242,21 @@ public class WorkingView extends Div implements BeforeEnterObserver {
             deleteColum.setEditorComponent(btn);
         });*/
 
-
         gridsales.addDropListener(e -> {
-            addServiceGrid();
+            addServiceGrid(dragitem);
         });
 
 
     }
 
-    private void addServiceGrid() {
+    private void addServiceGrid(WorkAdded work) {
 //        dragitem.setAdded(true);
+        dragitem = work;
         dragitem.setCant(dragitem.getCant() + 1);
         dataviewright.addItem(dragitem);
         dataviewleft.refreshItem(dragitem);
         dataviewright.refreshItem(dragitem);
-        updateInfo();
+        refreshTotaltoPay();
 
         // ## ANIIMATION
         /*gridsales.getElement().executeJs(
@@ -250,18 +286,11 @@ public class WorkingView extends Div implements BeforeEnterObserver {
         dataviewleft.refreshItem(dragitem);
         dataviewright.removeItem(dragitem);
         dragitem = null;
-        updateInfo();
+        refreshTotaltoPay();
     }
 
-
-    private void updateInfo() {
-        Double val = gridsales.getListDataView()
-                .getItems()
-                .toList()
-                .stream()
-                .mapToDouble(item -> item.subTotal())
-                .sum();
-        total.setText(formatNumber(val));
+    private void refreshTotaltoPay() {
+        total.setText(formatNumber(getTotalWorked()));
 
     }
 
@@ -302,14 +331,36 @@ public class WorkingView extends Div implements BeforeEnterObserver {
     }
 
     //Mini Formulario
+
+    /**
+     * Formulario
+     *
+     * @param work
+     * @return
+     */
     private Component createForm(WorkAdded work) {
         Div div = new Div();
         div.addClassName("mini-form");
-        Button minus = new Button(VaadinIcon.MINUS.create());
+        Button minus = new Button();
+        minus.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        minus.addClassNames(LumoUtility.Padding.XSMALL, LumoUtility.Margin.XSMALL);
+        if (work.getCant() > 1) {
+            minus.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+            minus.setIcon(VaadinIcon.MINUS.create());
+        } else {
+            minus.addThemeVariants(ButtonVariant.LUMO_ERROR);
+            minus.setIcon(VaadinIcon.TRASH.create());
+        }
         minus.addClickListener(event -> {
             removeService(work);
         });
         Button plus = new Button(VaadinIcon.PLUS.create());
+        plus.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST);
+        plus.addClassNames(LumoUtility.Padding.XSMALL, LumoUtility.Margin.XSMALL);
+        plus.addClickListener(event -> {
+            addServiceGrid(work);
+        });
+
         NumberField cant = new NumberField();
         cant.addValueChangeListener(event -> {
             if (cant == null) {
@@ -335,11 +386,38 @@ public class WorkingView extends Div implements BeforeEnterObserver {
     }
 
 
+    //## DATA
+    public Double getTotalWorked(){
+        Double val = gridsales.getListDataView()
+                .getItems()
+                .toList()
+                .stream()
+                .mapToDouble(item -> item.subTotal())
+                .sum();
+        return val;
+    }
+
     private void loadInfoLocalStorage() {
         //TODO Accer diccionario de opciones
         WebStorage.getItem("working.grid.show_buttons", value -> {
             showbuttons = Boolean.parseBoolean(value);
         });
+    }
+
+    private void controlShowViews(Boolean hide) {
+        if (hide) {
+            divfinal.addClassName("finish-on");
+            divleft.addClassName("no-visible");
+            divright.addClassName("no-visible");
+            divfooter.addClassName("no-visible");
+            divtoolbar.addClassName("no-visible");
+        } else {
+            divfinal.removeClassName("finish-on");
+            divtoolbar.removeClassName("no-visible");
+            divleft.removeClassName("no-visible");
+            divright.removeClassName("no-visible");
+            divfooter.removeClassName("no-visible");
+        }
     }
 
     @Override
@@ -349,7 +427,7 @@ public class WorkingView extends Div implements BeforeEnterObserver {
 
 
     //Class
-    private class WorkAdded {
+    public class WorkAdded {
         private Work servicio;
         private int cant;
         private boolean added;
