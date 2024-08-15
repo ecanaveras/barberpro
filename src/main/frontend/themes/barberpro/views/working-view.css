@@ -1,36 +1,45 @@
 .working-view-content {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
     height: 100vh;
-    gap: 0.5rem;
-}
-
-.div-left, .div-right {
-    min-width: 280px;
-    height: 70vh;
-    /*margin-top: 0.5rem;*/
-    /*margin: var(--lumo-space-xs);*/
-    border-radius: 10px;
-    padding: var(--lumo-space-s);
+    width: 100%;
+    row-gap: 0.5rem;
+    flex-flow: row wrap;
     flex: 1 1 auto;
 }
 
+.div-left, .div-right {
+    display: flex;
+    flex-direction: column;
+    min-width: 300px;
+    border-radius: 10px;
+    flex-grow: 1;
+}
+
 .div-left {
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--lumo-primary-color);
+    margin-right: var(--lumo-space-xs);
 }
 
 .div-right {
-    border: 1px solid var(--lumo-success-color);
+    border: 1px solid var(--lumo-contrast-20pct);
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    row-gap: .1rem;
 }
 
 
-.div-footer {
-    border: 1px solid var(--lumo-success-color);
-    border-radius: 10px;
-    flex-basis: 100%; /* El footer siempre ocupa el 100% del ancho */
-    align-self: flex-end; /* El footer se alinea al final del contenedor */
+.div-summary {
+    background-color: var(--lumo-contrast-20pct);
+    display: flex;
+    padding: var(--lumo-space-m);
+    flex-direction: column;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    flex-basis: 1rem;
 }
 
 div.no-visible {
@@ -38,9 +47,24 @@ div.no-visible {
 }
 
 vaadin-grid {
-    height: 100%;
+    /*border: 1px solid saddlebrown;*/
+    flex-grow: 2;
+    margin: var(--lumo-space-s);
+    height: 0;
+    flex-basis: 20rem;
 }
 
+.toolbar {
+    background-color: var(--lumo-contrast-10pct);
+    width: 100%;
+    border-radius: 4px;
+    padding-left: var(--lumo-space-s);
+    padding-right: var(--lumo-space-s);
+    > vaadin-button {
+        background-color: var(--lumo-primary-color);
+        color: var(--lumo-base-color);
+    }
+}
 .btn-delete-item, .check-service {
     margin-left: auto;
 }
@@ -49,6 +73,9 @@ vaadin-grid {
     right: 20px;
 }
 
+.btn-add-item {
+    visibility: hidden;
+}
 
 .item-service-avatar {
     border-radius: 50%;
@@ -84,26 +111,27 @@ vaadin-grid {
 }
 
 .mini-form > vaadin-number-field {
-    max-width: 40px;
+    max-width: 50px;
     margin-left: 4px;
     margin-right: 4px;
 
     > input[type="number"] {
+        min-width: 30px;
         text-align: center;
+        font-weight: bold;
+        font-size: var(--lumo-font-size-l);
+        color: var(--lumo-contrast);
+    }
+}
+
+/* Mostrar el botón en pantallas menores a 600px de ancho (modo móvil) */
+@media (max-width: 600px) {
+    .btn-add-item {
+        visibility: visible;
     }
 }
 
 @media all and (max-width: 800px){
-
-    .div-left, .div-right {
-        flex-basis: 100%;
-        max-height: 90%;
-    }
-
-    .div-footer {
-        align-self: flex-end;
-    }
-
     .column-btn-add {
         display: none;
     }
@@ -119,7 +147,7 @@ vaadin-grid {
 }
 
 @keyframes blink {
-    0% { background-color: #26ff00; }
+    0% { background-color: var(--lumo-success-color-50pct); }
     100% { background-color: white; }
 }
 

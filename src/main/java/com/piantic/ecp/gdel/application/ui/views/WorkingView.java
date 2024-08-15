@@ -15,7 +15,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.grid.dnd.GridDropMode;
-import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H5;
@@ -28,9 +27,12 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.validation.constraints.NotNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -50,7 +52,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     Div divtoolbar = new Div();
     Div divleft = new Div();
     Div divright = new Div();
-    Div divfooter = new Div();
+    Div divsummary = new Div();
     Div divfinal = new Div();
     Span total = new Span();
 
@@ -59,7 +61,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     GridListDataView<WorkAdded> dataviewleft = gridservices.getListDataView();
     GridListDataView<WorkAdded> dataviewright = gridsales.getListDataView();
 
-    Editor<WorkAdded> editorsales = gridsales.getEditor();
+//    Editor<WorkAdded> editorsales = gridsales.getEditor();
 
     //Preferents
     private boolean showbuttons = false;
@@ -71,10 +73,9 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         this.workService = workService;
         this.customerService = customerService;
 
-        divleft.addClassName("div-toolbar");
         divleft.addClassName("div-left");
         divright.addClassName("div-right");
-        divfooter.addClassName("div-footer");
+        divsummary.addClassName("div-summary");
 
         divfinal.addClassName("div-final");
 
@@ -90,15 +91,16 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         divleft.add(gridservices);
 
         divright.add(gridsales);
+        divright.add(divsummary);
 
-        divfooter.add(new H3("Total: $"), total);
+        divsummary.add(new H3("Total: $"), total);
 
         configureToolbar();
 
         Div content = new Div();
         content.addClassName("working-view-content");
 
-        content.add(divleft, divright, divfooter, divfinal);
+        content.add(divleft, divright, divfinal);
 
         //Title
         H3 title = new H3("Trabajando...");
@@ -110,7 +112,10 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     private void configureToolbar() {
+        divtoolbar.setWidthFull();
         HorizontalLayout toolbar = new HorizontalLayout();
+        toolbar.setWidthFull();
+        toolbar.addClassName("toolbar");
         Button btnContinuar = new Button("Continuar", VaadinIcon.CHECK.create());
         btnContinuar.addClickListener(event -> {
             FindDialogView<Customer> findCustomer =
@@ -131,16 +136,30 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
         });
 
+        Button btnLimpiar = new Button("Limpiar", VaadinIcon.DEL.create());
+        btnLimpiar.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(WorkingView.class).ifPresent(workingView -> {
+            //TODO Configurar boton limpiar todo
+            //configureGrids();
+        })));
+
         MenuBar menuBar = new MenuBar();
         menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
-        MenuItem menuItem = menuBar.addItem(LineAwesomeIcon.BARS_SOLID.create());
-        SubMenu showbtns = menuItem.getSubMenu();
-        showbtns.addItem(new HorizontalLayout(new Span("Mostrar Botones"), showbuttons ? LineAwesomeIcon.CHECK_SOLID.create() : new Span("")), event -> {
+        MenuItem options = menuBar.addItem(LineAwesomeIcon.BARS_SOLID.create());
+        SubMenu subMenu = options.getSubMenu();
+        MenuItem showbtns = subMenu.addItem("Mostrar Boton Agregar", event -> {
             WebStorage.setItem("working.grid.show_buttons", String.valueOf(!showbuttons));
-            this.getUI().ifPresent(ui -> ui.navigate(WorkingView.class));
+            this.getUI().ifPresent(ui -> {
+                ui.navigate(WorkingView.class).ifPresent(e -> {
+                    loadInfoLocalStorage();
+                });
+            });
         });
+        showbtns.setCheckable(true);
+        showbtns.setChecked(showbuttons);
 
-        toolbar.add(btnContinuar, menuBar);
+
+        toolbar.add(btnContinuar, btnLimpiar, menuBar, getProgreso());
+//        toolbar.setAlignSelf(Alignment.END, btnContinuar);
 
         divtoolbar.add(toolbar);
     }
@@ -167,13 +186,14 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
                 new ComponentRenderer<>(Button::new, (btn, work_item) -> {
                     btn.addClassName("btn-add-item");
                     btn.setIcon(LineAwesomeIcon.PLUS_SOLID.create());
-//                    btn.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_TERTIARY);
+                    btn.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST);
+                    btn.addClassNames(LumoUtility.Padding.XSMALL, LumoUtility.Margin.XSMALL);
                     //Agregar el elemento
                     btn.addClickListener(e -> {
                         addServiceGrid(work_item);
                     });
                 })
-        ).setAutoWidth(true).setFlexGrow(0).setVisible(showbuttons);
+        ).setAutoWidth(true).setFlexGrow(0);
 
         //Double Touch
         gridservices.addItemDoubleClickListener(e -> {
@@ -397,6 +417,17 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         return val;
     }
 
+    /**
+     * Consulta las estadisticas del perfil
+     */
+    private HorizontalLayout getProgreso(){
+        HorizontalLayout p = new HorizontalLayout();
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.setValue(0.8);
+        p.add(progressBar);
+        return p;
+    }
+
     private void loadInfoLocalStorage() {
         //TODO Accer diccionario de opciones
         WebStorage.getItem("working.grid.show_buttons", value -> {
@@ -409,14 +440,14 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             divfinal.addClassName("finish-on");
             divleft.addClassName("no-visible");
             divright.addClassName("no-visible");
-            divfooter.addClassName("no-visible");
+            divsummary.addClassName("no-visible");
             divtoolbar.addClassName("no-visible");
         } else {
             divfinal.removeClassName("finish-on");
             divtoolbar.removeClassName("no-visible");
             divleft.removeClassName("no-visible");
             divright.removeClassName("no-visible");
-            divfooter.removeClassName("no-visible");
+            divsummary.removeClassName("no-visible");
         }
     }
 

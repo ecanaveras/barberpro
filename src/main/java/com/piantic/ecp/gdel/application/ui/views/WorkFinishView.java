@@ -1,11 +1,13 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.utils.generics.CloseEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -58,8 +60,10 @@ public class WorkFinishView extends VerticalLayout {
         btnSave.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         btnSave.setSizeFull();
         btnSave.addClickListener(e -> {
-            Notification notification = new Notification("Servicio Guardado");
+            Notification notification = new Notification();
+            notification.add(new HorizontalLayout(VaadinIcon.CHECK_CIRCLE.create(), new Text("Servicio Guardado")));
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.setDuration(3000);
             notification.open();
             this.closeView();
         });
