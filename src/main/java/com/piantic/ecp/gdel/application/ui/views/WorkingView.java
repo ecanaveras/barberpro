@@ -9,8 +9,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.contextmenu.SubMenu;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
@@ -22,8 +21,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
-import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
@@ -38,6 +35,8 @@ import jakarta.validation.constraints.NotNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Route("working")
@@ -65,6 +64,8 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     //Preferents
     private boolean showbuttons = false;
+    private Button btnContinuar;
+    private Button btnLimpiar;
 
     public WorkingView(WorkService workService, CustomerService customerService) {
         addClassName("working-view-main");
@@ -85,7 +86,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         configureGrids();
 
         dataviewright.addItemCountChangeListener(event -> {
-            refreshTotaltoPay();
+            refreshComponents();
         });
 
         divleft.add(gridservices);
@@ -105,9 +106,10 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         //Title
         H3 title = new H3("Trabajando...");
         //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
-        HorizontalLayout contentTitle = new HorizontalLayout(title);
-        contentTitle.setAlignSelf(Alignment.BASELINE);
-        add(contentTitle, divtoolbar, content);
+        HorizontalLayout contentTitle = new HorizontalLayout(title, divtoolbar);
+        contentTitle.addClassName("content-title");
+        contentTitle.setWidthFull();
+        add(contentTitle, content);
 
     }
 
@@ -116,12 +118,17 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setWidthFull();
         toolbar.addClassName("toolbar");
-        Button btnContinuar = new Button("Continuar", VaadinIcon.CHECK.create());
+        btnContinuar = new Button(LineAwesomeIcon.SAVE.create());
         btnContinuar.addClickListener(event -> {
             FindDialogView<Customer> findCustomer =
                     new FindDialogView<>(customerService,
                             Customer.class,
                             "name");
+            findCustomer.setHeaderTitle("Clientes");
+            findCustomer.setResizable(true);
+            findCustomer.setNamesColumnFilter(List.of("name"));
+            findCustomer.setLabeslColumnFilter(List.of("Cliente"));
+            findCustomer.configureGrid();
             findCustomer.addDetachListener(detachEvent -> {
                 if (findCustomer.getIdSelected() != null) {
                     WorkFinishView vfinal = new WorkFinishView(dataviewright.getItems());
@@ -136,13 +143,24 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
         });
 
-        Button btnLimpiar = new Button("Limpiar", VaadinIcon.DEL.create());
+        btnLimpiar = new Button(LineAwesomeIcon.UNDO_ALT_SOLID.create());
+        btnLimpiar.addThemeVariants(ButtonVariant.LUMO_ERROR);
         btnLimpiar.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(WorkingView.class).ifPresent(workingView -> {
-            //TODO Configurar boton limpiar todo
-            //configureGrids();
+            //Limpiar zona de trabajo
+            ConfirmDialog confirmDialog = new ConfirmDialog("Aviso!", "¿Seguro quieres empezar de Nuevo?", "Cancelar", event -> {
+            });
+            confirmDialog.setCloseOnEsc(true);
+            confirmDialog.setRejectable(true);
+            confirmDialog.setRejectText("Sí, Reiniciar");
+            confirmDialog.addRejectListener(ev -> {
+                gridservices.setItems(new ArrayList<>());
+                gridsales.setItems(new ArrayList<>());
+                loadDataGridServices();
+            });
+            confirmDialog.open();
         })));
 
-        MenuBar menuBar = new MenuBar();
+        /*MenuBar menuBar = new MenuBar();
         menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
         MenuItem options = menuBar.addItem(LineAwesomeIcon.BARS_SOLID.create());
         SubMenu subMenu = options.getSubMenu();
@@ -155,10 +173,11 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             });
         });
         showbtns.setCheckable(true);
-        showbtns.setChecked(showbuttons);
+        showbtns.setChecked(showbuttons);*/
 
 
-        toolbar.add(btnContinuar, btnLimpiar, menuBar, getProgreso());
+//        toolbar.add(btnContinuar, btnLimpiar, menuBar, getProgreso());
+        toolbar.add(btnContinuar, btnLimpiar, getProgreso());
 //        toolbar.setAlignSelf(Alignment.END, btnContinuar);
 
         divtoolbar.add(toolbar);
@@ -167,11 +186,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     private void configureGrids() {
         //Disponibles
-        gridservices.setItems(workService.findAll("").stream().map(work -> {
-            WorkAdded service = new WorkAdded();
-            service.setServicio(work);
-            return service;
-        }).collect(Collectors.toList()));
+        loadDataGridServices();
         gridservices.setRowsDraggable(true);
         gridservices.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         gridservices.addComponentColumn(service -> {
@@ -269,6 +284,17 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     }
 
+    /**
+     * Carga los servicios disponibles para el perfil
+     */
+    private void loadDataGridServices() {
+        gridservices.setItems(workService.findAll("").stream().map(work -> {
+            WorkAdded service = new WorkAdded();
+            service.setServicio(work);
+            return service;
+        }).collect(Collectors.toList()));
+    }
+
     private void addServiceGrid(WorkAdded work) {
 //        dragitem.setAdded(true);
         dragitem = work;
@@ -276,7 +302,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         dataviewright.addItem(dragitem);
         dataviewleft.refreshItem(dragitem);
         dataviewright.refreshItem(dragitem);
-        refreshTotaltoPay();
+        refreshComponents();
 
         // ## ANIIMATION
         /*gridsales.getElement().executeJs(
@@ -306,11 +332,17 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         dataviewleft.refreshItem(dragitem);
         dataviewright.removeItem(dragitem);
         dragitem = null;
-        refreshTotaltoPay();
+        refreshComponents();
     }
 
-    private void refreshTotaltoPay() {
+    private void refreshComponents() {
+
+        //Refresca el valor a pagar
         total.setText(formatNumber(getTotalWorked()));
+
+        //Refresca estados de los botones
+        btnContinuar.setEnabled(gridsales.getListDataView().getItemCount() > 0);
+        btnLimpiar.setEnabled(gridsales.getListDataView().getItemCount() > 0);
 
     }
 
@@ -407,7 +439,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
 
     //## DATA
-    public Double getTotalWorked(){
+    public Double getTotalWorked() {
         Double val = gridsales.getListDataView()
                 .getItems()
                 .toList()
@@ -420,8 +452,9 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     /**
      * Consulta las estadisticas del perfil
      */
-    private HorizontalLayout getProgreso(){
+    private HorizontalLayout getProgreso() {
         HorizontalLayout p = new HorizontalLayout();
+        p.addClassName("toolbar-progress");
         ProgressBar progressBar = new ProgressBar();
         progressBar.setValue(0.8);
         p.add(progressBar);

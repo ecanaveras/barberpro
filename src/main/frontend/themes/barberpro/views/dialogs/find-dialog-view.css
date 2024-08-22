@@ -1,0 +1,51 @@
+.find-dialog {
+    width: 600px;
+}
+
+.content-dialog {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.2rem;
+    padding: 0;
+}
+
+.filter-text{
+    width: 100%;
+}
+
+.grid-dialog {
+    flex-grow: 1;
+    min-width: 400px;
+    padding: 0;
+    margin: 0;
+}
+
+.content-dialog > vaadin-grid::part(row){
+    font-weight: bold;
+    color: var(--lumo-primary-color-50pct);
+}
+
+.content-dialog > vaadin-grid::part(body-cell){
+    cursor: pointer;
+}
+
+.content-dialog > vaadin-grid::part(header-cell){
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .find-dialog {
+        width: 300px;
+    }
+    .grid-dialog {
+        min-width: 250px;
+    }
+}
+
+@media (max-height: 600px) {
+    .find-dialog {
+        height: 400px;
+    }
+}
+

@@ -1,8 +1,12 @@
+.working-view-main {
+    gap: var(--lumo-space-xs);
+}
+
 .working-view-content {
     display: flex;
     height: 100vh;
     width: 100%;
-    row-gap: 0.5rem;
+    row-gap: .5rem;
     flex-flow: row wrap;
     flex: 1 1 auto;
 }
@@ -13,17 +17,18 @@
     min-width: 300px;
     border-radius: 10px;
     flex-grow: 1;
+    border: 1px solid var(--lumo-contrast-20pct);
 }
 
 .div-left {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--lumo-primary-color);
+    /*border: 1px solid var(--lumo-primary-color);*/
     margin-right: var(--lumo-space-xs);
 }
 
 .div-right {
-    border: 1px solid var(--lumo-contrast-20pct);
+    /*border: 1px solid var(--lumo-contrast-20pct);*/
     border-radius: 10px 10px 0 0;
     display: flex;
     flex-direction: column;
@@ -54,17 +59,31 @@ vaadin-grid {
     flex-basis: 20rem;
 }
 
+.div-left > vaadin-grid::part(body-cell){
+    cursor: move;
+}
+
+.content-title {
+    align-self: baseline;
+    padding: 0;
+}
+
 .toolbar {
-    background-color: var(--lumo-contrast-10pct);
+    /*border-bottom: 1px solid var(--lumo-contrast-10pct);*/
     width: 100%;
-    border-radius: 4px;
-    padding-left: var(--lumo-space-s);
-    padding-right: var(--lumo-space-s);
+    padding: var(--lumo-space-xs);
+    flex-direction: row-reverse;
     > vaadin-button {
-        background-color: var(--lumo-primary-color);
-        color: var(--lumo-base-color);
+        /*background-color: var(--lumo-primary-color);*/
+        /*color: var(--lumo-primary-color);*/
     }
 }
+
+.toolbar-progress{
+    display: flex;
+    align-items: center;
+}
+
 .btn-delete-item, .check-service {
     margin-left: auto;
 }
@@ -79,7 +98,7 @@ vaadin-grid {
 
 .item-service-avatar {
     border-radius: 50%;
-    background-color: var(--lumo-primary-color);
+    background-color: var(--lumo-contrast);
     max-width: 32px;
     max-height: 32px;
     display: inline-block;

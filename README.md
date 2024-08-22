@@ -59,3 +59,8 @@ Once the Docker image is correctly built, you can test it locally using
 ```
 docker run -p 8080:8080 barberpro:latest
 ```
+
+## Links Ideas Dashboard
+Ideas para el dashboard de barber pro
+https://notion.notion.site/Introducing-Charts-27827b36230e497ca178d8a763f86d18
+
