@@ -1,9 +1,13 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Work extends AbstractEntity {
@@ -16,6 +20,9 @@ public class Work extends AbstractEntity {
     private String image;
     private String observations;
     private Double commissions;
+
+    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL)
+    private Set<AppointmentWork> appointmentWorks = new HashSet<>();
 
    public @NotNull String getTitle() {
         return title;
@@ -63,5 +70,13 @@ public class Work extends AbstractEntity {
 
     public void setCommissions(Double commissions) {
         this.commissions = commissions;
+    }
+
+    public Set<AppointmentWork> getAppointmentWorks() {
+        return appointmentWorks;
+    }
+
+    public void setAppointmentWorks(Set<AppointmentWork> appointmentWorks) {
+        this.appointmentWorks = appointmentWorks;
     }
 }

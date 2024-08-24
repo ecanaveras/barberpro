@@ -1,14 +1,41 @@
-.profile-form {
-    max-width: 400px;
+.role-form {
+
+    row-gap: .5rem;
+
+    > vaadin-form-layout {
+        min-width: 320px;
+
+        > vaadin-text-field {
+            padding-bottom: var(--lumo-space-m);
+        }
+
+        > span {
+            font-weight: bold;
+            color: var(--lumo-contrast-50pct);
+            font-size: var(--lumo-font-size-s);
+            padding-bottom: var(--lumo-space-xs);
+        }
+    }
 }
 
-.profile-view {
+.role-view {
     display: flex;
     gap: 0;
     overflow: hidden;
+
+    .content-left {
+        > vaadin-grid::part(header-cell) {
+            color: var(--lumo-contrast);
+        }
+
+        > vaadin-grid::part(row) {
+            font-weight: bold;
+            color: var(--lumo-primary-text-color);
+        }
+    }
 }
 
-.profile-view .content-left {
+.role-view .content-left {
     flex: 1;
     border-right: 1px solid var(--lumo-contrast-10pct);
     overflow: hidden;
@@ -26,14 +53,23 @@
     width: 400px;
 }
 
-.content-right.visible .profile-detail-view {
+.content-right.visible .role-detail-view {
     display: flex;
     flex-direction: column;
     opacity: 1;
     transition: opacity 1.5s ease-in-out;
+
+     > div > .div-services-role {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: var(--lumo-space-s);
+        column-gap: var(--lumo-space-s);
+    }
 }
 
-.content-right .profile-detail-view {
+
+
+.content-right .role-detail-view {
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
 }
@@ -56,7 +92,7 @@
     color: orange;
 }
 
-.profile-detail-view .back-button {
+.role-detail-view .back-button {
     display: none;
 }
 
@@ -65,7 +101,7 @@
         display: none;
     }
 
-    .profile-detail-view .back-button {
+    .role-detail-view .back-button {
         display: flex;
     }
 
@@ -82,13 +118,13 @@
     min-height: var(--lumo-size-m);
 }
 
-.profile-detail-view H4 {
+.role-detail-view H4 {
     font-size: var(--lumo-font-size-m);
     color: var(--lumo-contrast-60pct);
     margin-top: var(--lumo-space-s);
 }
 
-.profile-detail-view H3 {
+.role-detail-view H3 {
     color: var(--lumo-contrast-70pct);
 }
 

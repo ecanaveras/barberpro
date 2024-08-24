@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
     @Query("select c from Customer c " +
             " where lower(c.name) like lower(concat('%', :searchTerm, '%')) " +
             " or lower(c.phone) like lower(concat('%',:searchTerm,'%')) ")

@@ -1,18 +1,12 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
-import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.repository.WorkRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
-import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class WorkService {
@@ -33,6 +27,10 @@ public class WorkService {
         }
     }
 
+    public List<Work> findAll() {
+        return workRepository.findAll();
+    }
+
     public long count() {
         return workRepository.count();
     }
@@ -49,6 +47,10 @@ public class WorkService {
         workRepository.save(work);
     }
 
+    public List<Work> findWorksNotAssignedToRoleId(long roleId) {
+        return workRepository.findWorksNotAssignedToRoleId(roleId);
+    }
+/*
     @PostConstruct
     public void populateTestData() {
         if (workRepository.count() == 0) {
@@ -72,4 +74,6 @@ public class WorkService {
                     }).collect(Collectors.toList()));
         }
     }
+
+ */
 }

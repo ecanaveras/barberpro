@@ -8,8 +8,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
+
     @Query("select p from Profile p " +
             " where lower(p.nameProfile) like lower(concat('%', :searchTerm, '%')) " +
             " or lower(p.status) like lower(concat('%',:searchTerm,'%'))")
     List<Profile> search(@Param("searchTerm") String searchTerm);
+
 }

@@ -1,10 +1,13 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.NumberFormat;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Profile extends AbstractEntity implements Cloneable{
@@ -23,6 +26,44 @@ public class Profile extends AbstractEntity implements Cloneable{
 
     @NumberFormat
     private Integer pin;
+
+    @Email
+    private String email;
+
+    private String phone;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "role_profile",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private Set<Appointment> appointments = new HashSet<>();
+
+    public Profile() {}
+
+    public Profile(String name, Profile.Status status, Integer pin) {
+        this.nameProfile = name;
+        this.status = status;
+        this.pin = pin;
+    }
+
+
+    /**
+     * Devuelve los trabajos permitidos para el perfil
+     * @return
+     */
+    public Set<Work> getAllowedWorks(){
+        Set<Work> allowedWorks = new HashSet<>();
+        for(Role role : roles){
+            allowedWorks.addAll(role.getWorks());
+        }
+        return allowedWorks;
+    }
 
     public String getNameProfile() {
         return nameProfile;
@@ -50,5 +91,37 @@ public class Profile extends AbstractEntity implements Cloneable{
 
     public void setPin(Integer pin) {
         this.pin = pin;
+    }
+
+    public @Email String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public Set<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(Set<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }

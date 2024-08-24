@@ -1,9 +1,10 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
-import com.piantic.ecp.gdel.application.backend.entity.Customer;
-import com.piantic.ecp.gdel.application.backend.service.CustomerService;
+import com.piantic.ecp.gdel.application.backend.entity.Role;
+import com.piantic.ecp.gdel.application.backend.service.RoleService;
+import com.piantic.ecp.gdel.application.backend.service.WorkService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
-import com.piantic.ecp.gdel.application.ui.views.forms.CustomerForm;
+import com.piantic.ecp.gdel.application.ui.views.forms.RoleForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -12,8 +13,6 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.icon.SvgIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -22,29 +21,30 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-@PageTitle("Clientes | BarberPro")
-@Route("customer")
-public class CustomerView extends HorizontalLayout implements HasUrlParameter<Long> {
+@PageTitle("Roles | BarberPro")
+@Route("role")
+public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> {
 
     private final TextField txtFilter;
     private final Button btnAdd;
     private final Span count = new Span();
     private Div contentRight;
     private VerticalLayout contentLeft;
-    private CustomerViewDetail customerviewdetail;
-    private Grid<Customer> grid = new Grid<>(Customer.class, false);
-    private CustomerService customerService;
+    private RoleViewDetail roleviewdetail;
+    private Grid<Role> grid = new Grid<>(Role.class, false);
+    private RoleService roleService;
+    private WorkService workService;
     private Boolean detailAdded = false;
 
-    public CustomerView(CustomerService customerService) {
-        addClassName("customer-view");
+    public RoleView(RoleService roleService, WorkService workService) {
+        addClassName("role-view");
         setSizeFull();
 
-
-        this.customerService = customerService;
+        this.roleService = roleService;
+        this.workService = workService;
 
         //Title
-        H3 title = new H3("Clientes");
+        H3 title = new H3("Roles");
         //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         count.addClassNames(LumoUtility.FontWeight.LIGHT);
         count.getElement().getThemeList().add("badge");
@@ -63,7 +63,7 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         btnAdd = new Button(LineAwesomeIcon.USER_PLUS_SOLID.create());
         btnAdd.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         btnAdd.addClickListener(click -> {
-            openFormDialog(new Customer());
+            openFormDialog(new Role());
         });
 
         HorizontalLayout toolbar = new HorizontalLayout(txtFilter, btnAdd);
@@ -92,54 +92,53 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
 //        System.out.println("Reloadedddd");
     }
 
-    private void openFormDialog(Customer customer) {
-        CustomerForm formCustomer = new CustomerForm();
-        formCustomer.setEntity(customer);
-        formCustomer.setSaveEventListener(e -> {
-            this.saveCustomer(e);
-            formCustomer.close();
+    private void openFormDialog(Role role) {
+        RoleForm formRole = new RoleForm(workService);
+        formRole.setEntity(role);
+        formRole.setSaveEventListener(e -> {
+            this.saveRole(e);
+            formRole.close();
         });
-        formCustomer.open();
+        formRole.open();
     }
 
     private void configureGrid() {
-        grid.addClassName("customer-grid");
+        grid.addClassName("role-grid");
         grid.setSizeFull();
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.addComponentColumn(customer ->
-                new Anchor(String.format("/customer/%d", customer.getId()), customer.getName())
-        ).setKey("name1").setAutoWidth(true).setHeader("Nombre").setSortable(true).setComparator(Customer::getName).getStyle().set("min-width", "200px");
-        grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
-        grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
-        grid.addComponentColumn(customer -> {
-            SvgIcon star = LineAwesomeIcon.STAR_SOLID.create();
-            star.addClassName("star-icon");
-            return customer != null && customer.isFavorite() ? star : null;
-        }).setHeader("Favorito").setSortable(true).setComparator(Customer::isFavorite).setWidth("6rem");
+        grid.addColumn("name")
+                .setAutoWidth(true)
+                .setHeader("Roles")
+                .setSortable(true)
+                .getStyle().set("min-width", "200px");
 
         createMenu();
+
+        //TODO Configurar conlumna con los botones de editar (Servicios & Perfiles del ROLE)
 
         grid.asSingleSelect().addValueChangeListener(e -> showDetail(e.getValue() != null ? e.getValue().getId() : null));
     }
 
     private void updateList() {
-        grid.setItems(customerService.findAll(txtFilter.getValue()));
-        count.setText(String.valueOf(customerService.count()));
+        grid.setItems(roleService.findAll(txtFilter.getValue()));
+        count.setText(String.valueOf(roleService.count()));
     }
 
-    public void saveCustomer(Customer customer) {
-        customerService.save(customer);
+    public void saveRole(Role role) {
+        roleService.save(role);
+        role.getWorks().forEach(work -> System.out.println(work.getId()));
         updateList();
-        Notification.show("Cliente Guardado!");
+
+        NotificationUtil.showSuccess("Role Guardado");
     }
 
-    private void deleteCustomer(Customer customer) {
-        ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + customer.getName() + "\"?",
+    private void deleteRole(Role role) {
+        ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + role.getName() + "\"?",
                 "¿Desea borrar el registro?",
                 "Eliminar", e -> {
-            customerService.delete(customer);
+            roleService.delete(role);
             updateList();
-            getUI().ifPresent(ui -> ui.navigate(CustomerView.class));
+            getUI().ifPresent(ui -> ui.navigate(RoleView.class));
         }, "Cancelar", e -> e.getSource().close());
         confirmDialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName() + " " + ButtonVariant.LUMO_PRIMARY.getVariantName());
         confirmDialog.setCloseOnEsc(true);
@@ -148,51 +147,52 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
     }
 
     private void createMenu() {
-        GridContextMenu<Customer> menu = grid.addContextMenu();
-        menu.addItem(new HorizontalLayout(new Span("Nuevo"), LineAwesomeIcon.USER_PLUS_SOLID.create()), e -> openFormDialog(new Customer()));
+        GridContextMenu<Role> menu = grid.addContextMenu();
+        menu.addItem(new HorizontalLayout(new Span("Nuevo"), LineAwesomeIcon.USER_PLUS_SOLID.create()), e -> openFormDialog(new Role()));
         menu.addItem("Editar", e -> openFormDialog(e.getItem().get()));
         menu.addItem("Detalles", e -> showDetail(e.getItem().get().getId()));
         menu.add(new Hr());
-        GridMenuItem itemDel = menu.addItem("Eliminar", e -> deleteCustomer(e.getItem().get()));
+        GridMenuItem itemDel = menu.addItem("Eliminar", e -> deleteRole(e.getItem().get()));
         itemDel.addClassNames(LumoUtility.TextColor.ERROR);
     }
 
     private void showDetail(Long id) {
         if (id != null) {
-            getUI().ifPresent(ui -> ui.navigate(CustomerView.class, id));
+            getUI().ifPresent(ui -> ui.navigate(RoleView.class, id));
         } else {
-            getUI().ifPresent(ui -> ui.navigate(CustomerView.class));
+            getUI().ifPresent(ui -> ui.navigate(RoleView.class));
         }
     }
+
 
     @Override
     public void setParameter(BeforeEvent beforeEvent, @OptionalParameter Long id) {
         if (id != null) {
-            if (customerService.findByCustomerId(id) == null) {
-//                beforeEvent.rerouteToError(IllegalArgumentException.class, getTranslation("customer.not.found", beforeEvent.getLocation().getPath()));
+            if (roleService.findById(id) == null) {
+//                beforeEvent.rerouteToError(IllegalArgumentException.class, getTranslation("role.not.found", beforeEvent.getLocation().getPath()));
 //                beforeEvent.forwardTo("error");
                 NotificationUtil.showContrastCloseable("Registro no encontrado...");
                 return;
             }
-            if (customerviewdetail != null && customerviewdetail.getCustomer() != null && customerviewdetail.getCustomer().getId().equals(id)) {
-                if(contentRight.getClassNames().contains("visible")) {
+            if (roleviewdetail != null && roleviewdetail.getRole() != null && roleviewdetail.getRole().getId().equals(id)) {
+                if (contentRight.getClassNames().contains("visible")) {
                     contentLeft.removeClassName("viewing");
                     contentRight.removeClassName("visible");
                     return;
                 }
             }
-            if (customerviewdetail == null) {
-                customerviewdetail = new CustomerViewDetail(customerService, id);
-                contentRight.add(customerviewdetail);
+            if (roleviewdetail == null) {
+                roleviewdetail = new RoleViewDetail(roleService, id);
+                contentRight.add(roleviewdetail);
             } else {
-                customerviewdetail.updateUI(id);
+                roleviewdetail.updateUI(id);
             }
             contentRight.addClassName("visible");
             contentLeft.addClassName("viewing");
 
 
         } else {
-            if (customerviewdetail != null) {
+            if (roleviewdetail != null) {
                 contentLeft.removeClassName("viewing");
                 contentRight.removeClassName("visible");
             }

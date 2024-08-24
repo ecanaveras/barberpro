@@ -85,9 +85,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
         configureGrids();
 
-        dataviewright.addItemCountChangeListener(event -> {
-            refreshComponents();
-        });
+        dataviewright.addItemCountChangeListener(event -> refreshComponents());
 
         divleft.add(gridservices);
 
@@ -118,7 +116,9 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         HorizontalLayout toolbar = new HorizontalLayout();
         toolbar.setWidthFull();
         toolbar.addClassName("toolbar");
-        btnContinuar = new Button(LineAwesomeIcon.SAVE.create());
+        btnContinuar = new Button("Guardar", LineAwesomeIcon.SAVE.create());
+        btnContinuar.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        btnContinuar.addThemeVariants(ButtonVariant.LUMO_ICON);
         btnContinuar.addClickListener(event -> {
             FindDialogView<Customer> findCustomer =
                     new FindDialogView<>(customerService,
@@ -131,21 +131,26 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             findCustomer.configureGrid();
             findCustomer.addDetachListener(detachEvent -> {
                 if (findCustomer.getIdSelected() != null) {
-                    WorkFinishView vfinal = new WorkFinishView(dataviewright.getItems());
-                    vfinal.setCloseEventListener(() -> controlShowViews(false));
+                    WorkFinishView vfinal = new WorkFinishView(customerService, findCustomer.getIdSelected(), dataviewright.getItems(), getTotalWorked());
+                    vfinal.setCloseEventListener(() -> {
+                        controlShowViews(false);
+                        if(vfinal.isSaved()){
+                            resetWorkspace();
+                        }
+                    });
                     divfinal.add(vfinal);
                     controlShowViews(true);
                 }
             });
 
-
             findCustomer.open();
 
         });
 
-        btnLimpiar = new Button(LineAwesomeIcon.UNDO_ALT_SOLID.create());
+        btnLimpiar = new Button("Reiniciar", LineAwesomeIcon.UNDO_ALT_SOLID.create());
         btnLimpiar.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        btnLimpiar.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(WorkingView.class).ifPresent(workingView -> {
+        btnLimpiar.addThemeVariants(ButtonVariant.LUMO_ICON);
+        btnLimpiar.addClickListener(e -> getUI().flatMap(ui -> ui.navigate(WorkingView.class)).ifPresent(workingView -> {
             //Limpiar zona de trabajo
             ConfirmDialog confirmDialog = new ConfirmDialog("Aviso!", "¿Seguro quieres empezar de Nuevo?", "Cancelar", event -> {
             });
@@ -153,12 +158,10 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             confirmDialog.setRejectable(true);
             confirmDialog.setRejectText("Sí, Reiniciar");
             confirmDialog.addRejectListener(ev -> {
-                gridservices.setItems(new ArrayList<>());
-                gridsales.setItems(new ArrayList<>());
-                loadDataGridServices();
+                resetWorkspace();
             });
             confirmDialog.open();
-        })));
+        }));
 
         /*MenuBar menuBar = new MenuBar();
         menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
@@ -194,9 +197,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             itemservice.addClassName("item-service");
             return getIconItem(service.getServicio(), itemservice);
         });
-        gridservices.addComponentColumn(service -> {
-            return service.getCant() > 0 ? markIcon() : new Span("");
-        }).setWidth("60px").setFlexGrow(0);
+        gridservices.addComponentColumn(service -> service.getCant() > 0 ? markIcon() : new Span("")).setWidth("60px").setFlexGrow(0);
         gridservices.addColumn(
                 new ComponentRenderer<>(Button::new, (btn, work_item) -> {
                     btn.addClassName("btn-add-item");
@@ -204,16 +205,12 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
                     btn.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST);
                     btn.addClassNames(LumoUtility.Padding.XSMALL, LumoUtility.Margin.XSMALL);
                     //Agregar el elemento
-                    btn.addClickListener(e -> {
-                        addServiceGrid(work_item);
-                    });
+                    btn.addClickListener(e -> addServiceGrid(work_item));
                 })
         ).setAutoWidth(true).setFlexGrow(0);
 
         //Double Touch
-        gridservices.addItemDoubleClickListener(e -> {
-            addServiceGrid(e.getItem());
-        });
+        gridservices.addItemDoubleClickListener(e -> addServiceGrid(e.getItem()));
 
 
         //Drag and Drog
@@ -237,9 +234,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             itemservice.addClassNames("item-service", "added");
             return getIconItem(service.getServicio(), itemservice);
         });
-        gridsales.addComponentColumn(service -> {
-            return createForm(service);
-        }).setAutoWidth(true).setFlexGrow(0);
+        gridsales.addComponentColumn(this::createForm).setAutoWidth(true).setFlexGrow(0);
         gridsales.addColumn(
                 new ComponentRenderer<>(Button::new, (btn, work_item) -> {
                     btn.addClassName("btn-delete-item");
@@ -277,9 +272,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             deleteColum.setEditorComponent(btn);
         });*/
 
-        gridsales.addDropListener(e -> {
-            addServiceGrid(dragitem);
-        });
+        gridsales.addDropListener(e -> addServiceGrid(dragitem));
 
 
     }
@@ -321,6 +314,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             dragitem.setCant(dragitem.getCant() - 1);
             dataviewright.refreshItem(dragitem);
             dataviewleft.refreshItem(dragitem);
+            refreshComponents();
         } else {
             deleteServiceGrid();
         }
@@ -343,7 +337,15 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         //Refresca estados de los botones
         btnContinuar.setEnabled(gridsales.getListDataView().getItemCount() > 0);
         btnLimpiar.setEnabled(gridsales.getListDataView().getItemCount() > 0);
+    }
 
+    /**
+     * Limpia la zona de Trabajo
+     */
+    private void resetWorkspace() {
+        gridservices.setItems(new ArrayList<>());
+        gridsales.setItems(new ArrayList<>());
+        loadDataGridServices();
     }
 
     @NotNull
@@ -403,15 +405,11 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             minus.addThemeVariants(ButtonVariant.LUMO_ERROR);
             minus.setIcon(VaadinIcon.TRASH.create());
         }
-        minus.addClickListener(event -> {
-            removeService(work);
-        });
+        minus.addClickListener(event -> removeService(work));
         Button plus = new Button(VaadinIcon.PLUS.create());
         plus.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST);
         plus.addClassNames(LumoUtility.Padding.XSMALL, LumoUtility.Margin.XSMALL);
-        plus.addClickListener(event -> {
-            addServiceGrid(work);
-        });
+        plus.addClickListener(event -> addServiceGrid(work));
 
         NumberField cant = new NumberField();
         cant.addValueChangeListener(event -> {
@@ -428,7 +426,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         cant.addClassName("number-service");
         cant.setStep(1);
         cant.setReadOnly(true);
-        cant.setValue(Double.valueOf(work.cant));
+        cant.setValue((double) work.cant);
         div.add(minus, cant, plus);
         return div;
     }
@@ -440,13 +438,12 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     //## DATA
     public Double getTotalWorked() {
-        Double val = gridsales.getListDataView()
+        return gridsales.getListDataView()
                 .getItems()
                 .toList()
                 .stream()
                 .mapToDouble(item -> item.subTotal())
                 .sum();
-        return val;
     }
 
     /**
@@ -468,6 +465,10 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         });
     }
 
+    /**
+     * Oculta o muestra los elementos de la UI
+     * @param hide | True para ocultar
+     */
     private void controlShowViews(Boolean hide) {
         if (hide) {
             divfinal.addClassName("finish-on");

@@ -73,7 +73,7 @@ public class FindDialogView<T> extends Dialog {
                 return new Avatar(name);
             }
             return new Avatar("OK");
-        }));
+        })).setAutoWidth(true);
 
         //Establece las columnas enviadas en la lista (deben coincidir con el Entity)
         for (int i = 0; i < namesColumnFilter.size(); i++) {

@@ -1,11 +1,16 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.type.TrueFalseConverter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Customer extends AbstractEntity implements Cloneable {
@@ -21,6 +26,18 @@ public class Customer extends AbstractEntity implements Cloneable {
 
     @Convert(converter = TrueFalseConverter.class)
     private Boolean favorite;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private Set<Appointment> appointments = new HashSet<>();
+
+    public Customer() {}
+
+    public Customer(String name, String phone, String email, Boolean favorite) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.favorite = favorite;
+    }
 
     public String getName() {
         return name;
@@ -58,4 +75,11 @@ public class Customer extends AbstractEntity implements Cloneable {
         this.favorite = favorite;
     }
 
+    public Set<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(Set<Appointment> appointments) {
+        this.appointments = appointments;
+    }
 }

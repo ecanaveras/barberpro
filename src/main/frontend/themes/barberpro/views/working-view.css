@@ -1,6 +1,15 @@
 .working-view-main {
     gap: var(--lumo-space-xs);
+
+    > vaadin-horizontal-layout {
+        align-items: center;
+
+        h3 {
+            color: var(--lumo-success-color);
+        }
+    }
 }
+
 
 .working-view-content {
     display: flex;
@@ -41,17 +50,31 @@
     background-color: var(--lumo-contrast-20pct);
     display: flex;
     padding: var(--lumo-space-m);
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
-    flex-grow: 1;
+    /*flex-grow: 1;*/
     flex-basis: 1rem;
+    align-items: center;
+    justify-content: flex-end;
+
+    > H3 {
+        /*margin-left: auto;*/
+        color: var(--lumo-contrast-60pct);
+    }
+
+    > span {
+        font-weight: bold;
+        font-size: var(--lumo-font-size-xxl);
+        padding-left: var(--lumo-space-m);
+        padding-right: var(--lumo-space-m);
+    }
 }
 
 div.no-visible {
     display: none;
 }
 
-vaadin-grid {
+.working-view-content > vaadin-grid {
     /*border: 1px solid saddlebrown;*/
     flex-grow: 2;
     margin: var(--lumo-space-s);
@@ -59,9 +82,80 @@ vaadin-grid {
     flex-basis: 20rem;
 }
 
-.div-left > vaadin-grid::part(body-cell){
+.div-left > vaadin-grid::part(body-cell) {
     cursor: move;
 }
+
+.div-final.finish-on {
+    width: 100%;
+    text-align: -webkit-center;
+    align-content: center;
+
+    > .work-finish-view {
+        border: 1px solid var(--lumo-contrast-10pct);
+        border-radius: 10px;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        /*justify-content: space-between;*/
+        /*height: 100%;*/
+
+        > vaadin-vertical-layout {
+            padding: var(--lumo-space-l);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            row-gap: var(--lumo-space-s);
+
+
+            div {
+                align-self: center;
+                padding-bottom: var(--lumo-space-s);
+            }
+
+            > div > span {
+                font-weight: 500;
+                color: var(--lumo-tertiary-text-color);
+                /*background-color: var(--lumo-contrast-20pct);*/
+            }
+
+            > vaadin-details {
+                margin: 0;
+
+                vaadin-details-summary::part(content) {
+                    font-weight: 400;
+                    color: var(--lumo-contrast);
+                }
+
+                .div-infoservices {
+                    display: flex;
+                    flex-wrap: wrap;
+                    row-gap: .5rem;
+                    column-gap: .5rem;
+                }
+            }
+
+            > vaadin-horizontal-layout {
+                display: flex;
+                align-items: center;
+                width: 100%;
+
+                .span-to-pay {
+                    font-weight: bold;
+                    font-size: var(--lumo-font-size-xxl);
+                    padding-left: var(--lumo-space-m);
+                    margin-left: auto;
+                }
+            }
+        }
+
+        > .div-botones {
+            padding: var(--lumo-space-l);
+        }
+    }
+}
+
 
 .content-title {
     align-self: baseline;
@@ -73,13 +167,13 @@ vaadin-grid {
     width: 100%;
     padding: var(--lumo-space-xs);
     flex-direction: row-reverse;
-    > vaadin-button {
-        /*background-color: var(--lumo-primary-color);*/
-        /*color: var(--lumo-primary-color);*/
-    }
+    /*> vaadin-button:not([theme]) {*/
+    /*    background-color: var(--lumo-primary-color);*/
+    /*    color: var(--lumo-base-color);*/
+    /*}*/
 }
 
-.toolbar-progress{
+.toolbar-progress {
     display: flex;
     align-items: center;
 }
@@ -148,17 +242,27 @@ vaadin-grid {
     .btn-add-item {
         visibility: visible;
     }
+
+    .toolbar {
+        > vaadin-button::part(label) {
+            display: none;
+        }
+    }
 }
 
-@media all and (max-width: 800px){
+@media all and (max-width: 800px) {
     .column-btn-add {
         display: none;
     }
 }
 
 @keyframes highlight {
-    0% { background-color: yellow; }
-    100% { background-color: white; }
+    0% {
+        background-color: yellow;
+    }
+    100% {
+        background-color: white;
+    }
 }
 
 .animated-row {
@@ -166,8 +270,12 @@ vaadin-grid {
 }
 
 @keyframes blink {
-    0% { background-color: var(--lumo-success-color-50pct); }
-    100% { background-color: white; }
+    0% {
+        background-color: var(--lumo-success-color-50pct);
+    }
+    100% {
+        background-color: white;
+    }
 }
 
 .animated-numberfield {

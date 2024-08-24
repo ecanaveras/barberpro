@@ -24,6 +24,8 @@ public class GenericForm<T> extends Dialog {
     Button btnSave = new Button("Guardar");
     Button btnCancel = new Button("Cancelar");
 
+    private T entity;
+
     public Binder<T> binder = new BeanValidationBinder<>(getGenericType());
 
     private SaveEventListener<T> saveEventListener;
@@ -60,10 +62,6 @@ public class GenericForm<T> extends Dialog {
         binder.addStatusChangeListener(e -> btnSave.setEnabled(binder.isValid()));
     }
 
-    public void setEntity(T entity) {
-        binder.setBean(entity);
-    }
-
     private void validateAndSave() {
         if (binder.isValid() && saveEventListener != null) {
             saveEventListener.onSave(binder.getBean());
@@ -78,6 +76,15 @@ public class GenericForm<T> extends Dialog {
             closeEventListener.onClose();
         }
         this.close();
+    }
+
+    public void setEntity(T entity) {
+        binder.setBean(entity);
+        this.entity = entity;
+    }
+
+    public T getEntity() {
+        return entity;
     }
 
     // This method helps to determine the generic type at runtime

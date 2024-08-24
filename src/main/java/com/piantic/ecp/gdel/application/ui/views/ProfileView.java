@@ -1,142 +1,138 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
+import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.ui.views.forms.ProfileForm;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.function.ValueProvider;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 @PageTitle("Perfiles | BarberPro")
 @Route("profile")
-public class ProfileView extends VerticalLayout {
+public class ProfileView extends HorizontalLayout implements HasUrlParameter<Long> {
 
-    private ProfileForm profileForm;
-    private final ProfileService profileService;
-    Grid<Profile> grid = new Grid<>(Profile.class);
-    TextField filterText = new TextField();
-    Div content = new Div();
+    private final TextField txtFilter;
+    private final Button btnAdd;
+    private final Span count = new Span();
+    private Div contentRight;
+    private VerticalLayout contentLeft;
+    private ProfileViewDetail profileViewDetail;
+    private Grid<Profile> grid = new Grid<>(Profile.class, false);
+    private ProfileService profileService;
+    private Boolean detailAdded = false;
 
-    public ProfileView(ProfileService profileService, CustomerService customerService) {
-        this.profileService = profileService;
+    public ProfileView(ProfileService profileService) {
         addClassName("profile-view");
         setSizeFull();
 
+
+        this.profileService = profileService;
+
+        //Title
+        H3 title = new H3("Perfiles");
+        //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
+        count.addClassNames(LumoUtility.FontWeight.LIGHT);
+        count.getElement().getThemeList().add("badge");
+        HorizontalLayout contentTitle = new HorizontalLayout(title, count);
+        contentTitle.setAlignSelf(Alignment.BASELINE);
+
+        //Toolbar
+        txtFilter = new TextField();
+        txtFilter.setClearButtonVisible(true);
+        txtFilter.setPlaceholder("Filtrar...");
+        txtFilter.setValueChangeMode(ValueChangeMode.LAZY);
+        txtFilter.addValueChangeListener(e -> updateList());
+        txtFilter.addClassNames(LumoUtility.Flex.AUTO);
+        txtFilter.setMaxWidth("26rem");
+
+        btnAdd = new Button(LineAwesomeIcon.USER_PLUS_SOLID.create());
+        btnAdd.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
+        btnAdd.addClickListener(click -> {
+            openFormDialog(new Profile());
+        });
+
+        HorizontalLayout toolbar = new HorizontalLayout(txtFilter, btnAdd);
+        toolbar.setWidthFull();
+        toolbar.setFlexGrow(0);
+
+        //Grid
         configureGrid();
 
-        profileForm = new ProfileForm();
-        //Events
-        profileForm.addListener(ProfileForm.SaveEvent.class, this::saveProfile);
-        profileForm.addListener(ProfileForm.DeleteEvent.class, this::deleteProfile);
-        profileForm.addListener(ProfileForm.CloseEvent.class, e -> closeEditor());
-
-        content.addClassName("content-div");
-        content.add(grid, profileForm);
-        content.setSizeFull();
-
-        add(configureToolbar(), content);
         updateList();
-        closeEditor();
+
+        //Content Left
+        contentLeft = new VerticalLayout();
+        contentLeft.addClassName("content-left");
+        contentLeft.setSizeFull();
+
+        contentLeft.add(contentTitle, toolbar, grid);
+
+        //Content Right
+        contentRight = new Div();
+        contentRight.addClassName("content-right");
+
+        add(contentLeft);
+        add(contentRight);
+
+//        System.out.println("Reloadedddd");
     }
 
-    //View
-    private HorizontalLayout configureToolbar() {
-        filterText.setClearButtonVisible(true);
-        filterText.setPlaceholder("Buscar...");
-        filterText.setValueChangeMode(ValueChangeMode.LAZY);
-        filterText.addValueChangeListener(event -> updateList());
-
-        Button btnAdd = new Button(LineAwesomeIcon.PLUS_SOLID.create(), e -> addProfile());
-
-
-        HorizontalLayout toolbar = new HorizontalLayout(filterText, btnAdd, new Button(LineAwesomeIcon.ENVELOPE_OPEN.create(), e -> {
-        }));
-//        HorizontalLayout toolbar = new HorizontalLayout(filterText, btnAdd, new Button(LineAwesomeIcon.ENVELOPE_OPEN.create(), e -> openFindDialog()));
-        toolbar.addClassName("toolbar");
-        return toolbar;
-
-    }
-
-    /*
-    private void openFindDialog() {
-        //Dialog
-        FindDialogView dialogView = new FindDialogView(customerService);
-        dialogView.addOpenedChangeListener(listener -> {
-            if (!listener.isOpened()) {
-                Notification.show("Id seleccionado: " + dialogView.getIdSelected());
-            }
+    private void openFormDialog(Profile profile) {
+        ProfileForm profileForm = new ProfileForm();
+        profileForm.setEntity(profile);
+        profileForm.setSaveEventListener(e -> {
+            this.saveProfile(e);
+            profileForm.close();
         });
-        dialogView.open();
-    }*/
+        profileForm.open();
+    }
 
     private void configureGrid() {
         grid.addClassName("profile-grid");
         grid.setSizeFull();
-        grid.setColumns("nameProfile", "status");
-        grid.addColumn(profile -> {
-            return profile == null ? false : profile.isLock();
-        }).setHeader("PIN");
-        grid.addComponentColumn(new ValueProvider<Profile, Component>() {
-            @Override
-            public Component apply(Profile profile) {
-                PasswordField password = new PasswordField();
-                password.setEnabled(false);
-                if (profile.isLock())
-                    password.setValue(profile.getPin().toString());
-                Checkbox checkbox = new Checkbox(profile.isLock());
-                checkbox.setEnabled(false);
-                return new HorizontalLayout(checkbox, password);
-            }
-        }).setHeader("Requiere PIN");
-        //grid.getColumnByKey("lock").setHeader("Estado");
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+        grid.addComponentColumn(profile ->
+                new Anchor(String.format("/profile/%d", profile.getId()), profile.getNameProfile())
+        ).setKey("name1").setAutoWidth(true).setHeader("Perfil").setSortable(true).setComparator(Profile::getNameProfile).getStyle().set("min-width", "200px");
+        grid.addColumn(Profile::getStatus).setHeader("Estado").setSortable(true);
 
-        grid.asSingleSelect().addValueChangeListener(click -> updateProfileForm(click.getValue()));
+        createMenu();
+
+        grid.asSingleSelect().addValueChangeListener(e -> showDetail(e.getValue() != null ? e.getValue().getId() : null));
     }
 
-    //Data
-
-    private void addProfile() {
-        profileForm.setVisible(true);
-        profileForm.setProfile(new Profile());
-        profileForm.addClassName("visible");
-        addClassName("editing");
-
+    private void updateList() {
+        grid.setItems(profileService.findAll(txtFilter.getValue()));
+        count.setText(String.valueOf(profileService.count()));
     }
 
-    private void saveProfile(ProfileForm.SaveEvent evt) {
-        //profileService.save((Profile) evt.getData());
-        profileService.save((Profile) evt.getProfile());
-        Notification notification = new Notification();
-        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS, NotificationVariant.LUMO_PRIMARY);
-        notification.show("Perfil Guardado");
+    public void saveProfile(Profile profile) {
+        profileService.save(profile);
         updateList();
-        closeEditor();
+        Notification.show("Perfil Guardado!");
     }
 
-    private void deleteProfile(ProfileForm.DeleteEvent evt) {
-        ConfirmDialog confirmDialog = new ConfirmDialog("Eliminar a \"" + evt.getProfile().getNameProfile() + "\"?",
+    private void deleteProfile(Profile profile) {
+        ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + profile.getNameProfile() + "\"?",
                 "¿Desea borrar el registro?",
                 "Eliminar", e -> {
-            profileService.delete(evt.getProfile());
+            profileService.delete(profile);
             updateList();
-            closeEditor();
+            getUI().ifPresent(ui -> ui.navigate(ProfileView.class));
         }, "Cancelar", e -> e.getSource().close());
         confirmDialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName() + " " + ButtonVariant.LUMO_PRIMARY.getVariantName());
         confirmDialog.setCloseOnEsc(true);
@@ -144,26 +140,56 @@ public class ProfileView extends VerticalLayout {
 
     }
 
+    private void createMenu() {
+        GridContextMenu<Profile> menu = grid.addContextMenu();
+        menu.addItem(new HorizontalLayout(new Span("Nuevo"), LineAwesomeIcon.USER_PLUS_SOLID.create()), e -> openFormDialog(new Profile()));
+        menu.addItem("Editar", e -> openFormDialog(e.getItem().get()));
+        menu.addItem("Detalles", e -> showDetail(e.getItem().get().getId()));
+        menu.add(new Hr());
+        GridMenuItem itemDel = menu.addItem("Eliminar", e -> deleteProfile(e.getItem().get()));
+        itemDel.addClassNames(LumoUtility.TextColor.ERROR);
+    }
 
-    private void updateProfileForm(Profile profile) {
-        if (profile != null) {
-            profileForm.setProfile(grid.asSingleSelect().getValue());
-            profileForm.setVisible(true);
-            profileForm.addClassName("visible");
-            addClassName("editing");
+    private void showDetail(Long id) {
+        if (id != null) {
+            getUI().ifPresent(ui -> ui.navigate(ProfileView.class, id));
         } else {
-            closeEditor();
+            getUI().ifPresent(ui -> ui.navigate(ProfileView.class));
         }
     }
 
-    private void updateList() {
-        grid.setItems(profileService.findAll(filterText.getValue()));
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter Long id) {
+        if (id != null) {
+            if (profileService.findById(id) == null) {
+//                beforeEvent.rerouteToError(IllegalArgumentException.class, getTranslation("profile.not.found", beforeEvent.getLocation().getPath()));
+//                beforeEvent.forwardTo("error");
+                NotificationUtil.showContrastCloseable("Registro no encontrado...");
+                return;
+            }
+            if (profileViewDetail != null && profileViewDetail.getProfile() != null && profileViewDetail.getProfile().getId().equals(id)) {
+                if(contentRight.getClassNames().contains("visible")) {
+                    contentLeft.removeClassName("viewing");
+                    contentRight.removeClassName("visible");
+                    return;
+                }
+            }
+            if (profileViewDetail == null) {
+                profileViewDetail = new ProfileViewDetail(profileService, id);
+                contentRight.add(profileViewDetail);
+            } else {
+                profileViewDetail.updateUI(id);
+            }
+            contentRight.addClassName("visible");
+            contentLeft.addClassName("viewing");
+
+
+        } else {
+            if (profileViewDetail != null) {
+                contentLeft.removeClassName("viewing");
+                contentRight.removeClassName("visible");
+            }
+        }
     }
 
-    private void closeEditor() {
-        profileForm.setProfile(null);
-        profileForm.setVisible(false);
-        profileForm.removeClassName("visible");
-        removeClassName("editing");
-    }
 }

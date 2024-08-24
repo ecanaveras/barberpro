@@ -3,20 +3,18 @@ package com.piantic.ecp.gdel.application.backend.service;
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.repository.CustomerRepository;
 import com.piantic.ecp.gdel.application.backend.utils.generics.GenericService;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CustomerService implements GenericService<Customer> {
+
     public static final Logger LOGGER = Logger.getLogger(ProfileService.class.getName());
+
     private CustomerRepository customerRepository;
 
     public CustomerService(CustomerRepository customerRepository) {
@@ -43,12 +41,14 @@ public class CustomerService implements GenericService<Customer> {
         customerRepository.delete(customer);
     }
 
-    public void save(Customer customer) {
+    public void delete(Long id){ customerRepository.deleteById(id);}
+
+    public Customer save(Customer customer) {
         if (customer == null) {
             LOGGER.log(Level.SEVERE, "Cliente es nulo, asegurese que los datos sean correctos");
-            return;
+            return null;
         }
-        customerRepository.save(customer);
+        return customerRepository.save(customer);
     }
 
     public Customer findByCustomerId(Long id) {
@@ -63,7 +63,7 @@ public class CustomerService implements GenericService<Customer> {
         return customer.getId();
     }
 
-
+/*
     @PostConstruct
     public void populateTestData() {
         if (customerRepository.count() == 0) {
@@ -78,5 +78,7 @@ public class CustomerService implements GenericService<Customer> {
             }).collect(Collectors.toList()));
         }
     }
+
+ */
 
 }

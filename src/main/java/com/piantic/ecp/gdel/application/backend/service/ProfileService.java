@@ -2,54 +2,60 @@ package com.piantic.ecp.gdel.application.backend.service;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.repository.ProfileRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ProfileService {
     public static final Logger LOGGER = Logger.getLogger(ProfileService.class.getName());
     private ProfileRepository profileRepository;
 
-    public ProfileService(ProfileRepository profileRepository){
+    public ProfileService(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
     }
 
-    public List<Profile> findAll(){
+    public List<Profile> findAll() {
         return profileRepository.findAll();
     }
 
     public List<Profile> findAll(String textfilter) {
-        if(textfilter == null || textfilter.isEmpty()) {
+        if (textfilter == null || textfilter.isEmpty()) {
             return profileRepository.findAll();
-        }else{
+        } else {
             return profileRepository.search(textfilter);
         }
     }
 
-    public long count(){
+    public long count() {
         return profileRepository.count();
     }
 
-    public void delete(Profile profile){
+    public void delete(Profile profile) {
         profileRepository.delete(profile);
     }
 
-    public void save(Profile profile){
-        if(profile == null){
+    public void save(Profile profile) {
+        if (profile == null) {
             LOGGER.log(Level.SEVERE, "Perfil es nulo, asegurese que los datos sean correctos");
             return;
         }
         profileRepository.save(profile);
     }
 
+    public Profile findById(Long id) {
+        Optional<Profile> profile = profileRepository.findById(id);
+        if (profile.isPresent()) {
+            return profile.get();
+        }
+        return null;
+    }
 
+
+/*
     @PostConstruct
     public void populateTestData(){
         if(profileRepository.count()==0){
@@ -64,5 +70,7 @@ public class ProfileService {
             }).collect(Collectors.toList()));
         }
     }
+
+ */
 
 }
