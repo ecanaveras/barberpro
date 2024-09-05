@@ -28,10 +28,10 @@
             color: var(--lumo-contrast);
         }
 
-        > vaadin-grid::part(row) {
-            font-weight: bold;
-            color: var(--lumo-primary-text-color);
-        }
+        /*> vaadin-grid::part(row) {*/
+        /*    font-weight: bold;*/
+        /*    color: var(--lumo-primary-text-color);*/
+        /*}*/
     }
 }
 

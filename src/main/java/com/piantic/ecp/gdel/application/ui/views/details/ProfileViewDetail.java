@@ -1,7 +1,8 @@
-package com.piantic.ecp.gdel.application.ui.views;
+package com.piantic.ecp.gdel.application.ui.views.details;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
+import com.piantic.ecp.gdel.application.ui.views.ProfileView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
@@ -77,6 +78,20 @@ public class ProfileViewDetail extends VerticalLayout {
         content.add(cardItem(LineAwesomeIcon.AT_SOLID.create(), "Email", profile.getEmail()));
 
         content.add(rolesInfo);
+
+
+        Div divroles = new Div();
+        divroles.addClassName("div-roles");
+        divroles.addClassNames(LumoUtility.Display.FLEX
+                , LumoUtility.FlexWrap.WRAP
+                , LumoUtility.Gap.Column.SMALL);
+        profileService.getRolesByProfileId(id).forEach(role -> {
+            Span spanrole = new Span(role.getName());
+            spanrole.getElement().getThemeList().add("badge");
+            divroles.add(spanrole);
+        });
+
+        content.add(divroles);
 
         content.add(activityInfo);
 

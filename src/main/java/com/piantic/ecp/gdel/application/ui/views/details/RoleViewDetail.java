@@ -1,7 +1,9 @@
-package com.piantic.ecp.gdel.application.ui.views;
+package com.piantic.ecp.gdel.application.ui.views.details;
 
 import com.piantic.ecp.gdel.application.backend.entity.Role;
+import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.RoleService;
+import com.piantic.ecp.gdel.application.ui.views.RoleView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;
@@ -14,17 +16,19 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 
 public class RoleViewDetail extends VerticalLayout {
 
-    private final RoleService roleService;
+    private RoleService roleService;
+    private ProfileService profileService;
     private final Long id;
     private Role role;
     private Div content;
     Binder<Role> binder = new Binder<>(Role.class);
 
-    public RoleViewDetail(RoleService roleService, Long id) {
-        this.roleService = roleService;
-        this.id = id;
+    public RoleViewDetail(RoleService roleService, ProfileService profileService, Long id) {
         addClassNames("role-detail-view");
-//        setWidthFull();
+        this.roleService = roleService;
+        this.profileService = profileService;
+        this.id = id;
+
         configInitUI();
         updateUI(id);
     }
@@ -70,15 +74,31 @@ public class RoleViewDetail extends VerticalLayout {
 
         content.add(info1);
 
-        //TODO agregar la info de los perfiles
+        Div divprofiles = new Div();
+        divprofiles.addClassNames(LumoUtility.Display.FLEX,
+                LumoUtility.Gap.Column.SMALL,
+                LumoUtility.Gap.Row.SMALL,
+                LumoUtility.FlexWrap.WRAP);
+        divprofiles.addClassName("div-services-profile");
+        profileService.getProfileByRoleId(id).forEach(profile -> {
+            Span service = new Span(profile.getNameProfile());
+            service.getElement().getThemeList().add("badge contrast");
+            divprofiles.add(service);
+        });
+
+        content.add(divprofiles);
 
         content.add(info2);
 
         Div divservices = new Div();
+        divservices.addClassNames(LumoUtility.Display.FLEX,
+                LumoUtility.Gap.Column.SMALL,
+                LumoUtility.Gap.Row.SMALL,
+                LumoUtility.FlexWrap.WRAP);
         divservices.addClassName("div-services-role");
         roleService.getWorksByRoleId(id).forEach(work -> {
             Span service = new Span(work.getTitle());
-            service.getElement().getThemeList().add("badge");
+            service.getElement().getThemeList().add("badge warning");
             divservices.add(service);
         });
 

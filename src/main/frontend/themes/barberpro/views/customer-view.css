@@ -6,6 +6,17 @@
     display: flex;
     gap: 0;
     overflow: hidden;
+
+    .content-left {
+        > vaadin-grid::part(header-cell) {
+            color: var(--lumo-contrast);
+        }
+
+        > vaadin-grid::part(body-cell) > h5 {
+            color: var(--lumo-primary-text-color);
+        }
+
+    }
 }
 
 .customer-view .content-left {

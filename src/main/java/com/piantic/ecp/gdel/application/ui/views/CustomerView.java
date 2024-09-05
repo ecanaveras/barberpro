@@ -3,6 +3,7 @@ package com.piantic.ecp.gdel.application.ui.views;
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
+import com.piantic.ecp.gdel.application.ui.views.details.CustomerViewDetail;
 import com.piantic.ecp.gdel.application.ui.views.forms.CustomerForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -22,8 +23,8 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-@PageTitle("Clientes | BarberPro")
-@Route("customer")
+@PageTitle("Clientes")
+@Route(value = "customer", layout = MainLayout.class)
 public class CustomerView extends HorizontalLayout implements HasUrlParameter<Long> {
 
     private final TextField txtFilter;
@@ -33,7 +34,7 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
     private VerticalLayout contentLeft;
     private CustomerViewDetail customerviewdetail;
     private Grid<Customer> grid = new Grid<>(Customer.class, false);
-    private CustomerService customerService;
+    public CustomerService customerService;
     private Boolean detailAdded = false;
 
     public CustomerView(CustomerService customerService) {
@@ -42,14 +43,6 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
 
 
         this.customerService = customerService;
-
-        //Title
-        H3 title = new H3("Clientes");
-        //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
-        count.addClassNames(LumoUtility.FontWeight.LIGHT);
-        count.getElement().getThemeList().add("badge");
-        HorizontalLayout contentTitle = new HorizontalLayout(title, count);
-        contentTitle.setAlignSelf(Alignment.BASELINE);
 
         //Toolbar
         txtFilter = new TextField();
@@ -80,7 +73,7 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         contentLeft.addClassName("content-left");
         contentLeft.setSizeFull();
 
-        contentLeft.add(contentTitle, toolbar, grid);
+        contentLeft.add(toolbar, grid);
 
         //Content Right
         contentRight = new Div();
@@ -106,9 +99,16 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         grid.addClassName("customer-grid");
         grid.setSizeFull();
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.addComponentColumn(customer ->
-                new Anchor(String.format("/customer/%d", customer.getId()), customer.getName())
-        ).setKey("name1").setAutoWidth(true).setHeader("Nombre").setSortable(true).setComparator(Customer::getName).getStyle().set("min-width", "200px");
+        grid.addComponentColumn(customer -> {
+            return new H5(customer.getName());
+        }).setAutoWidth(true).setHeader("Nombre")
+                .setSortable(true)
+                .setComparator(Customer::getName)
+                .getStyle().set("min-width", "200px");
+        /*grid.addColumn(Customer::getName).setAutoWidth(true).setHeader("Nombre")
+                .setSortable(true)
+                .getStyle().set("min-width", "200px");
+         */
         grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
         grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
         grid.addComponentColumn(customer -> {

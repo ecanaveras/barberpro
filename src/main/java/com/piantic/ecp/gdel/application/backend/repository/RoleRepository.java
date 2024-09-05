@@ -15,7 +15,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             " where lower(r.name) like lower(concat('%', :searchTerm, '%'))")
     List<Role> search(@Param("searchTerm") String searchTerm);
 
-    // Método para obtener un Role junto con sus perfiles (fetch join)
+    // Método para obtener un Role junto con sus servicios (fetch join)
     @Query("SELECT r FROM Role r LEFT JOIN FETCH r.works WHERE r.id = :id")
     Optional<Role> findByIdWithWorks(@Param("id") Long id);
 

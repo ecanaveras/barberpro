@@ -4,14 +4,12 @@ import com.piantic.ecp.gdel.application.ui.views.forms.ActivityDetailForm;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-@Route("feed")
+@PageTitle("Actividad")
+@Route(value = "feed", layout = MainLayout.class)
 public class ActivityView extends VerticalLayout implements HasUrlParameter<String> {
 
 

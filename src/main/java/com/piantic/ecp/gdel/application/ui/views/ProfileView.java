@@ -2,7 +2,9 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
+import com.piantic.ecp.gdel.application.backend.service.RoleService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
+import com.piantic.ecp.gdel.application.ui.views.details.ProfileViewDetail;
 import com.piantic.ecp.gdel.application.ui.views.forms.ProfileForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -12,7 +14,6 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,34 +22,29 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-@PageTitle("Perfiles | BarberPro")
-@Route("profile")
+@PageTitle("Perfiles")
+@Route(value = "profile", layout = MainLayout.class)
 public class ProfileView extends HorizontalLayout implements HasUrlParameter<Long> {
 
     private final TextField txtFilter;
     private final Button btnAdd;
     private final Span count = new Span();
+
     private Div contentRight;
     private VerticalLayout contentLeft;
     private ProfileViewDetail profileViewDetail;
     private Grid<Profile> grid = new Grid<>(Profile.class, false);
-    private ProfileService profileService;
+    private RoleService roleService;
+    public ProfileService profileService;
     private Boolean detailAdded = false;
 
-    public ProfileView(ProfileService profileService) {
+    public ProfileView(ProfileService profileService, RoleService roleService) {
         addClassName("profile-view");
         setSizeFull();
 
 
         this.profileService = profileService;
-
-        //Title
-        H3 title = new H3("Perfiles");
-        //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
-        count.addClassNames(LumoUtility.FontWeight.LIGHT);
-        count.getElement().getThemeList().add("badge");
-        HorizontalLayout contentTitle = new HorizontalLayout(title, count);
-        contentTitle.setAlignSelf(Alignment.BASELINE);
+        this.roleService = roleService;
 
         //Toolbar
         txtFilter = new TextField();
@@ -79,7 +75,7 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         contentLeft.addClassName("content-left");
         contentLeft.setSizeFull();
 
-        contentLeft.add(contentTitle, toolbar, grid);
+        contentLeft.add(toolbar, grid);
 
         //Content Right
         contentRight = new Div();
@@ -87,8 +83,6 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
 
         add(contentLeft);
         add(contentRight);
-
-//        System.out.println("Reloadedddd");
     }
 
     private void openFormDialog(Profile profile) {
@@ -106,9 +100,14 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         grid.setSizeFull();
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(profile ->
-                new Anchor(String.format("/profile/%d", profile.getId()), profile.getNameProfile())
+                new H5(profile.getNameProfile())
         ).setKey("name1").setAutoWidth(true).setHeader("Perfil").setSortable(true).setComparator(Profile::getNameProfile).getStyle().set("min-width", "200px");
+        grid.addColumn(Profile::getPhone).setHeader("Telefono");
+        grid.addColumn(Profile::getEmail).setHeader("Email");
         grid.addColumn(Profile::getStatus).setHeader("Estado").setSortable(true);
+        grid.addComponentColumn(profile ->
+             new Anchor(String.format("/permission/%d", profile.getId()), "Editar Permisos")
+        );
 
         createMenu();
 
@@ -123,7 +122,7 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
     public void saveProfile(Profile profile) {
         profileService.save(profile);
         updateList();
-        Notification.show("Perfil Guardado!");
+        NotificationUtil.showSuccess("Perfil Guardado!");
     }
 
     private void deleteProfile(Profile profile) {

@@ -1,7 +1,8 @@
-package com.piantic.ecp.gdel.application.ui.views;
+package com.piantic.ecp.gdel.application.ui.views.details;
 
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
+import com.piantic.ecp.gdel.application.ui.views.CustomerView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.*;

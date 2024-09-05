@@ -29,6 +29,7 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Route("working")
+@PageTitle("Trabajando")
+@Route(value = "working", layout = MainLayout.class)
 public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     CustomerService customerService;

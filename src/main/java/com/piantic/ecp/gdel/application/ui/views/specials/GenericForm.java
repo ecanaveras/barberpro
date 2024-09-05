@@ -1,5 +1,7 @@
 package com.piantic.ecp.gdel.application.ui.views.specials;
 
+import com.piantic.ecp.gdel.application.backend.entity.Role;
+import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.utils.generics.CloseEventListener;
 import com.piantic.ecp.gdel.application.backend.utils.generics.SaveEventListener;
 import com.vaadin.flow.component.Key;
@@ -12,6 +14,8 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.util.Set;
+
 public class GenericForm<T> extends Dialog {
 
     public FormLayout formLayout = new FormLayout();
@@ -21,10 +25,13 @@ public class GenericForm<T> extends Dialog {
     private NumberField commissions = new NumberField("Commissions");
     private TextArea observations = new TextArea("Observations");*/
 
-    Button btnSave = new Button("Guardar");
+    public Button btnSave = new Button("Guardar");
     Button btnCancel = new Button("Cancelar");
 
     private T entity;
+    public Set<Work> workSet;
+//    public Set<Profile> profileSet;
+//    public Set<Role> roleSet;
 
     public Binder<T> binder = new BeanValidationBinder<>(getGenericType());
 
@@ -64,6 +71,9 @@ public class GenericForm<T> extends Dialog {
 
     private void validateAndSave() {
         if (binder.isValid() && saveEventListener != null) {
+            if(binder.getBean() instanceof Role){
+                ((Role) binder.getBean()).setWorks(workSet);
+            }
             saveEventListener.onSave(binder.getBean());
             this.close();
         } else {

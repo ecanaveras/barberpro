@@ -33,7 +33,7 @@ public class Profile extends AbstractEntity implements Cloneable{
     private String phone;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "role_profile",
             joinColumns = @JoinColumn(name = "profile_id"),

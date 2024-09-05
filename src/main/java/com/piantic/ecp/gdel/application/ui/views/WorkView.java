@@ -23,8 +23,8 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.text.DecimalFormat;
 
-@PageTitle("Servicios | BarberPro")
-@Route("service")
+@PageTitle("Servicios")
+@Route(value = "service", layout = MainLayout.class)
 public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> {
 
     private final TextField txtFilter;
@@ -34,7 +34,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     private VerticalLayout contentLeft;
     //private WordS customerviewdetail;
     private Grid<Work> grid = new Grid<>(Work.class, false);
-    private WorkService workService;
+    public WorkService workService;
     private Boolean detailAdded = false;
 
     public WorkView(WorkService workService) {
@@ -43,14 +43,6 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
 
 
         this.workService = workService;
-
-        //Title
-        H3 title = new H3("Servicios");
-        //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
-        count.addClassNames(LumoUtility.FontWeight.LIGHT);
-        count.getElement().getThemeList().add("badge");
-        HorizontalLayout contentTitle = new HorizontalLayout(title, count);
-        contentTitle.setAlignSelf(Alignment.BASELINE);
 
         //Toolbar
         txtFilter = new TextField();
@@ -82,7 +74,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
         contentLeft.addClassName("content-left");
         contentLeft.setSizeFull();
 
-        contentLeft.add(contentTitle, toolbar, grid);
+        contentLeft.add(toolbar, grid);
 
         //Content Right
         contentRight = new Div();

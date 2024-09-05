@@ -1,11 +1,14 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,6 +57,15 @@ public class ProfileService {
         return null;
     }
 
+    public Set<Role> getRolesByProfileId(Long roleId) {
+        return profileRepository.findByIdWithProfile(roleId)
+                .map(Profile::getRoles)
+                .orElse(Collections.emptySet());
+    }
+
+    public List<Profile> getProfileByRoleId(Long roleId) {
+        return profileRepository.findByRoleId(roleId);
+    }
 
 /*
     @PostConstruct

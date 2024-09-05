@@ -2,8 +2,8 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
+import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.backend.utils.generics.CloseEventListener;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.details.Details;
@@ -12,9 +12,6 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.SvgIcon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -88,11 +85,7 @@ public class WorkFinishView extends Div {
             //Guardar
             this.saved = true;
 
-            Notification notification = new Notification();
-            notification.add(new HorizontalLayout(VaadinIcon.CHECK_CIRCLE.create(), new Text("Servicio Guardado")));
-            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            notification.setDuration(3000);
-            notification.open();
+            NotificationUtil.showSuccess("Trabajo Guardado");
             this.closeView();
         });
 

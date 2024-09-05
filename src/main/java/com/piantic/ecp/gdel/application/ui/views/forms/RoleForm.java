@@ -23,7 +23,6 @@ public class RoleForm extends GenericForm<Role> {
 
     Grid<Work> attacths = new Grid<>(Work.class, false);
 
-
     public RoleForm(WorkService workService) {
         super();
         addClassName("role-form");
@@ -45,9 +44,10 @@ public class RoleForm extends GenericForm<Role> {
 //        formLayout.setColspan(attacths, 2);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 1));
 
-        //TODO corregir Bug, del grid al salir sin guardar
-        if (updateitem != null)
+        if (updateitem != null) {
+            binder.readBean(updateitem);
             updateitem.getWorks().forEach(work -> attacths.select(work));
+        }
     }
 
 
@@ -55,6 +55,7 @@ public class RoleForm extends GenericForm<Role> {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         updateitem = this.getEntity();
+        binder.readBean(updateitem);
         updateitem.getWorks().forEach(work -> attacths.select(work));
     }
 
@@ -64,7 +65,11 @@ public class RoleForm extends GenericForm<Role> {
         attacths.setItems(workService.findAll());
         attacths.setSelectionMode(Grid.SelectionMode.MULTI);
         attacths.addColumn("title").setHeader("Servicios");
-        attacths.addSelectionListener(event -> updateitem.setWorks(attacths.getSelectedItems()));
+        attacths.addSelectionListener(listener -> {
+            workSet = attacths.getSelectedItems();
+        });
     }
+
+
 
 }
