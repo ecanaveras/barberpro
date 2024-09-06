@@ -62,8 +62,8 @@ public class MainLayout extends AppLayout {
         SideNavItem adminsection = new SideNavItem("Admin");
         adminsection.setPrefixComponent(LineAwesomeIcon.COG_SOLID.create());
         adminsection.addItem(new SideNavItem("Servicios", WorkView.class, LineAwesomeIcon.MAGIC_SOLID.create()));
-        adminsection.addItem(new SideNavItem("Roles", RoleView.class, LineAwesomeIcon.OBJECT_GROUP.create()));
         adminsection.addItem(new SideNavItem("Perfiles", ProfileView.class, LineAwesomeIcon.USER.create()));
+        adminsection.addItem(new SideNavItem("Roles", RoleView.class, LineAwesomeIcon.OBJECT_GROUP.create()));
 
         nav.addItem(adminsection);
 

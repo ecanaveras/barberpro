@@ -1,5 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views.specials;
 
+import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.utils.generics.CloseEventListener;
@@ -30,6 +31,7 @@ public class GenericForm<T> extends Dialog {
 
     private T entity;
     public Set<Work> workSet;
+    public Set<Profile> profileSet;
 //    public Set<Profile> profileSet;
 //    public Set<Role> roleSet;
 
@@ -73,6 +75,7 @@ public class GenericForm<T> extends Dialog {
         if (binder.isValid() && saveEventListener != null) {
             if(binder.getBean() instanceof Role){
                 ((Role) binder.getBean()).setWorks(workSet);
+                ((Role) binder.getBean()).setProfiles(profileSet);
             }
             saveEventListener.onSave(binder.getBean());
             this.close();

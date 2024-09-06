@@ -67,7 +67,7 @@ public class ProfilePermissionView extends VerticalLayout implements HasUrlParam
                 ButtonVariant.LUMO_TERTIARY_INLINE);
         clearButton.getStyle().set("margin-inline-start",
                 "var(--lumo-space-xs)");
-        Span note = new Span(new Span(LineAwesomeIcon.INFO_SOLID.create()));
+        Span note = new Span(new Span(LineAwesomeIcon.INFO_CIRCLE_SOLID.create()));
         note.setClassName("note");
         note.getElement().getThemeList().add("badge contrast");
         note.addClassNames(LumoUtility.Padding.XLARGE,

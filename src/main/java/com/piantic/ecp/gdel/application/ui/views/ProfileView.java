@@ -1,6 +1,7 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.RoleService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
@@ -13,7 +14,10 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,6 +25,8 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+
+import java.util.Set;
 
 @PageTitle("Perfiles")
 @Route(value = "profile", layout = MainLayout.class)
@@ -105,9 +111,7 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         grid.addColumn(Profile::getPhone).setHeader("Telefono");
         grid.addColumn(Profile::getEmail).setHeader("Email");
         grid.addColumn(Profile::getStatus).setHeader("Estado").setSortable(true);
-        grid.addComponentColumn(profile ->
-             new Anchor(String.format("/permission/%d", profile.getId()), "Editar Permisos")
-        );
+        grid.addComponentColumn(profile -> getSpanWorkItem(profile.getRoles())).setHeader("Roles Asignados");
 
         createMenu();
 
@@ -155,6 +159,25 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         } else {
             getUI().ifPresent(ui -> ui.navigate(ProfileView.class));
         }
+    }
+
+    /**
+     * Crea una coleción de badges
+     * @param roles
+     * @return
+     */
+    private Div getSpanWorkItem(Set<Role> roles) {
+        Div divspan = new Div();
+        divspan.addClassNames(LumoUtility.Display.FLEX,
+                LumoUtility.Gap.Column.SMALL,
+                LumoUtility.Gap.Row.SMALL,
+                LumoUtility.FlexWrap.WRAP);
+        roles.forEach(work -> {
+            Span spanw = new Span(work.getName());
+            spanw.getElement().getThemeList().add("badge warning");
+            divspan.add(spanw);
+        });
+        return divspan;
     }
 
     @Override

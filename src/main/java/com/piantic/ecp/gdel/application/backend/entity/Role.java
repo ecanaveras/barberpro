@@ -22,6 +22,15 @@ public class Role extends AbstractEntity {
     )
     private Set<Work> works = new HashSet<>();
 
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_profile",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "profile_id")
+    )
+    private Set<Profile> profiles = new HashSet<>();
+
     public Role() {}
 
     public Role(String name) {
@@ -43,4 +52,21 @@ public class Role extends AbstractEntity {
     public void setWorks(Set<Work> works) {
         this.works = works;
     }
+
+    public int getWorksCount() {
+        return works.size();
+    }
+
+    public Set<Profile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(Set<Profile> profiles) {
+        this.profiles = profiles;
+    }
+
+    public int getProfilesCount() {
+        return profiles.size();
+    }
+
 }

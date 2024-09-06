@@ -95,7 +95,7 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
     }
 
     private void openFormDialog(Role role) {
-        RoleForm formRole = new RoleForm(workService);
+        RoleForm formRole = new RoleForm(workService, profileService);
         formRole.setEntity(role);
         formRole.setSaveEventListener(e -> {
             this.saveRole(e);

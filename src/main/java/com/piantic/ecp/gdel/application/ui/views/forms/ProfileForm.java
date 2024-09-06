@@ -38,7 +38,6 @@ public class ProfileForm extends GenericForm<Profile> {
         email.setPrefixComponent(VaadinIcon.MAILBOX.create());
 
         pin.setPrefixComponent(VaadinIcon.LOCK.create());
-        pin.setPattern("[0-9]");
         pin.setAllowedCharPattern("[0-9]");
 
         status.setItems(Profile.Status.values());

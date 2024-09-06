@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.format.annotation.NumberFormat;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,8 +24,9 @@ public class Profile extends AbstractEntity implements Cloneable{
     @NotNull
     private Profile.Status status;
 
-    @NumberFormat
-    private Integer pin;
+    @Column(length = 4)
+    @Pattern(regexp = "\\d{4}", message = "El PIN debe tener exactamente 4 dígitos.")
+    private String pin;
 
     @Email
     private String email;
@@ -33,12 +34,7 @@ public class Profile extends AbstractEntity implements Cloneable{
     private String phone;
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "role_profile",
-            joinColumns = @JoinColumn(name = "profile_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "profiles")
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
@@ -46,7 +42,7 @@ public class Profile extends AbstractEntity implements Cloneable{
 
     public Profile() {}
 
-    public Profile(String name, Profile.Status status, Integer pin) {
+    public Profile(String name, Profile.Status status, String pin) {
         this.nameProfile = name;
         this.status = status;
         this.pin = pin;
@@ -73,7 +69,7 @@ public class Profile extends AbstractEntity implements Cloneable{
         this.nameProfile = nameProfile;
     }
 
-    public Integer getPin() {
+    public String getPin() {
         return pin;
     }
 
@@ -89,7 +85,7 @@ public class Profile extends AbstractEntity implements Cloneable{
         this.status = status;
     }
 
-    public void setPin(Integer pin) {
+    public void setPin(String pin) {
         this.pin = pin;
     }
 
