@@ -114,6 +114,14 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
                 .setSortable(true)
                 .getStyle().set("min-width", "200px");
         grid.addComponentColumn(role -> getSpanWorkItem(role.getWorks())).setHeader("Servicios Asignados");
+        grid.addComponentColumn(role -> {
+            Button btnEdit = new Button(LineAwesomeIcon.EDIT.create());
+            btnEdit.addThemeVariants(ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
+            btnEdit.setAriaLabel("Editar");
+            btnEdit.setTooltipText("Editar");
+            btnEdit.addClickListener(event -> openFormDialog(role));
+            return btnEdit;
+        }).setAutoWidth(true);
         createMenu();
 
         grid.asSingleSelect().addValueChangeListener(e -> showDetail(e.getValue() != null ? e.getValue().getId() : null));
