@@ -31,6 +31,10 @@ public class WorkService {
         return workRepository.findAll();
     }
 
+    public List<Work> findWorkForProfile(Long profileId) {
+        return workRepository.findWorksForProfile(profileId);
+    }
+
     public long count() {
         return workRepository.count();
     }

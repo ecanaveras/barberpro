@@ -1,5 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
+import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Text;
@@ -79,7 +80,7 @@ public class MainLayout extends AppLayout {
 
     private Footer createFooter() {
         Footer layout = new Footer();
-        Profile profile = (Profile) VaadinSession.getCurrent().getAttribute("perfil");
+        Profile profile = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
         if (profile != null) {
 
             Div divencabezado = new Div();
@@ -122,7 +123,7 @@ public class MainLayout extends AppLayout {
             }).add(new Text("Oscuro"));
             subMenu.add(new Hr());
             subMenu.addItem(LineAwesomeIcon.SIGN_OUT_ALT_SOLID.create(), event -> {
-                VaadinSession.getCurrent().setAttribute("perfil", null);
+                VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, null);
                 getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
             }).add(new Text("Salir"));
 
@@ -135,7 +136,7 @@ public class MainLayout extends AppLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
-        if (VaadinSession.getCurrent().getAttribute("perfil") == null) {
+        if (VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE) == null) {
             getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
         }
     }

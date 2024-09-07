@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Theme(value = "barberpro")
 public class Application implements AppShellConfigurator {
 
+    public static final String SESSION_PROFILE = "profile";
 
     public static void main(String[] args) {
 

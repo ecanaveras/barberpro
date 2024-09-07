@@ -2,6 +2,7 @@ package com.piantic.ecp.gdel.application.backend.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +24,9 @@ public class Work extends AbstractEntity {
 
     @OneToMany(mappedBy = "work", cascade = CascadeType.ALL)
     private Set<AppointmentWork> appointmentWorks = new HashSet<>();
+
+    @ManyToMany(mappedBy = "works")
+    private Set<Role> roles = new HashSet<>();
 
    public @NotNull String getTitle() {
         return title;

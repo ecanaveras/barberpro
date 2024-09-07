@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Customer extends AbstractEntity implements Cloneable {
+public class Customer extends AbstractEntity {
 
     @NotNull
     @NotEmpty

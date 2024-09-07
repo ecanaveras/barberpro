@@ -1,7 +1,10 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
+import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
+import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.service.WorkService;
 import com.piantic.ecp.gdel.application.ui.views.dialog.FindDialogView;
@@ -31,6 +34,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.validation.constraints.NotNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -46,6 +50,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     CustomerService customerService;
     WorkService workService;
+    AppointmentService appointmentService;
 
     Grid<WorkAdded> gridservices = new Grid<>(WorkAdded.class, false);
     Grid<WorkAdded> gridsales = new Grid<>(WorkAdded.class, false);
@@ -62,6 +67,8 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     GridListDataView<WorkAdded> dataviewleft = gridservices.getListDataView();
     GridListDataView<WorkAdded> dataviewright = gridsales.getListDataView();
 
+    Profile profileworking;
+
 //    Editor<WorkAdded> editorsales = gridsales.getEditor();
 
     //Preferents
@@ -69,12 +76,19 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     private Button btnContinuar;
     private Button btnLimpiar;
 
-    public WorkingView(WorkService workService, CustomerService customerService) {
+    public WorkingView(WorkService workService, CustomerService customerService, AppointmentService appointmentService) {
         addClassName("working-view-main");
         setSizeFull();
 
         this.workService = workService;
         this.customerService = customerService;
+        this.appointmentService = appointmentService;
+
+        //Profile
+        profileworking = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
+        if (profileworking == null) {
+            getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
+        }
 
         divleft.addClassName("div-left");
         divright.addClassName("div-right");
@@ -133,10 +147,10 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
             findCustomer.configureGrid();
             findCustomer.addDetachListener(detachEvent -> {
                 if (findCustomer.getIdSelected() != null) {
-                    WorkFinishView vfinal = new WorkFinishView(customerService, findCustomer.getIdSelected(), dataviewright.getItems(), getTotalWorked());
+                    WorkFinishView vfinal = new WorkFinishView(customerService, appointmentService, findCustomer.getIdSelected(), dataviewright.getItems(), getTotalWorked());
                     vfinal.setCloseEventListener(() -> {
                         controlShowViews(false);
-                        if(vfinal.isSaved()){
+                        if (vfinal.isSaved()) {
                             resetWorkspace();
                         }
                     });
@@ -283,11 +297,13 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
      * Carga los servicios disponibles para el perfil
      */
     private void loadDataGridServices() {
-        gridservices.setItems(workService.findAll("").stream().map(work -> {
-            WorkAdded service = new WorkAdded();
-            service.setServicio(work);
-            return service;
-        }).collect(Collectors.toList()));
+        if(profileworking!=null) {
+            gridservices.setItems(workService.findWorkForProfile(profileworking.getId()).stream().map(work -> {
+                WorkAdded service = new WorkAdded();
+                service.setServicio(work);
+                return service;
+            }).collect(Collectors.toList()));
+        }
     }
 
     private void addServiceGrid(WorkAdded work) {
@@ -469,6 +485,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     /**
      * Oculta o muestra los elementos de la UI
+     *
      * @param hide | True para ocultar
      */
     private void controlShowViews(Boolean hide) {

@@ -1,5 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
+import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.vaadin.flow.component.Component;
@@ -61,7 +62,7 @@ public class WelcomeView extends Div {
         }
         vl.addClickListener(e -> {
             if (profile.isLock()) {
-                PasswordField passwordField = new PasswordField("PIN");
+                PasswordField passwordField = new PasswordField();
                 passwordField.setPrefixComponent(VaadinIcon.LOCK.create());
                 passwordField.setRequiredIndicatorVisible(true);
                 passwordField.setRequired(true);
@@ -87,8 +88,7 @@ public class WelcomeView extends Div {
                 btnContinue.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
                 btnContinue.addClickListener(event -> {
                     if (profile.getPin().equalsIgnoreCase(passwordField.getValue())) {
-                        VaadinSession session = VaadinSession.getCurrent();
-                        session.setAttribute("perfil", profile);
+                        VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, profile);
                         getUI().ifPresent(ui -> ui.navigate(MainLayout.class));
                         saveLocalSession();
                         passdialog.close();
@@ -104,13 +104,12 @@ public class WelcomeView extends Div {
                 spanaviso.addClassName("span-aviso");
                 spanaviso.getElement().getThemeList().add("badge warning");
 
-                passdialog.setHeaderTitle("PIN");
+                passdialog.setHeaderTitle(profile.getNameProfile());
                 passdialog.add(new VerticalLayout(spanaviso, passwordField, passfailed));
                 passdialog.getFooter().add(btnContinue);
                 passdialog.open();
             } else {
-                VaadinSession session = VaadinSession.getCurrent();
-                session.setAttribute("perfil", profile);
+                VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, profile);
                 getUI().ifPresent(ui -> ui.navigate(MainLayout.class));
                 saveLocalSession();
             }

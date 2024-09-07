@@ -18,4 +18,7 @@ public interface WorkRepository extends JpaRepository<Work, Long> {
     @Query("SELECT w FROM Work w WHERE w.id NOT IN (SELECT w2.id FROM Role r JOIN r.works w2 WHERE r.id = :roleId)")
     List<Work> findWorksNotAssignedToRoleId(@Param("roleId") Long roleId);
 
+    @Query("SELECT w FROM Work w JOIN w.roles r JOIN r.profiles p WHERE p.id=:profileId")
+    List<Work> findWorksForProfile(@Param("profileId") Long profileId);
+
 }

@@ -1,6 +1,7 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -19,19 +20,19 @@ public class Appointment extends AbstractEntity {
     @JoinColumn(name = "profile_id")
     private Profile profile;
 
-    @OneToMany(
-            mappedBy = "appointment",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AppointmentWork> appointmentWorks = new HashSet<>();
+
+    @NotNull
+    private Double total;
 
     public Appointment() {}
 
-    public Appointment(LocalDateTime datework, Profile profile, Customer customer) {
+    public Appointment(LocalDateTime datework, Profile profile, Customer customer, Double total) {
         this.appointmentTime = datework;
         this.profile = profile;
         this.customer = customer;
+        this.total = total;
     }
 
     public LocalDateTime getAppointmentTime() {
@@ -66,16 +67,24 @@ public class Appointment extends AbstractEntity {
         this.appointmentWorks = appointmentWorks;
     }
 
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
     /**
      * Permite agregar trabajos realizados por el perfil.
      * @param work
      * @param quantity
      */
-    public void addWork(Work work, int quantity) {
+    public void addWork(Work work, int quantity, Double total) {
         if(!profile.getAllowedWorks().contains(work)){
             throw new IllegalArgumentException("El estilista no tiene permitido realizar este trabajo.");
         }
-        AppointmentWork appointmentWork = new AppointmentWork(this, work, quantity);
+        AppointmentWork appointmentWork = new AppointmentWork(this, work, quantity, total);
         appointmentWorks.add(appointmentWork);
     }
 }

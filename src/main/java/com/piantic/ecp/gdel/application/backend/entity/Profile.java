@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Profile extends AbstractEntity implements Cloneable{
+public class Profile extends AbstractEntity {
 
     public enum Status {
         Activo, Inactivo

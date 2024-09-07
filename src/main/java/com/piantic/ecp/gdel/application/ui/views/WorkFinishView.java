@@ -1,6 +1,10 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
+import com.piantic.ecp.gdel.application.Application;
+import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
+import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.backend.utils.generics.CloseEventListener;
@@ -14,10 +18,12 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -30,11 +36,15 @@ public class WorkFinishView extends Div {
     private CustomerService customerService;
     private Customer customer;
     private boolean saved;
+    private Profile profileworking;
 
-    public WorkFinishView(CustomerService customerService, Long idSelected, Stream<WorkingView.WorkAdded> workAddeds, Double totalpay) {
+    private AppointmentService appointmentService;
+
+    public WorkFinishView(CustomerService customerService, AppointmentService appointmentService, Long idSelected, Stream<WorkingView.WorkAdded> workAddeds, Double totalpay) {
         addClassName("work-finish-view");
         this.idSelected = idSelected;
         this.customerService = customerService;
+        this.appointmentService = appointmentService;
         this.totalpay = totalpay;
         this.listservices = workAddeds.toList();
 
@@ -43,6 +53,9 @@ public class WorkFinishView extends Div {
         iconfinish.addClassName(LumoUtility.IconSize.LARGE);
 
         H3 title = new H3("Todo Listo...");
+
+        //Profile
+        profileworking = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
 
         //Cliente
         findCustomer();
@@ -83,6 +96,11 @@ public class WorkFinishView extends Div {
         btnSave.setWidthFull();
         btnSave.addClickListener(e -> {
             //Guardar
+            Appointment chamba = new Appointment(LocalDateTime.now(), profileworking, customer, totalpay);
+            listservices.forEach(workAdded -> {
+                chamba.addWork(workAdded.getServicio(), workAdded.getCant(), workAdded.getCant() * workAdded.getServicio().getPrice());
+            });
+            appointmentService.save(chamba);
             this.saved = true;
 
             NotificationUtil.showSuccess("Trabajo Guardado");
