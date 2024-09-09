@@ -20,3 +20,15 @@
 .slide-in-div.visible {
     right: 0; /* El div se mueve desde la izquierda a la vista */
 }
+
+.toolbar-feed{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+
+}
+
+ vaadin-combo-box-item{
+    font-size: var(--lumo-font-size-s);
+}

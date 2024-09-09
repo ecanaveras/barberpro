@@ -5,20 +5,20 @@
 
 }
 
-vaadin-dialog-overlay > vaadin-vertical-layout {
+.welcome-view > vaadin-dialog-overlay > vaadin-vertical-layout {
     align-items: center;
 }
 
 
-vaadin-dialog-overlay::part(content) {
+.welcome-view > vaadin-dialog-overlay::part(content) {
     padding-bottom: 0;
 }
 
-vaadin-dialog-overlay::part(header) {
+.welcome-view > vaadin-dialog-overlay::part(header) {
     align-self: center;
 }
 
-vaadin-dialog-overlay::part(footer) {
+.welcome-view > vaadin-dialog-overlay::part(footer) {
     justify-content: center;
 }
 
@@ -31,6 +31,21 @@ vaadin-dialog-overlay::part(footer) {
         padding-top: 8rem;
         padding-bottom: var(--lumo-space-xl);
     }
+}
+
+.welcome-newprofile{
+    display: flex;
+    flex-direction: column;
+    row-gap: var(--lumo-space-m);
+
+    max-width: 280px;
+    align-items: center;
+    margin: auto;
+    padding: var(--lumo-space-xl);
+    border-radius: var(--lumo-space-s);
+    border: 1px solid var(--lumo-contrast-30pct);
+
+
 }
 
 

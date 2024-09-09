@@ -1,10 +1,14 @@
 package com.piantic.ecp.gdel.application.ui.views.forms;
 
+import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.ui.views.specials.GenericForm;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -15,9 +19,12 @@ public class WorkForm extends GenericForm<Work> {
     private TextField description = new TextField("Descripción");
     private NumberField price = new NumberField("Precio");
     private NumberField commissions = new NumberField("Comisión");
-    private TextArea observations = new TextArea("Observación");
+//    private TextArea observations = new TextArea("Observación");
 
-    public WorkForm() {
+
+    MultiSelectListBox<Profile> mlboxprofiles = new MultiSelectListBox<>();
+
+    public WorkForm(ProfileService profileService) {
         super();
         addClassName("work-form");
 
@@ -58,15 +65,25 @@ public class WorkForm extends GenericForm<Work> {
             }
         });
 
+        //Profiles disponibles
+        mlboxprofiles.setItems(profileService.findAll());
+        mlboxprofiles.setItemLabelGenerator(Profile::getNameProfile);
+        mlboxprofiles.addSelectionListener(listener -> {
+//            profileSet = mlboxprofiles.getSelectedItems();
+        });
+        VerticalLayout vlprofiles = new VerticalLayout();
+        vlprofiles.add(new Span(new Span(LineAwesomeIcon.USER_CIRCLE.create()), new Span("¿Qué perfil lo puede trabajar?")), mlboxprofiles);
+
         // Form Layout
-        formLayout.add(title, description, price, commissions, gain, commission, observations);
+//        formLayout.add(title, description, price, commissions, gain, commission, observations);
+        formLayout.add(title, description, price, commissions, gain, commission, vlprofiles);
         formLayout.setColspan(title, 2);
         formLayout.setColspan(description, 2);
         formLayout.setColspan(price, 1);
         formLayout.setColspan(commissions, 1);
         formLayout.setColspan(gain, 1);
         formLayout.setColspan(commission, 1);
-        formLayout.setColspan(observations, 2);
+        formLayout.setColspan(vlprofiles, 2);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
     }
 }

@@ -1,7 +1,9 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.WorkService;
+import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.ui.views.forms.WorkForm;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
@@ -11,8 +13,10 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
-import com.vaadin.flow.component.html.*;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -30,6 +34,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     private final TextField txtFilter;
     private final Button btnAdd;
     private final Span count = new Span();
+    private final ProfileService profileService;
     private Div contentRight;
     private VerticalLayout contentLeft;
     //private WordS customerviewdetail;
@@ -37,12 +42,13 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     public WorkService workService;
     private Boolean detailAdded = false;
 
-    public WorkView(WorkService workService) {
+    public WorkView(WorkService workService, ProfileService profileService) {
         addClassName("work-view");
         setSizeFull();
 
 
         this.workService = workService;
+        this.profileService = profileService;
 
         //Toolbar
         txtFilter = new TextField();
@@ -82,12 +88,10 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
 
         add(contentLeft);
         add(contentRight);
-
-        System.out.println("Reloadedddd");
     }
 
     private void openFormDialog(Work work) {
-        WorkForm workForm = new WorkForm();
+        WorkForm workForm = new WorkForm(profileService);
         workForm.setEntity(work);
         workForm.setSaveEventListener(e -> {
             this.saveWork(e);
@@ -148,7 +152,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     public void saveWork(Work work) {
         workService.save(work);
         updateList();
-        Notification.show("Servicio Guardado!");
+        NotificationUtil.showSuccess("Servicio Guardado!");
     }
 
     private void deleteWork(Work work) {

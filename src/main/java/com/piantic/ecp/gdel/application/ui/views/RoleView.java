@@ -144,6 +144,10 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
         ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + role.getName() + "\"?",
                 "¿Desea borrar el registro?",
                 "Eliminar", e -> {
+            if(role.getName().equals("ROLE_ADMINISTRADOR")){
+                NotificationUtil.showWarning("No es posible borrar el ROLE_ADMINISTRADOR");
+                return;
+            }
             roleService.delete(role);
             updateList();
             getUI().ifPresent(ui -> ui.navigate(RoleView.class));

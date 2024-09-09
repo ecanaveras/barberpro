@@ -1,7 +1,11 @@
 package com.piantic.ecp.gdel.application;
 
+import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.ui.views.WelcomeView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.WebStorage;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,6 +36,15 @@ public class Application implements AppShellConfigurator {
             isProfileOnline.set(Boolean.parseBoolean(value));
         });
         return isProfileOnline.get();
+    }
+
+
+    public static Profile getProfile(){
+        Profile profile = (Profile) VaadinSession.getCurrent().getAttribute(SESSION_PROFILE);
+        if(profile == null){
+            UI.getCurrent().navigate(WelcomeView.class);
+        }
+        return profile;
     }
 
 }

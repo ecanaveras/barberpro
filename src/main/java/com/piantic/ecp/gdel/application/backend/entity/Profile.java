@@ -1,10 +1,7 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,8 +21,7 @@ public class Profile extends AbstractEntity {
     @NotNull
     private Profile.Status status;
 
-    @Column(length = 4)
-    @Pattern(regexp = "\\d{4}", message = "El PIN debe tener exactamente 4 dígitos.")
+
     private String pin;
 
     @Email

@@ -4,49 +4,120 @@ import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
+import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.ui.views.forms.ActivityDetailForm;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.ComboBoxVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.*;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @PageTitle("Actividad")
 @Route(value = "feed", layout = MainLayout.class)
 public class ActivityView extends VerticalLayout implements HasUrlParameter<String> {
 
 
+    private ProfileService profileService;
     private AppointmentService activities;
 
     private ActivityDetailForm activityDetailForm = new ActivityDetailForm();
 
-    public ActivityView(AppointmentService activities) {
+    private Profile currentProfile;
+
+    public ActivityView(AppointmentService activities, ProfileService profileService) {
         addClassName("activity-view");
         this.activities = activities;
+        this.profileService = profileService;
 
-        activities.findAppointmentByProfile((Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE)).forEach(appointment -> {
-            add(createContentLayout(appointment));
-        });
+        add(createToolbar());
+
+        currentProfile = Application.getProfile();
+
+//        activities.findAppointmentByProfile(Application.getProfile()).forEach(appointment -> {
+//            add(createContentLayout(appointment));
+//        });
 
         add(activityDetailForm);
+
     }
 
-    private void addEvents(VerticalLayout form) {
-        form.getUI().ifPresent(ui -> ui.navigate(ActivityView.class, form.getId().toString()));
+    private void loadInfoActivity(Tab tab, Integer filterDateOption) {
+//        if(tab.getLabel().equals()) {}
+        //TODO Aplicar logica de negocio de filtrado en el servicio de Actividades
+        LocalDate localDate = LocalDate.now();
+        switch (filterDateOption) {
+            case 2:
+                localDate = localDate.minusDays(1);
+                break;
+            case 3:
+                localDate = localDate.minusDays(2);
+                break;
+            case 4:
+                localDate = localDate.minusDays(7);
+                break;
+            case 6:
+                localDate = localDate.minusMonths(1);
+                break;
+        }
+        System.out.println("FECHA: " + localDate);
     }
+
+    private Div createToolbar() {
+        Div toolbar = new Div();
+        toolbar.addClassName("toolbar-feed");
+        //TODO Controlar cuando mostrar estos TABS
+        Tabs tabs = new Tabs();
+        tabs.addThemeVariants(TabsVariant.LUMO_HIDE_SCROLL_BUTTONS);
+        tabs.addThemeVariants(TabsVariant.LUMO_SMALL);
+        tabs.addClassNames(LumoUtility.FontSize.SMALL);
+        Tab alltab = new Tab("TODOS");
+        tabs.add(alltab);
+        profileService.findAll().forEach(profile -> {
+            tabs.add(new Tab(profile.getNameProfile().toUpperCase()));
+        });
+        Map<Integer, String> optionFilterDate = new HashMap<>();
+        optionFilterDate.put(1, "Hoy");
+        optionFilterDate.put(2, "Ayer");
+        optionFilterDate.put(3, "Últ. 3 días");
+        optionFilterDate.put(4, "Últ. 7 días");
+        optionFilterDate.put(5, "Este mes");
+        optionFilterDate.put(6, "Mes anterior");
+
+        //TODO Contemplar la opcion PopoverDropdownField en Vaadin (POPOVER)
+        ComboBox<Integer> comboFilter = new ComboBox();
+        comboFilter.addClassNames(LumoUtility.FontSize.XSMALL);
+        comboFilter.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
+        comboFilter.setItems(optionFilterDate.keySet());
+        comboFilter.setItemLabelGenerator(option -> optionFilterDate.get(option));
+        comboFilter.setValue(1);
+        comboFilter.addValueChangeListener(event -> loadInfoActivity(tabs.getSelectedTab(), comboFilter.getValue()));
+
+        toolbar.add(tabs);
+        toolbar.add(comboFilter);
+
+        return toolbar;
+    }
+
 
     private VerticalLayout createContentLayout(Appointment appointment) {
         VerticalLayout content = new VerticalLayout();
         content.setId(String.valueOf(appointment.getId()));
         content.addClassName("content-feed");
         content.addSingleClickListener(e -> {
-            addEvents(e.getSource());
+            e.getSource().getUI().ifPresent(ui -> ui.navigate(ActivityView.class, e.getSource().getId().toString()));
         });
 
         Span span = new Span(String.valueOf(appointment.getId()));
@@ -73,7 +144,7 @@ public class ActivityView extends VerticalLayout implements HasUrlParameter<Stri
                 LumoUtility.Flex.GROW);
         hLayout.add(
                 new HorizontalLayout(LineAwesomeIcon.USER_CIRCLE.create(),
-                new Span(appointment.getProfile().getNameProfile())),
+                        new Span(appointment.getProfile().getNameProfile())),
                 new Span(new DecimalFormat("#.##").format(appointment.getTotal())),
                 LineAwesomeIcon.PLUS_SOLID.create());
 

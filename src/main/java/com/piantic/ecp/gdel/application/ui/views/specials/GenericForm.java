@@ -15,23 +15,19 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class GenericForm<T> extends Dialog {
 
     public FormLayout formLayout = new FormLayout();
-    /*private TextField title = new TextField("Title");
-    private TextField description = new TextField("Description");
-    private NumberField price = new NumberField("Price");
-    private NumberField commissions = new NumberField("Commissions");
-    private TextArea observations = new TextArea("Observations");*/
 
     public Button btnSave = new Button("Guardar");
     Button btnCancel = new Button("Cancelar");
 
     private T entity;
-    public Set<Work> workSet;
-    public Set<Profile> profileSet;
+    public Set<Work> workSet  = new HashSet<>();
+    public Set<Profile> profileSet = new HashSet<>();
 //    public Set<Profile> profileSet;
 //    public Set<Role> roleSet;
 

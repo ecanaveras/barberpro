@@ -118,7 +118,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         content.add(divleft, divright, divfinal);
 
         //Title
-        H3 title = new H3("Trabajando...");
+        H3 title = new H3(Application.getProfile().getNameProfile());
         //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
         HorizontalLayout contentTitle = new HorizontalLayout(title, divtoolbar);
         contentTitle.addClassName("content-title");
@@ -298,6 +298,15 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
      */
     private void loadDataGridServices() {
         if(profileworking!=null) {
+            if(workService.findWorkForProfile(profileworking.getId()).isEmpty()){
+                ConfirmDialog confirmDialog = new ConfirmDialog();
+                confirmDialog.setCloseOnEsc(true);
+                confirmDialog.setHeader("Aviso");
+                confirmDialog.setText("No hemos encontrado Servicios activos\n¿Deseas agregar nuevo Servicios?");
+                confirmDialog.addConfirmListener(event -> getUI().ifPresent(ui -> ui.navigate(WorkView.class)));
+                confirmDialog.setConfirmText("Aceptar");
+                confirmDialog.open();
+            }
             gridservices.setItems(workService.findWorkForProfile(profileworking.getId()).stream().map(work -> {
                 WorkAdded service = new WorkAdded();
                 service.setServicio(work);
