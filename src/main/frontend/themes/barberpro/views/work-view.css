@@ -12,4 +12,37 @@
 
 .work-form {
     max-width: 400px;
+
+    vaadin-form-layout > vaadin-vertical-layout {
+        border-radius: var(--lumo-space-s);
+        border: 1px solid var(--lumo-contrast-20pct);
+        min-height: 200px;
+        row-gap: 0;
+        margin-top: var(--lumo-space-s);
+        /*flex-basis: max-content;*/
+
+        > span {
+            font-weight: bold;
+            color: var(--lumo-contrast-60pct);
+            font-size: var(--lumo-font-size-s);
+            > span { padding: var(--lumo-space-xs);}
+        }
+
+        > vaadin-list-box {
+            width: -webkit-fill-available;
+            max-height: -webkit-fill-available;
+            > vaadin-item {
+                font-weight: bold;
+                color: var(--lumo-contrast-70pct);
+            }
+            > vaadin-item[selected]{
+                color: var(--lumo-primary-text-color);
+            }
+            > vaadin-item::part(checkmark)::before {
+                color: var(--lumo-primary-text-color);
+            }
+        }
+    }
+
+
 }

@@ -29,7 +29,19 @@
         margin-right: var(--lumo-space-xs);
     }
 
-    > p {
+}
 
+.div-preview {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: var(--lumo-space-s);
+    align-items: center;
+
+    > img {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        border: 10px solid var(--lumo-base-color);
     }
 }
