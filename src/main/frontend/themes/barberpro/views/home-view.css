@@ -1,0 +1,53 @@
+.home-view {
+    height: 100%;
+}
+
+.home-view .div-main-content {
+
+    /*background-color: var(--lumo-contrast-5pct);*/
+    display: flex;
+    padding: 0px;
+    border-radius: var(--lumo-space-m);
+
+    > .div-preview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 300px;
+        border-radius: var(--lumo-space-s);
+        border: 1px solid var(--lumo-contrast-10pct);
+        justify-content: center;
+        padding: var(--lumo-space-xl);
+        margin: auto;
+        /*background-color: var(--lumo-contrast);*/
+        /*color: var(--lumo-primary-contrast-color);*/
+        column-gap: var(--lumo-space-s);
+
+        > h5 {
+            /*color: var(--lumo-primary-contrast-color);*/
+            padding-bottom: var(--lumo-space-m);
+        }
+
+        > h1{
+            /*color: var(--lumo-primary-contrast-color);*/
+        }
+
+        > img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 10px solid var(--lumo-base-color);
+        }
+
+        > vaadin-vertical-layout {
+            gap: var(--lumo-space-s);
+        }
+    }
+}
+
+/* Mostrar el botón en pantallas menores a 600px de ancho (modo móvil) */
+@media (max-width: 600px) {
+    .home-view .div-main-content .div-preview {
+        border: 0px;
+    }
+}

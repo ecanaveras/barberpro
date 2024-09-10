@@ -2,6 +2,7 @@ package com.piantic.ecp.gdel.application.backend.service;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Role;
+import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import com.piantic.ecp.gdel.application.backend.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,9 @@ import java.util.logging.Logger;
 
 @Service
 public class ProfileService {
+
     public static final Logger LOGGER = Logger.getLogger(ProfileService.class.getName());
+
     private ProfileRepository profileRepository;
 
     public ProfileService(ProfileRepository profileRepository) {
@@ -55,6 +58,10 @@ public class ProfileService {
             return profile.get();
         }
         return null;
+    }
+
+    public List<Profile> findByTenant(Tenant tenant) {
+        return profileRepository.findByTenant(tenant);
     }
 
     public Set<Role> getRolesByProfileId(Long roleId) {

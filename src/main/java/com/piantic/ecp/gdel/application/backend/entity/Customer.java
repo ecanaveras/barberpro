@@ -1,9 +1,6 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Customer extends AbstractEntity {
+public class Customer extends BaseEntity {
 
     @NotNull
     @NotEmpty

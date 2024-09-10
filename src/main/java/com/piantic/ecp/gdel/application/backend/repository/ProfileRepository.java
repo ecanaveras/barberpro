@@ -1,6 +1,7 @@
 package com.piantic.ecp.gdel.application.backend.repository;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,6 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
             "where rp.role_id=:id"
             , nativeQuery = true)
     List<Profile> findByRoleId(@Param("id") Long id);
+
+    List<Profile> findByTenant(Tenant tenant);
 }

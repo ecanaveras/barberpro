@@ -7,12 +7,12 @@
     > vaadin-horizontal-layout {
         justify-content: end;
         padding: var(--lumo-space-s);
-   }
+    }
 
 
 }
 
-.wizard-config-view .tabsheet-wizard >  Div{
+.wizard-config-view .tabsheet-wizard > Div {
     display: flex;
     flex-direction: column;
     max-width: 80%;
@@ -22,6 +22,7 @@
     margin-top: var(--lumo-space-l);
     margin-left: auto;
     margin-right: auto;
+
     > span > span {
         /*opacity: .85;*/
         margin-top: var(--lumo-space-s);
@@ -31,12 +32,34 @@
 
 }
 
-.div-preview {
+.wizard-config-view .content-form-preview {
+    display: flex;
+    column-gap: var(--lumo-space-m);
+    row-gap: var(--lumo-space-m);
+    margin-top: var(--lumo-space-m);
+
+    > vaadin-form-layout {
+        max-width: 50%;
+        border-radius: var(--lumo-space-s);
+        border: 1px solid var(--lumo-contrast-10pct);
+        padding: var(--lumo-space-m);
+
+        > vaadin-upload {
+            margin-top: var(--lumo-space-m);
+        }
+    }
+}
+
+.wizard-config-view .div-preview {
     display: flex;
     flex-direction: column;
-    width: 100%;
     padding: var(--lumo-space-s);
     align-items: center;
+    /*min-width: 300px;*/
+    border-radius: var(--lumo-space-s);
+    border: 1px solid var(--lumo-contrast-10pct);
+    flex-grow: 1;
+    justify-content: center;
 
     > img {
         width: 200px;
@@ -44,4 +67,29 @@
         border-radius: 50%;
         border: 10px solid var(--lumo-base-color);
     }
+
+    > vaadin-vertical-layout {
+        gap: var(--lumo-space-xs);
+    }
 }
+
+/* Mostrar el botón en pantallas menores a 600px de ancho (modo móvil) */
+@media (max-width: 600px) {
+    .wizard-config-view .content-form-preview {
+        gap: var(--lumo-space-s);
+        flex-direction: column;
+
+        > vaadin-form-layout {
+            max-width: 100%;
+            /*gap: var(--lumo-space-xs);*/
+        }
+    }
+
+    .wizard-config-view .tabsheet-wizard > Div {
+        padding: var(--lumo-space-m);
+        max-width: 100%;
+        margin-top: 0;
+    }
+}
+
+

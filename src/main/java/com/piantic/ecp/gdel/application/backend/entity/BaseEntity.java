@@ -1,14 +1,12 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @MappedSuperclass
-public class AbstractEntity {
+@EntityListeners(BaseEntityListener.class)
+public class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,18 +20,28 @@ public class AbstractEntity {
         return id != null;
     }
 
+    @ManyToOne()
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private Tenant tenant;
+
+    public Tenant getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractEntity that = (AbstractEntity) o;
-        return Objects.equals(id, that.id);
+        BaseEntity that = (BaseEntity) o;
+        return Objects.equals(id, that.id) && Objects.equals(tenant, that.tenant);
     }
 
     @Override
     public int hashCode() {
-        if (getId() != null)
-            return Objects.hashCode(id);
-        return super.hashCode();
+        return Objects.hash(id, tenant);
     }
 }

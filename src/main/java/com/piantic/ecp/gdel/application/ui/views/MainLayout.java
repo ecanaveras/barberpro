@@ -2,6 +2,9 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.backend.entity.Tenant;
+import com.piantic.ecp.gdel.application.backend.service.TenandService;
+import com.piantic.ecp.gdel.application.ui.views.specials.HomeView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -25,16 +28,20 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 /**
  * The main view is a top-level placeholder for other views.
  */
-@Route("")
+@Route("main")
 public class MainLayout extends AppLayout {
 
+    private Tenant tenant;
     private H1 viewTitle;
     private Span count;
 
-    public MainLayout() {
+    public MainLayout(TenandService tenandService) {
+        addClassName("main-layout");
+
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
+
     }
 
     private void addHeaderContent() {
@@ -63,6 +70,7 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
+        nav.addItem(new SideNavItem("Inicio", HomeView.class, LineAwesomeIcon.HOME_SOLID.create()));
         nav.addItem(new SideNavItem("Area de Trabajo", WorkingView.class, LineAwesomeIcon.FIRE_ALT_SOLID.create()));
         nav.addItem(new SideNavItem("Actividad", ActivityView.class, LineAwesomeIcon.HEARTBEAT_SOLID.create()));
         nav.addItem(new SideNavItem("Clientes", CustomerView.class, LineAwesomeIcon.ADDRESS_BOOK.create()));
@@ -77,6 +85,7 @@ public class MainLayout extends AppLayout {
 
         return nav;
     }
+
 
     private Footer createFooter() {
         Footer layout = new Footer();
@@ -133,10 +142,12 @@ public class MainLayout extends AppLayout {
         return layout;
     }
 
+
+
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
-        if (VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE) == null) {
+        if (Application.getProfile() == null) {
             getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
         }
     }
@@ -148,30 +159,30 @@ public class MainLayout extends AppLayout {
         count.setText(getCurrentRowsPage());
     }
 
-    private String getCurrentPageTitle() {
+    private java.lang.String getCurrentPageTitle() {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value();
     }
 
-    public String getCurrentRowsPage() {
+    public java.lang.String getCurrentRowsPage() {
         if (getContent() instanceof ActivityView) {
 //            return String.valueOf(((ActivityView) getContent()).act.count());
         }
 
         if (getContent() instanceof CustomerView) {
-            return String.valueOf(((CustomerView) getContent()).customerService.count());
+            return java.lang.String.valueOf(((CustomerView) getContent()).customerService.count());
         }
 
         if (getContent() instanceof ProfileView) {
-            return String.valueOf(((ProfileView) getContent()).profileService.count());
+            return java.lang.String.valueOf(((ProfileView) getContent()).profileService.count());
         }
 
         if (getContent() instanceof RoleView) {
-            return String.valueOf(((RoleView) getContent()).roleService.count());
+            return java.lang.String.valueOf(((RoleView) getContent()).roleService.count());
         }
 
         if (getContent() instanceof WorkView) {
-            return String.valueOf(((WorkView) getContent()).workService.count());
+            return java.lang.String.valueOf(((WorkView) getContent()).workService.count());
         }
 
         return "";

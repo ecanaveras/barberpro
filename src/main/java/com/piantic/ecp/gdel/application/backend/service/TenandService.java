@@ -1,6 +1,6 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
-import com.piantic.ecp.gdel.application.backend.entity.Tenand;
+import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import com.piantic.ecp.gdel.application.backend.repository.TenandRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,15 @@ public class TenandService {
         this.tenandRepository = tenandRepository;
     }
 
-    public List<Tenand> findAll() {
+    public List<Tenant> findAll() {
         return tenandRepository.findAll();
     }
 
-    public void save(Tenand tenand) {
+    public Tenant findTenantByEmail(String email) {
+        return tenandRepository.findTenantByEmail(email);
+    }
+
+    public void save(Tenant tenand) {
         tenandRepository.save(tenand);
     }
 

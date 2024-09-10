@@ -103,7 +103,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     private void configureGrid() {
         grid.addClassName("work-grid");
         grid.setSizeFull();
-        grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(work -> {
             HorizontalLayout content = new HorizontalLayout();
             content.setAlignItems(Alignment.CENTER);

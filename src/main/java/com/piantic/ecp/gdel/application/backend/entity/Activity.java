@@ -10,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 @Entity
-public class Activity extends AbstractEntity implements Cloneable {
+public class Activity extends BaseEntity implements Cloneable {
 
     @DateTimeFormat
     private Date dateActivity;

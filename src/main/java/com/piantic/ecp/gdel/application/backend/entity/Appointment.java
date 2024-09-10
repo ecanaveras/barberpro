@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Appointment extends AbstractEntity {
+public class Appointment extends BaseEntity {
 
     private LocalDateTime appointmentTime;
 

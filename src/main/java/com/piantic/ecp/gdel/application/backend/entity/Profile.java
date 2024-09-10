@@ -1,13 +1,15 @@
 package com.piantic.ecp.gdel.application.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Profile extends AbstractEntity {
+public class Profile extends BaseEntity {
 
     public enum Status {
         Activo, Inactivo
@@ -70,7 +72,7 @@ public class Profile extends AbstractEntity {
     }
 
     public Boolean isLock() {
-        return pin != null;
+        return pin != null && !pin.isEmpty();
     }
 
     public Profile.Status getStatus() {

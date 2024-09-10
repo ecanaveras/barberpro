@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Role extends AbstractEntity {
+public class Role extends BaseEntity {
 
     @NotNull
     @NotEmpty

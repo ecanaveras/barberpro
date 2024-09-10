@@ -6,6 +6,7 @@ import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.RoleService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
+import com.piantic.ecp.gdel.application.ui.views.specials.HomeView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -206,7 +207,7 @@ public class WelcomeView extends Div {
 
     private void continueToMainLayout(Profile profile) {
         VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, profile);
-        getUI().ifPresent(ui -> ui.navigate(MainLayout.class));
+        getUI().ifPresent(ui -> ui.navigate(HomeView.class));
         saveLocalSession();
     }
 

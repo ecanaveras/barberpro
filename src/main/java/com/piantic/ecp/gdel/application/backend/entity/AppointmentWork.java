@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
-public class AppointmentWork extends AbstractEntity {
+public class AppointmentWork extends BaseEntity {
 
 //    @EmbeddedId
 //    private AppointmentWorkId id = new AppointmentWorkId();
@@ -34,14 +34,6 @@ public class AppointmentWork extends AbstractEntity {
         this.subtotal = subtotal;
     }
 
-    /*public AppointmentWorkId getAppoinmentId() {
-        return id;
-    }
-
-    public void setId(AppointmentWorkId id) {
-        this.id = id;
-    }
-*/
     public Appointment getAppointment() {
         return appointment;
     }
