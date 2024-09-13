@@ -31,6 +31,10 @@
         padding-top: 8rem;
         padding-bottom: var(--lumo-space-xl);
     }
+
+    > vaadin-vertical-layout {
+        align-items: center;
+    }
 }
 
 .welcome-newprofile{
@@ -45,7 +49,6 @@
     border-radius: var(--lumo-space-s);
     border: 1px solid var(--lumo-contrast-30pct);
 
-
 }
 
 
@@ -57,6 +60,16 @@
     column-gap: var(--lumo-space-m);
     align-items: normal;
     justify-content: center;
+
+    > vaadin-vertical-layout{
+        align-items: center;
+
+        > vaadin-avatar {
+            font-weight: 800;
+            font-size: var(--lumo-font-size-l);
+            color: var(--lumo-primary-text-color);
+        }
+    }
 }
 
 .card-profile {

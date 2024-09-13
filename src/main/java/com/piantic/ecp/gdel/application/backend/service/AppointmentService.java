@@ -2,12 +2,12 @@ package com.piantic.ecp.gdel.application.backend.service;
 
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.repository.AppointmentRepository;
 import com.piantic.ecp.gdel.application.backend.repository.CustomerRepository;
+import com.piantic.ecp.gdel.application.backend.repository.ProductRepository;
 import com.piantic.ecp.gdel.application.backend.repository.ProfileRepository;
-import com.piantic.ecp.gdel.application.backend.repository.WorkRepository;
 import com.piantic.ecp.gdel.application.backend.utils.generics.GenericService;
 import com.piantic.ecp.gdel.application.ui.views.WorkingView;
 import jakarta.persistence.EntityManager;
@@ -15,7 +15,6 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class AppointmentService implements GenericService<Appointment> {
     private ProfileRepository profileRepository;
 
     @Autowired
-    private WorkRepository workRepository;
+    private ProductRepository productRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -60,15 +59,15 @@ public class AppointmentService implements GenericService<Appointment> {
 
         // Procesar cada WorkAdded
         for (WorkingView.WorkAdded workAdded : worksAdded) {
-            Work work = workAdded.getServicio();
+            Product product = workAdded.getServicio();
 
             // Verificar si el Work está gestionado por la sesión de JPA, si no, usar merge
-            if (!entityManager.contains(work)) {
-                work = entityManager.merge(work);
+            if (!entityManager.contains(product)) {
+                product = entityManager.merge(product);
             }
 
             // Añadir el trabajo al Appointment
-            appointment.addWork(work, workAdded.getCant(), work.getPrice() * workAdded.getCant());
+            appointment.addWork(product, workAdded.getCant(), product.getPrice() * workAdded.getCant());
         }
 
         // Retornar la cita
@@ -83,11 +82,13 @@ public class AppointmentService implements GenericService<Appointment> {
         return appointmentRepository.findByProfileId(profile.getId());
     }
 
-    public List<Appointment> findAppointmentByProfileDate(Profile profile, LocalDate localDate) {
-        //TODO Buscar por perfil y fecha.
-        return appointmentRepository.findByProfileId(profile.getId());
+    public List<Appointment> findAppointmentByProfileAndDate(Profile profile, LocalDateTime startOfDay, LocalDateTime endOfDay) {
+        return appointmentRepository.findByProfileAndDate(profile.getId(), startOfDay, endOfDay);
     }
 
+    public Appointment findByAppointmentId(Long appointmentId) {
+        return appointmentRepository.findbyId(appointmentId);
+    }
 
     @Override
     public List<Appointment> findAll(String filter) {

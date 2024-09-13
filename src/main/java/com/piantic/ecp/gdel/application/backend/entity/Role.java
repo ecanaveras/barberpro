@@ -16,15 +16,6 @@ public class Role extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "role_work",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "work_id")
-    )
-    private Set<Work> works = new HashSet<>();
-
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
             name = "role_profile",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "profile_id")
@@ -43,18 +34,6 @@ public class Role extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<Work> getWorks() {
-        return works;
-    }
-
-    public void setWorks(Set<Work> works) {
-        this.works = works;
-    }
-
-    public int getWorksCount() {
-        return works.size();
     }
 
     public Set<Profile> getProfiles() {

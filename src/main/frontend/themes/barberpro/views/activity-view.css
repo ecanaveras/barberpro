@@ -6,14 +6,14 @@
 .slide-in-div {
     position: fixed;
     top: 0;
-    right: -350px; /* Ajusta el valor según el ancho del div */
-    width: 300px; /* Ajusta el valor según el ancho del div */
+    right: -370px; /* Ajusta el valor según el ancho del div */
+    width: 320px; /* Ajusta el valor según el ancho del div */
     height: 100vh; /* Ocupa toda la altura de la ventana */
     background-color: white;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
     transition: right 0.1s ease-out;
     z-index: 10; /* Asegura que el div esté por encima de otros elementos */
-    padding: 20px; /* Opcional: Padding para el contenido del div */
+    padding: var(--lumo-space-m);
 }
 
 /* Clase para hacer visible el div con deslizamiento */
@@ -21,14 +21,51 @@
     right: 0; /* El div se mueve desde la izquierda a la vista */
 }
 
-.toolbar-feed{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-
+.slide-in-div vaadin-tabs {
+    background: var(--lumo-contrast-10pct);
+    border-radius: calc(var(--lumo-border-radius-s) + 3px);
+    min-height: var(--lumo-size-s);
+    box-shadow: none;
+    padding-top: var(--lumo-space-xs);
+    padding-bottom: var(--lumo-space-xs);
 }
 
- vaadin-combo-box-item{
+
+.slide-in-div vaadin-tab[selected]:not([focus-ring]) {
+    box-shadow: 0 0 0 1px var(--lumo-shade-5pct), 0 1px 1px 0 var(--lumo-shade-5pct);
+}
+
+.slide-in-div vaadin-tab[selected] {
+    color: var(--lumo-header-text-color);
+    background-color: var(--lumo-tint-30pct);
+    -webkit-backdrop-filter: brightness(1.06);
+    backdrop-filter: brightness(1.06);
+}
+
+.slide-in-div vaadin-tab {
+    flex: auto;
+    font-weight: 600;
+    border-radius: var(--lumo-border-radius-s);
+    transition: color .16s, background-color .16s, box-shadow 60ms, transform .2s, -webkit-backdrop-filter .2s, backdrop-filter .2s;
+    padding: var(--lumo-space-xs) var(--lumo-space-m);
+}
+
+
+.toolbar-feed {
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    display: flex;
+    justify-content: space-between;
+    padding-right: var(--lumo-space-s);
+    background-color: var(--lumo-base-color);
+}
+
+.activity-view .activity-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+vaadin-combo-box-item {
     font-size: var(--lumo-font-size-s);
 }

@@ -21,63 +21,88 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 @PageTitle("Actividad")
 @Route(value = "feed", layout = MainLayout.class)
-public class ActivityView extends VerticalLayout implements HasUrlParameter<String> {
+public class ActivityView extends Div implements HasUrlParameter<Long> {
 
 
     private ProfileService profileService;
     private AppointmentService activities;
 
-    private ActivityDetailForm activityDetailForm = new ActivityDetailForm();
+    private ActivityDetailForm activityDetailForm;
 
     private Profile currentProfile;
+    private VerticalLayout content;
 
     public ActivityView(AppointmentService activities, ProfileService profileService) {
         addClassName("activity-view");
         this.activities = activities;
         this.profileService = profileService;
+        activityDetailForm=new ActivityDetailForm(activities);
 
         add(createToolbar());
 
         currentProfile = Application.getProfile();
 
-//        activities.findAppointmentByProfile(Application.getProfile()).forEach(appointment -> {
-//            add(createContentLayout(appointment));
-//        });
+        //Info de hoy
+        content = new VerticalLayout();
+        content.addClassName("activity-content");
+
+        loadInfoActivity(null, 1);
 
         add(activityDetailForm);
+        add(content);
 
     }
 
     private void loadInfoActivity(Tab tab, Integer filterDateOption) {
-//        if(tab.getLabel().equals()) {}
+//        if(tab!=null && ) {}
         //TODO Aplicar logica de negocio de filtrado en el servicio de Actividades
         LocalDate localDate = LocalDate.now();
+        LocalDateTime localDateStart = localDate.atStartOfDay();
+        LocalDateTime localDateEnd = localDate.atTime(LocalTime.MAX);
         switch (filterDateOption) {
-            case 2:
-                localDate = localDate.minusDays(1);
+            case 2: //Ayer
+                localDateStart = localDate.minusDays(1).atStartOfDay();
+                localDateEnd = localDate.minusDays(1).atTime(LocalTime.MAX);
                 break;
-            case 3:
-                localDate = localDate.minusDays(2);
+            case 3: //Ult 3 dias
+                localDateStart = localDate.minusDays(2).atStartOfDay();
+                localDateEnd = localDate.atTime(LocalTime.MAX);
                 break;
-            case 4:
-                localDate = localDate.minusDays(7);
+            case 4: //Ult 7 dias
+                localDateStart = localDate.minusDays(6).atStartOfDay();
+                localDateEnd = localDate.atTime(LocalTime.MAX);
                 break;
-            case 6:
+            case 5: //Mes Actual
+                localDateStart = localDate.minusDays(localDate.getDayOfMonth() - 1).atStartOfDay();
+                localDateEnd = localDate.plusDays(localDate.lengthOfMonth() - (localDate.getDayOfMonth())).atTime(LocalTime.MAX);
+                break;
+            case 6: //Mes pasado
                 localDate = localDate.minusMonths(1);
+                localDateStart = localDate.minusDays(localDate.getDayOfMonth() - 1).atStartOfDay();
+                localDateEnd = localDate.plusDays(localDate.lengthOfMonth() - (localDate.getDayOfMonth())).atTime(LocalTime.MAX);
                 break;
         }
-        System.out.println("FECHA: " + localDate);
+        System.out.println("FECHAS: " + localDateStart + " - " + localDateEnd);
+
+        //Load Info
+        content.removeAll();
+        activities.findAppointmentByProfileAndDate(Application.getProfile(), localDateStart, localDateEnd).forEach(appointment -> {
+            content.add(createContentLayout(appointment));
+        });
     }
 
     private Div createToolbar() {
         Div toolbar = new Div();
         toolbar.addClassName("toolbar-feed");
+        toolbar.addClassNames(LumoUtility.Position.STICKY);
         //TODO Controlar cuando mostrar estos TABS
         Tabs tabs = new Tabs();
         tabs.addThemeVariants(TabsVariant.LUMO_HIDE_SCROLL_BUTTONS);
@@ -117,7 +142,7 @@ public class ActivityView extends VerticalLayout implements HasUrlParameter<Stri
         content.setId(String.valueOf(appointment.getId()));
         content.addClassName("content-feed");
         content.addSingleClickListener(e -> {
-            e.getSource().getUI().ifPresent(ui -> ui.navigate(ActivityView.class, e.getSource().getId().toString()));
+            getUI().ifPresent(ui -> ui.navigate(ActivityView.class, appointment.getId()));
         });
 
         Span span = new Span(String.valueOf(appointment.getId()));
@@ -125,7 +150,7 @@ public class ActivityView extends VerticalLayout implements HasUrlParameter<Stri
         Div divservices = new Div();
         divservices.addClassName("div-services");
         appointment.getAppointmentWorks().forEach(appointmentWork -> {
-            Span service = new Span(appointmentWork.getWork().getTitle());
+            Span service = new Span(appointmentWork.getProduct().getTitle());
             service.getElement().getThemeList().add("badge success");
             service.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.FontWeight.SEMIBOLD);
             divservices.add(service);
@@ -162,15 +187,15 @@ public class ActivityView extends VerticalLayout implements HasUrlParameter<Stri
     }
 
     @Override
-    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String s) {
-        if (s != null) {
-            if (activityDetailForm != null && activityDetailForm.getID() != null && activityDetailForm.getID().equals(s) && activityDetailForm.getClassNames().contains("visible")) {
+    public void setParameter(BeforeEvent beforeEvent, @OptionalParameter Long activityId) {
+        if (activityId != null) {
+            if (activityDetailForm != null && activityDetailForm.getID() != null && activityDetailForm.getID().equals(activityId) && activityDetailForm.getClassNames().contains("visible")) {
                 activityDetailForm.removeClassName("visible");
                 activityDetailForm.setID(null);
                 return;
             }
             activityDetailForm.addClassName("visible");
-            activityDetailForm.setID(s);
+            activityDetailForm.setID(activityId);
             activityDetailForm.updateUI();
         }
     }

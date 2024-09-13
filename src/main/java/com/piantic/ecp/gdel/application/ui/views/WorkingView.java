@@ -2,11 +2,11 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
-import com.piantic.ecp.gdel.application.backend.service.WorkService;
+import com.piantic.ecp.gdel.application.backend.service.ProductService;
 import com.piantic.ecp.gdel.application.ui.views.dialog.FindDialogView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -34,7 +34,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.validation.constraints.NotNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -49,7 +48,7 @@ import java.util.stream.Collectors;
 public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     CustomerService customerService;
-    WorkService workService;
+    ProductService productService;
     AppointmentService appointmentService;
 
     Grid<WorkAdded> gridservices = new Grid<>(WorkAdded.class, false);
@@ -76,16 +75,16 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     private Button btnContinuar;
     private Button btnLimpiar;
 
-    public WorkingView(WorkService workService, CustomerService customerService, AppointmentService appointmentService) {
+    public WorkingView(ProductService productService, CustomerService customerService, AppointmentService appointmentService) {
         addClassName("working-view-main");
         setSizeFull();
 
-        this.workService = workService;
+        this.productService = productService;
         this.customerService = customerService;
         this.appointmentService = appointmentService;
 
         //Profile
-        profileworking = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
+        profileworking = Application.getProfile();
         if (profileworking == null) {
             getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
         }
@@ -298,16 +297,17 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
      */
     private void loadDataGridServices() {
         if(profileworking!=null) {
-            if(workService.findWorkForProfile(profileworking.getId()).isEmpty()){
+            List<Product> productList = productService.findProductsByProfile(Application.getTenand(), profileworking);
+            if(productList.isEmpty()){
                 ConfirmDialog confirmDialog = new ConfirmDialog();
                 confirmDialog.setCloseOnEsc(true);
                 confirmDialog.setHeader("Aviso");
                 confirmDialog.setText("No hemos encontrado Servicios activos\n¿Deseas agregar nuevo Servicios?");
-                confirmDialog.addConfirmListener(event -> getUI().ifPresent(ui -> ui.navigate(WorkView.class)));
+                confirmDialog.addConfirmListener(event -> getUI().ifPresent(ui -> ui.navigate(ProductView.class)));
                 confirmDialog.setConfirmText("Aceptar");
                 confirmDialog.open();
             }
-            gridservices.setItems(workService.findWorkForProfile(profileworking.getId()).stream().map(work -> {
+            gridservices.setItems(productList.stream().map(work -> {
                 WorkAdded service = new WorkAdded();
                 service.setServicio(work);
                 return service;
@@ -376,22 +376,22 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     @NotNull
-    private Div getIconItem(Work work, Div itemservice) {
+    private Div getIconItem(Product product, Div itemservice) {
         Div div = new Div();
         div.addClassName("item-service-avatar");
-        if (work.getImage() != null && !work.getImage().isEmpty()) {
-            div.add(new SvgIcon("line-awesome/svg/" + work.getImage() + ".svg"));
+        if (product.getImage() != null && !product.getImage().isEmpty()) {
+            div.add(new SvgIcon("line-awesome/svg/" + product.getImage() + ".svg"));
         } else {
             Avatar avatar = new Avatar();
             avatar.addClassName("avatar-service");
-            avatar.setName(work.getTitle());
+            avatar.setName(product.getTitle());
             div.addClassName("avatar");
             div.add(avatar);
         }
         itemservice.add(div);
         Div div2 = new Div();
-        H5 h5 = new H5(work.getTitle());
-        Span price = new Span(formatNumber(work.getPrice()));
+        H5 h5 = new H5(product.getTitle());
+        Span price = new Span(formatNumber(product.getPrice()));
         price.getElement().getThemeList().add("badge contrast");
         div2.add(h5, price);
         itemservice.add(div2);
@@ -521,15 +521,15 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     //Class
     public class WorkAdded {
-        private Work servicio;
+        private Product servicio;
         private int cant;
         private boolean added;
 
-        public Work getServicio() {
+        public Product getServicio() {
             return servicio;
         }
 
-        public void setServicio(Work servicio) {
+        public void setServicio(Product servicio) {
             this.servicio = servicio;
         }
 

@@ -71,15 +71,17 @@ public class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Inicio", HomeView.class, LineAwesomeIcon.HOME_SOLID.create()));
+        nav.addItem(new SideNavItem("Mi Negocio", DashboardView.class, LineAwesomeIcon.CHART_AREA_SOLID.create()));
         nav.addItem(new SideNavItem("Area de Trabajo", WorkingView.class, LineAwesomeIcon.FIRE_ALT_SOLID.create()));
         nav.addItem(new SideNavItem("Actividad", ActivityView.class, LineAwesomeIcon.HEARTBEAT_SOLID.create()));
         nav.addItem(new SideNavItem("Clientes", CustomerView.class, LineAwesomeIcon.ADDRESS_BOOK.create()));
 
         SideNavItem adminsection = new SideNavItem("Admin");
+        adminsection.setExpanded(true);
         adminsection.setPrefixComponent(LineAwesomeIcon.COG_SOLID.create());
-        adminsection.addItem(new SideNavItem("Servicios", WorkView.class, LineAwesomeIcon.MAGIC_SOLID.create()));
+        adminsection.addItem(new SideNavItem("Servicios", ProductView.class, LineAwesomeIcon.MAGIC_SOLID.create()));
         adminsection.addItem(new SideNavItem("Perfiles", ProfileView.class, LineAwesomeIcon.USER.create()));
-        adminsection.addItem(new SideNavItem("Roles", RoleView.class, LineAwesomeIcon.OBJECT_GROUP.create()));
+//        adminsection.addItem(new SideNavItem("Roles", RoleView.class, LineAwesomeIcon.OBJECT_GROUP.create()));
 
         nav.addItem(adminsection);
 
@@ -181,8 +183,8 @@ public class MainLayout extends AppLayout {
             return java.lang.String.valueOf(((RoleView) getContent()).roleService.count());
         }
 
-        if (getContent() instanceof WorkView) {
-            return java.lang.String.valueOf(((WorkView) getContent()).workService.count());
+        if (getContent() instanceof ProductView) {
+            return java.lang.String.valueOf(((ProductView) getContent()).productService.count());
         }
 
         return "";

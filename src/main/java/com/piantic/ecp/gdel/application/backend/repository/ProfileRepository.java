@@ -1,5 +1,6 @@
 package com.piantic.ecp.gdel.application.backend.repository;
 
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,4 +32,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     List<Profile> findByRoleId(@Param("id") Long id);
 
     List<Profile> findByTenant(Tenant tenant);
+
+    @Query("SELECT p from Profile p LEFT JOIN FETCH p.products a where a.product = :productId")
+    List<Profile> findProfilesByProduct(Product productId);
 }

@@ -98,7 +98,11 @@ public class WorkFinishView extends Div {
             //Guardar
             Appointment chamba = new Appointment(LocalDateTime.now(), profileworking, customer, totalpay);
             listservices.forEach(workAdded -> {
-                chamba.addWork(workAdded.getServicio(), workAdded.getCant(), workAdded.getCant() * workAdded.getServicio().getPrice());
+                Double total = workAdded.getCant() * workAdded.getServicio().getPrice();
+                Double commission = workAdded.getServicio().getCommissions();
+                Double valcommission = (commission * total)/100;
+                Double valrevenue = total - valcommission;
+                chamba.addWork(workAdded.getServicio(), workAdded.getCant(), total, valrevenue, commission, valcommission);
             });
             appointmentService.save(chamba);
             this.saved = true;

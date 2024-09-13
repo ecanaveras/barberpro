@@ -1,5 +1,6 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
@@ -62,6 +63,10 @@ public class ProfileService {
 
     public List<Profile> findByTenant(Tenant tenant) {
         return profileRepository.findByTenant(tenant);
+    }
+
+    public List<Profile> findProfileByProduct(Product product) {
+        return profileRepository.findProfilesByProduct(product);
     }
 
     public Set<Role> getRolesByProfileId(Long roleId) {

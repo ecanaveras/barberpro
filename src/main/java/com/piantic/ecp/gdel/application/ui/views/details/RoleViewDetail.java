@@ -58,7 +58,6 @@ public class RoleViewDetail extends VerticalLayout {
         }
         getData(id);
         H4 info1 = new H4("Perfiles Asignados");
-        H4 info2 = new H4("Servicios Asignados");
 
         if (content != null) {
             remove(content);
@@ -80,29 +79,14 @@ public class RoleViewDetail extends VerticalLayout {
                 LumoUtility.Gap.Row.SMALL,
                 LumoUtility.FlexWrap.WRAP);
         divprofiles.addClassName("div-services-profile");
-        profileService.getProfileByRoleId(id).forEach(profile -> {
+        /*profileService.getProfileByRoleId(id).forEach(profile -> {
             Span service = new Span(profile.getNameProfile());
             service.getElement().getThemeList().add("badge contrast");
             divprofiles.add(service);
-        });
+        });*/
 
         content.add(divprofiles);
 
-        content.add(info2);
-
-        Div divservices = new Div();
-        divservices.addClassNames(LumoUtility.Display.FLEX,
-                LumoUtility.Gap.Column.SMALL,
-                LumoUtility.Gap.Row.SMALL,
-                LumoUtility.FlexWrap.WRAP);
-        divservices.addClassName("div-services-role");
-        roleService.getWorksByRoleId(id).forEach(work -> {
-            Span service = new Span(work.getTitle());
-            service.getElement().getThemeList().add("badge warning");
-            divservices.add(service);
-        });
-
-        content.add(divservices);
 
         add(content);
     }

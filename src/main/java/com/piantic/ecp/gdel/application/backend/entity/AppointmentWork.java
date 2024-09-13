@@ -17,21 +17,39 @@ public class AppointmentWork extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "word_id", nullable = false)
-    private Work work;
+    private Product product;
 
     private int quantity;
 
     @NotNull
     private Double subtotal;
 
+    private Double revenue;
+
+    private Double commissions;
+
+    private Double valueCommision;
+
+    private String comment;
+
     public AppointmentWork() {
     }
 
-    public AppointmentWork(Appointment appointment, Work work, int quantity, Double subtotal) {
+    public AppointmentWork(Appointment appointment, Product product, int quantity, Double subtotal) {
         this.appointment = appointment;
-        this.work = work;
+        this.product = product;
         this.quantity = quantity;
         this.subtotal = subtotal;
+    }
+
+    public AppointmentWork(Appointment appointment, Product product, int quantity, Double subtotal, Double revenue, Double commissions, Double valueCommision) {
+        this.appointment = appointment;
+        this.product = product;
+        this.quantity = quantity;
+        this.subtotal = subtotal;
+        this.commissions = commissions;
+        this.valueCommision = valueCommision;
+        this.revenue = revenue;
     }
 
     public Appointment getAppointment() {
@@ -42,12 +60,12 @@ public class AppointmentWork extends BaseEntity {
         this.appointment = appointment;
     }
 
-    public Work getWork() {
-        return work;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setWork(Work work) {
-        this.work = work;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public int getQuantity() {
@@ -66,32 +84,51 @@ public class AppointmentWork extends BaseEntity {
         this.subtotal = subtotal;
     }
 
+    public Double getCommissions() {
+        return commissions;
+    }
+
+    public void setCommissions(Double commissions) {
+        this.commissions = commissions;
+    }
+
+    public Double getValueCommision() {
+        return valueCommision;
+    }
+
+    public void setValueCommision(Double valueCommision) {
+        this.valueCommision = valueCommision;
+    }
+
+    public Double getRevenue() {
+        return revenue;
+    }
+
+    public void setRevenue(Double revenue) {
+        this.revenue = revenue;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         AppointmentWork that = (AppointmentWork) o;
-        return quantity == that.quantity && Objects.equals(appointment, that.appointment) && Objects.equals(work, that.work);
+        return quantity == that.quantity && Objects.equals(appointment, that.appointment) && Objects.equals(product, that.product);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), appointment, work, quantity);
+        return Objects.hash(super.hashCode(), appointment, product, quantity);
     }
 
-    /*@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AppointmentWork that = (AppointmentWork) o;
-        return quantity == that.quantity && Objects.equals(id, that.id) && Objects.equals(appointment, that.appointment) && Objects.equals(work, that.work);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, appointment, work, quantity);
-    }
-
-     */
 }

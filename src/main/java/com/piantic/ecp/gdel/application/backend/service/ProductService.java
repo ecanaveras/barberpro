@@ -1,7 +1,9 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
-import com.piantic.ecp.gdel.application.backend.entity.Work;
-import com.piantic.ecp.gdel.application.backend.repository.WorkRepository;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
+import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.backend.entity.Tenant;
+import com.piantic.ecp.gdel.application.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,50 +11,46 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
-public class WorkService {
+public class ProductService {
 
-    public static final Logger LOGGER = Logger.getLogger(WorkService.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(ProductService.class.getName());
 
-    private WorkRepository workRepository;
+    private ProductRepository productRepository;
 
-    public WorkService(WorkRepository workRepository) {
-        this.workRepository = workRepository;
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
-    public List<Work> findAll(String filter) {
+    public List<Product> findAll(Tenant tenantId, String filter) {
         if (filter == null || filter.isEmpty()) {
-            return workRepository.findAll();
+            return productRepository.findAllByTenant(tenantId);
         } else {
-            return workRepository.search(filter);
+            return productRepository.searchByTenant(tenantId, filter);
         }
     }
 
-    public List<Work> findAll() {
-        return workRepository.findAll();
+    public List<Product> findAll(Tenant tenantId) {
+        return productRepository.findAllByTenant(tenantId);
     }
 
-    public List<Work> findWorkForProfile(Long profileId) {
-        return workRepository.findWorksForProfile(profileId);
+    public List<Product> findProductsByProfile(Tenant tenant, Profile profile) {
+        return productRepository.findProductsByProfile(tenant, profile);
     }
 
     public long count() {
-        return workRepository.count();
+        return productRepository.count();
     }
 
-    public void delete(Work work) {
-        workRepository.delete(work);
+    public void delete(Product product) {
+        productRepository.delete(product);
     }
 
-    public void save(Work work) {
-        if (work == null) {
+    public void save(Product product) {
+        if (product == null) {
             LOGGER.log(Level.SEVERE, "Servicio es nulo, asegurese que los datos sean correctos");
             return;
         }
-        workRepository.save(work);
-    }
-
-    public List<Work> findWorksNotAssignedToRoleId(long roleId) {
-        return workRepository.findWorksNotAssignedToRoleId(roleId);
+        productRepository.save(product);
     }
 /*
     @PostConstruct

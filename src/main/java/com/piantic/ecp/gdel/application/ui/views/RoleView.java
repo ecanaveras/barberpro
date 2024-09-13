@@ -1,10 +1,10 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.entity.Role;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.RoleService;
-import com.piantic.ecp.gdel.application.backend.service.WorkService;
+import com.piantic.ecp.gdel.application.backend.service.ProductService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.ui.views.details.RoleViewDetail;
 import com.piantic.ecp.gdel.application.ui.views.forms.RoleForm;
@@ -42,15 +42,15 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
     private RoleViewDetail roleviewdetail;
     private Grid<Role> grid = new Grid<>(Role.class, false);
     public RoleService roleService;
-    private WorkService workService;
+    private ProductService productService;
     private Boolean detailAdded = false;
 
-    public RoleView(RoleService roleService, WorkService workService, ProfileService profileService) {
+    public RoleView(RoleService roleService, ProductService productService, ProfileService profileService) {
         addClassName("role-view");
         setSizeFull();
 
         this.roleService = roleService;
-        this.workService = workService;
+        this.productService = productService;
 
         //Toolbar
         txtFilter = new TextField();
@@ -95,7 +95,7 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
     }
 
     private void openFormDialog(Role role) {
-        RoleForm formRole = new RoleForm(workService, profileService);
+        RoleForm formRole = new RoleForm(productService, profileService);
         formRole.setEntity(role);
         formRole.setSaveEventListener(e -> {
             this.saveRole(e);
@@ -113,7 +113,7 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
                 .setHeader("Roles")
                 .setSortable(true)
                 .getStyle().set("min-width", "200px");
-        grid.addComponentColumn(role -> getSpanWorkItem(role.getWorks())).setHeader("Servicios Asignados");
+//        grid.addComponentColumn(role -> getSpanWorkItem(role.getWorks())).setHeader("Servicios Asignados");
         grid.addComponentColumn(role -> {
             Button btnEdit = new Button(LineAwesomeIcon.EDIT.create());
             btnEdit.addThemeVariants(ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_SMALL);
@@ -179,16 +179,16 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
     /**
      * Crea una coleción de badges
      *
-     * @param works
+     * @param products
      * @return
      */
-    private Div getSpanWorkItem(Set<Work> works) {
+    private Div getSpanWorkItem(Set<Product> products) {
         Div divworks = new Div();
         divworks.addClassNames(LumoUtility.Display.FLEX,
                 LumoUtility.Gap.Column.SMALL,
                 LumoUtility.Gap.Row.SMALL,
                 LumoUtility.FlexWrap.WRAP);
-        works.forEach(work -> {
+        products.forEach(work -> {
             Span spanw = new Span(work.getTitle());
             spanw.getElement().getThemeList().add("badge warning");
             divworks.add(spanw);

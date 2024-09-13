@@ -3,7 +3,7 @@ package com.piantic.ecp.gdel.application.ui.views.admin;
 import com.piantic.ecp.gdel.application.ui.views.MainLayout;
 import com.piantic.ecp.gdel.application.ui.views.ProfileView;
 import com.piantic.ecp.gdel.application.ui.views.RoleView;
-import com.piantic.ecp.gdel.application.ui.views.WorkView;
+import com.piantic.ecp.gdel.application.ui.views.ProductView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -72,7 +72,7 @@ public class AdminLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Servicios", WorkView.class, LineAwesomeIcon.TAGS_SOLID.create()));
+        nav.addItem(new SideNavItem("Servicios", ProductView.class, LineAwesomeIcon.TAGS_SOLID.create()));
         nav.addItem(new SideNavItem("Perfiles", ProfileView.class, LineAwesomeIcon.ADDRESS_CARD.create()));
         nav.addItem(new SideNavItem("Roles", RoleView.class, LineAwesomeIcon.ICONS_SOLID.create()));
 
@@ -91,7 +91,7 @@ public class AdminLayout extends AppLayout {
         navigation.setPadding(false);
         navigation.setSpacing(false);
         navigation.add(
-                createLink(LineAwesomeIcon.MAGIC_SOLID, "Servicios", WorkView.class),
+                createLink(LineAwesomeIcon.MAGIC_SOLID, "Servicios", ProductView.class),
                 createLink(LineAwesomeIcon.USER, "Perfiles", ProfileView.class),
                 createLink(LineAwesomeIcon.OBJECT_GROUP,"Roles", RoleView.class)
         );

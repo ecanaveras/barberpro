@@ -1,9 +1,11 @@
 package com.piantic.ecp.gdel.application.ui.views.forms;
 
+import com.piantic.ecp.gdel.application.Application;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.ui.views.specials.GenericForm;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
@@ -13,7 +15,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-public class WorkForm extends GenericForm<Work> {
+public class ProductForm extends GenericForm<Product> {
 
     private TextField title = new TextField("Servicio");
     private TextField description = new TextField("Descripción");
@@ -21,14 +23,16 @@ public class WorkForm extends GenericForm<Work> {
     private NumberField commissions = new NumberField("Comisión");
 //    private TextArea observations = new TextArea("Observación");
 
+    private Product updateitem;
 
     MultiSelectListBox<Profile> mlboxprofiles = new MultiSelectListBox<>();
 
-    public WorkForm(ProfileService profileService) {
+    private ProfileService profileService;
+
+    public ProductForm(ProfileService profileService) {
         super();
         addClassName("work-form");
-
-        setHeaderTitle("Nuevo Servicio");
+        this.profileService = profileService;
 
         binder.bindInstanceFields(this);
 
@@ -59,17 +63,17 @@ public class WorkForm extends GenericForm<Work> {
         commissions.setValueChangeMode(ValueChangeMode.LAZY);
         commissions.addClientValidatedEventListener(e -> {
             if (e.isValid()) {
-                Work entity = binder.getBean();
+                Product entity = binder.getBean();
                 gain.setValue(String.valueOf(entity.getPrice() - (entity.getPrice() * entity.getCommissions() / 100)));
                 commission.setValue(String.valueOf(entity.getPrice() * entity.getCommissions() / 100));
             }
         });
 
         //Profiles disponibles
-        mlboxprofiles.setItems(profileService.findAll());
+        mlboxprofiles.setItems(profileService.findByTenant(Application.getTenand()));
         mlboxprofiles.setItemLabelGenerator(Profile::getNameProfile);
         mlboxprofiles.addSelectionListener(listener -> {
-//            profileSet = mlboxprofiles.getSelectedItems();
+            profileSet = mlboxprofiles.getSelectedItems();
         });
         VerticalLayout vlprofiles = new VerticalLayout();
         vlprofiles.add(new Span(new Span(LineAwesomeIcon.USER_CIRCLE.create()), new Span("¿Qué perfil lo puede trabajar?")), mlboxprofiles);
@@ -85,5 +89,18 @@ public class WorkForm extends GenericForm<Work> {
         formLayout.setColspan(commission, 1);
         formLayout.setColspan(vlprofiles, 2);
         formLayout.setResponsiveSteps(new FormLayout.ResponsiveStep("0", 2));
+
+
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        updateitem = this.getEntity();
+        setHeaderTitle(getEntity().getId() != null ? "Editando Servicio" : "Nuevo Servicio");
+        if (updateitem != null) {
+            binder.readBean(updateitem);
+            mlboxprofiles.select(updateitem.getProfiles());
+        }
     }
 }

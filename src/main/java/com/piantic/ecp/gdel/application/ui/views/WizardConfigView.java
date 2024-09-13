@@ -1,15 +1,15 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.Application;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.TenandService;
-import com.piantic.ecp.gdel.application.backend.service.WorkService;
+import com.piantic.ecp.gdel.application.backend.service.ProductService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.ui.views.forms.ProfileForm;
-import com.piantic.ecp.gdel.application.ui.views.forms.WorkForm;
+import com.piantic.ecp.gdel.application.ui.views.forms.ProductForm;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Text;
@@ -44,7 +44,7 @@ public class WizardConfigView extends Div {
 
     private ProfileService profileService;
     private TenandService tenandService;
-    private WorkService workService;
+    private ProductService productService;
     private TabSheet tabSheet;
     private Tenant tenant;
     private MemoryBuffer buffer;
@@ -52,10 +52,10 @@ public class WizardConfigView extends Div {
     private Binder<Tenant> binder = new Binder<>();
     private Image logoTenandTab4;
 
-    public WizardConfigView(ProfileService profileService, WorkService workService, TenandService tenandService) {
+    public WizardConfigView(ProfileService profileService, ProductService productService, TenandService tenandService) {
         addClassName("wizard-config-view");
         this.profileService = profileService;
-        this.workService = workService;
+        this.productService = productService;
         this.tenandService = tenandService;
 
         //Load info if exist
@@ -258,29 +258,30 @@ public class WizardConfigView extends Div {
         Text text3 = new Text("Puedes agregar todos los que desees");
 
 
-        Grid<Work> grid = new Grid<>(Work.class, false);
+        Grid<Product> grid = new Grid<>(Product.class, false);
 
         Div contentTab1 = new Div(h3, text1, text2, text3);
         contentTab1.addClassNames("content-tab-3");
         Button btnAddService = new Button("Agregar servicio", LineAwesomeIcon.PLUS_SQUARE.create());
         btnAddService.addThemeVariants(ButtonVariant.LUMO_SMALL);
         btnAddService.addClickListener(e -> {
-            WorkForm workForm = new WorkForm(profileService);
-            workForm.setEntity(new Work());
-            workForm.setSaveEventListener(work_return -> {
-                workService.save(work_return);
-                workForm.close();
-                grid.setItems(workService.findAll());
+            ProductForm productForm = new ProductForm(profileService);
+            productForm.setEntity(new Product());
+            productForm.setSaveEventListener(work_return -> {
+                productService.save(work_return);
+                productForm.close();
+                grid.setItems(productService.findAll(Application.getTenand()));
             });
-            workForm.open();
+            productForm.open();
         });
 
         contentTab1.add(btnAddService);
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.setItems(workService.findAll());
-        grid.addColumn(Work::getTitle).setHeader("Servicios");
-        grid.addColumn(Work::getPrice).setHeader("Precio");
+        grid.setItems(productService.findAll(Application.getTenand()));
+        grid.addColumn(Product::getTitle).setHeader("Servicios");
+        grid.addColumn(Product::getPrice).setHeader("Precio");
+        grid.addColumn(Product::getProfiles).setHeader("Permisos");
         contentTab1.add(grid);
 
         return contentTab1;
@@ -307,7 +308,7 @@ public class WizardConfigView extends Div {
         vlayout.addClassNames(LumoUtility.Margin.AUTO);
         vlayout.add(createItemValid("Negocio", binder != null ? binder.getBean().getNameTenant().length() : 0));
         vlayout.add(createItemValid("Perfiles", (int) profileService.count()));
-        vlayout.add(createItemValid("Servicios", (int) workService.count()));
+        vlayout.add(createItemValid("Servicios", (int) productService.count()));
 
         Button btnFinish = new Button("Guardar y Continuar", LineAwesomeIcon.CHECK_CIRCLE_SOLID.create());
         btnFinish.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

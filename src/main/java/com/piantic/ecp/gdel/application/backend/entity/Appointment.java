@@ -77,14 +77,26 @@ public class Appointment extends BaseEntity {
 
     /**
      * Permite agregar trabajos realizados por el perfil.
-     * @param work
+     * @param product
      * @param quantity
      */
-    public void addWork(Work work, int quantity, Double total) {
-        if(!profile.getAllowedWorks().contains(work)){
-            throw new IllegalArgumentException("El estilista no tiene permitido realizar este trabajo.");
-        }
-        AppointmentWork appointmentWork = new AppointmentWork(this, work, quantity, total);
+    public void addWork(Product product, int quantity, Double total) {
+        AppointmentWork appointmentWork = new AppointmentWork(this, product, quantity, total);
+        appointmentWorks.add(appointmentWork);
+    }
+
+
+    /**
+     * Permite agregar trabajos realizados por el perfil.
+     * @param product
+     * @param quantity
+     * @param total
+     * @param revenue
+     * @param commssion
+     * @param valCommision
+     */
+    public void addWork(Product product, int quantity, Double total, Double revenue, Double commssion, Double valCommision) {
+        AppointmentWork appointmentWork = new AppointmentWork(this, product, quantity, total, revenue, commssion, valCommision);
         appointmentWorks.add(appointmentWork);
     }
 }

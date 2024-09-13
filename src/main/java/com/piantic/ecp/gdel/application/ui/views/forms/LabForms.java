@@ -1,6 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views.forms;
 
-import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.ui.views.specials.GenericForm;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.NumberField;
@@ -9,7 +9,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-public class LabForms extends GenericForm<Work> {
+public class LabForms extends GenericForm<Product> {
 
     private TextField title = new TextField("Title");
     private TextField description = new TextField("Description");
@@ -48,7 +48,7 @@ public class LabForms extends GenericForm<Work> {
         commissions.setValueChangeMode(ValueChangeMode.LAZY);
         commissions.addClientValidatedEventListener(e -> {
             if (e.isValid()) {
-                Work entity = binder.getBean();
+                Product entity = binder.getBean();
                 gain.setValue(String.valueOf(entity.getPrice() - (entity.getPrice() * entity.getCommissions() / 100)));
                 commission.setValue(String.valueOf(entity.getPrice() * entity.getCommissions() / 100));
             }

@@ -1,10 +1,11 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
-import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.Application;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
-import com.piantic.ecp.gdel.application.backend.service.WorkService;
+import com.piantic.ecp.gdel.application.backend.service.ProductService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
-import com.piantic.ecp.gdel.application.ui.views.forms.WorkForm;
+import com.piantic.ecp.gdel.application.ui.views.forms.ProductForm;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -27,9 +28,9 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.text.DecimalFormat;
 
-@PageTitle("Servicios")
-@Route(value = "service", layout = MainLayout.class)
-public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> {
+@PageTitle("Servicios | Productos")
+@Route(value = "product", layout = MainLayout.class)
+public class ProductView extends HorizontalLayout implements HasUrlParameter<Long> {
 
     private final TextField txtFilter;
     private final Button btnAdd;
@@ -38,16 +39,16 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     private Div contentRight;
     private VerticalLayout contentLeft;
     //private WordS customerviewdetail;
-    private Grid<Work> grid = new Grid<>(Work.class, false);
-    public WorkService workService;
+    private Grid<Product> grid = new Grid<>(Product.class, false);
+    public ProductService productService;
     private Boolean detailAdded = false;
 
-    public WorkView(WorkService workService, ProfileService profileService) {
+    public ProductView(ProductService productService, ProfileService profileService) {
         addClassName("work-view");
         setSizeFull();
 
 
-        this.workService = workService;
+        this.productService = productService;
         this.profileService = profileService;
 
         //Toolbar
@@ -63,7 +64,7 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
         btnAdd.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         btnAdd.setTooltipText("Agregar...");
         btnAdd.addClickListener(click -> {
-            openFormDialog(new Work());
+            openFormDialog(new Product());
         });
 
         HorizontalLayout toolbar = new HorizontalLayout(txtFilter, btnAdd);
@@ -90,14 +91,14 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
         add(contentRight);
     }
 
-    private void openFormDialog(Work work) {
-        WorkForm workForm = new WorkForm(profileService);
-        workForm.setEntity(work);
-        workForm.setSaveEventListener(e -> {
+    private void openFormDialog(Product product) {
+        ProductForm productForm = new ProductForm(profileService);
+        productForm.setEntity(product);
+        productForm.setSaveEventListener(e -> {
             this.saveWork(e);
-            workForm.close();
+            productForm.close();
         });
-        workForm.open();
+        productForm.open();
     }
 
     private void configureGrid() {
@@ -112,24 +113,47 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
             layout.add(new H5(work.getTitle()),new Span(work.getDescription()));
             content.add(new Avatar(work.getTitle()), layout);
            return content;
-        }).setAutoWidth(true).setHeader("Servicio").setSortable(true).setComparator(Work::getTitle).getStyle().set("min-width", "200px");
+        }).setAutoWidth(true).setHeader("Servicio").setSortable(true).setComparator(Product::getTitle).getStyle().set("min-width", "200px");
 
-        grid.addComponentColumn(work -> {
+        grid.addComponentColumn(product -> {
             Span span = new Span();
-            span.setText(new DecimalFormat("$ #,###.##").format(work.getPrice()));
+            span.setText(new DecimalFormat("$ #,###.##").format(product.getPrice()));
             span.getElement().getThemeList().add("badge success");
             return span;
-        }).setHeader("Precio").setComparator(Work::getPrice);
+        }).setHeader("Precio").setComparator(Product::getPrice);
 
-        grid.addComponentColumn(work -> {
+        grid.addComponentColumn(product -> {
             Span span = new Span();
-            span.setText(new DecimalFormat("###.##").format(work.getCommissions())+" %");
+            span.setText(new DecimalFormat("###.##").format(product.getCommissions())+" %");
             span.getElement().getThemeList().add("badge");
             return span;
-        }).setHeader("Comisión").setComparator(Work::getCommissions);
+        }).setHeader("Comisión").setComparator(Product::getCommissions);
 
-        grid.addColumn("observations").setHeader("Observaciones");
+        grid.addComponentColumn(product -> {
+            Span span = new Span();
+            span.getElement().getThemeList().add("badge warning");
+//            product.getProfiles().forEach(profileProduct -> {
+//                span.setText(profileProduct.getProfile().getNameProfile());
+//            });
+            profileService.findProfileByProduct(product).forEach(profile -> {
+                span.setText(profile.getNameProfile());
+            });
+            return span;
+        }).setHeader("Perfiles");
+        grid.addComponentColumn(product -> {
+            Button btnedit = new Button("Editar", LineAwesomeIcon.EDIT.create());
+            btnedit.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_ICON);
+            btnedit.addClickListener(event -> {
+                openFormDialog(product);
+            });
+            return btnedit;
+        }).setHeader("");
+
+//        grid.addColumn("observations").setHeader("Observaciones");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
+
+
+
         //grid.addColumns("price", "commissions", "description", "observations");
 //        grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
 //        grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
@@ -145,23 +169,23 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     }
 
     private void updateList() {
-        grid.setItems(workService.findAll(txtFilter.getValue()));
-        count.setText(String.valueOf(workService.count()));
+        grid.setItems(productService.findAll(Application.getTenand(), txtFilter.getValue()));
+        count.setText(String.valueOf(productService.count()));
     }
 
-    public void saveWork(Work work) {
-        workService.save(work);
+    public void saveWork(Product product) {
+        productService.save(product);
         updateList();
         NotificationUtil.showSuccess("Servicio Guardado!");
     }
 
-    private void deleteWork(Work work) {
-        ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + work.getTitle() + "\"?",
+    private void deleteWork(Product product) {
+        ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + product.getTitle() + "\"?",
                 "¿Desea borrar el registro?",
                 "Eliminar", e -> {
-            workService.delete(work);
+            productService.delete(product);
             updateList();
-            getUI().ifPresent(ui -> ui.navigate(WorkView.class));
+            getUI().ifPresent(ui -> ui.navigate(ProductView.class));
         }, "Cancelar", e -> e.getSource().close());
         confirmDialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName() + " " + ButtonVariant.LUMO_PRIMARY.getVariantName());
         confirmDialog.setCloseOnEsc(true);
@@ -170,10 +194,10 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
     }
 
     private void createMenu() {
-        GridContextMenu<Work> menu = grid.addContextMenu();
+        GridContextMenu<Product> menu = grid.addContextMenu();
         Span new1 = new Span("Nuevo");
         new1.setClassName(LumoUtility.TextColor.PRIMARY);
-        menu.addItem(new HorizontalLayout(new1, LineAwesomeIcon.MAGIC_SOLID.create()), e -> openFormDialog(new Work()));
+        menu.addItem(new HorizontalLayout(new1, LineAwesomeIcon.MAGIC_SOLID.create()), e -> openFormDialog(new Product()));
         menu.addItem("Editar", e -> openFormDialog(e.getItem().get()));
         menu.addItem("Detalles", e -> showDetail(e.getItem().get().getId()));
         menu.add(new Hr());
@@ -183,9 +207,9 @@ public class WorkView extends HorizontalLayout implements HasUrlParameter<Long> 
 
     private void showDetail(Long id) {
         if (id != null) {
-            getUI().ifPresent(ui -> ui.navigate(WorkView.class, id));
+            getUI().ifPresent(ui -> ui.navigate(ProductView.class, id));
         } else {
-            getUI().ifPresent(ui -> ui.navigate(WorkView.class));
+            getUI().ifPresent(ui -> ui.navigate(ProductView.class));
         }
     }
 

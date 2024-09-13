@@ -5,6 +5,7 @@ import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.RoleService;
+import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.ui.views.specials.HomeView;
 import com.vaadin.flow.component.Component;
@@ -64,73 +65,20 @@ public class WelcomeView extends Div {
         } else {
             divtitle.add(welcome);
             divcontent.add(divtitle);
-            divcontent.add(getUINewProfile());
+            Div div = MessagesUtil.showWarning("No hay perfiles en tu cuenta, por favor configura tu Negocio!");
+            div.addClassNames(LumoUtility.TextTransform.UPPERCASE);
+
+            Button btngoto = new Button("Asistente de Configuración", LineAwesomeIcon.HAND_POINT_UP.create());
+            btngoto.addThemeVariants(ButtonVariant.LUMO_SMALL);
+            btngoto.addClickListener(event -> getUI().ifPresent(ui -> ui.navigate(WizardConfigView.class)));
+//            divcontent.add(getUINewProfile());
+            divcontent.add(new VerticalLayout(div, btngoto));
             add(divcontent);
         }
 
 
     }
 
-    private Component getUINewProfile() {
-        Div divnewprofile = new Div();
-        divnewprofile.addClassName("welcome-newprofile");
-        H5 h5 = new H5("Crea un PERFIL para continuar");
-        h5.addClassName(LumoUtility.TextColor.PRIMARY);
-
-        Button btnContinue = new Button("Continuar");
-
-        //Inputs
-        TextField nameProfile = new TextField();
-        nameProfile.focus();
-        nameProfile.setPlaceholder("Nombre del Peril");
-        nameProfile.setRequired(true);
-        nameProfile.setValueChangeMode(ValueChangeMode.LAZY);
-        nameProfile.addValueChangeListener(listener -> {
-            if (!nameProfile.getValue().isEmpty() && nameProfile.getValue().toString().length() > 3) {
-                btnContinue.setEnabled(true);
-            }
-        });
-
-
-        FormLayout formLayout = new FormLayout();
-        //Form
-        formLayout.add(nameProfile);
-        formLayout.setColspan(nameProfile, 2);
-
-        btnContinue.setEnabled(false);
-        btnContinue.addClickShortcut(Key.ENTER);
-        btnContinue.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        btnContinue.addClickListener(e -> {
-            if (nameProfile.getValue().isEmpty()) {
-                NotificationUtil.showWarning("Perfil no válido");
-                return;
-            }
-
-            Profile profile = new Profile();
-            profile.setNameProfile(nameProfile.getValue());
-            profile.setStatus(Profile.Status.Activo);
-
-            //Agregar ROLE_ADMINISTRADOR sino existe
-            Role role = new Role("ROLE_ADMINISTRADOR");
-            Set<Role> roles = new HashSet<>(roleService.findAll(role.getName()));
-
-            profileService.save(profile);
-
-            //Asiga el PERFIL al ROLE
-            if (!roles.isEmpty()) {
-                //Actualizar el ROLE Existente
-                role = roles.iterator().next();
-            }
-            role.setProfiles(new HashSet<>(profileService.findAll(profile.getNameProfile())));
-            roleService.save(role);
-
-            continueToMainLayout(profile);
-        });
-
-        divnewprofile.add(h5, formLayout, btnContinue);
-
-        return divnewprofile;
-    }
 
     /**
      * Tarjeta del Perfil
@@ -211,4 +159,64 @@ public class WelcomeView extends Div {
         saveLocalSession();
     }
 
+    private Component getUINewProfile() {
+        Div divnewprofile = new Div();
+        divnewprofile.addClassName("welcome-newprofile");
+        H5 h5 = new H5("Crea un PERFIL para continuar");
+        h5.addClassName(LumoUtility.TextColor.PRIMARY);
+
+        Button btnContinue = new Button("Continuar");
+
+        //Inputs
+        TextField nameProfile = new TextField();
+        nameProfile.focus();
+        nameProfile.setPlaceholder("Nombre del Peril");
+        nameProfile.setRequired(true);
+        nameProfile.setValueChangeMode(ValueChangeMode.LAZY);
+        nameProfile.addValueChangeListener(listener -> {
+            if (!nameProfile.getValue().isEmpty() && nameProfile.getValue().toString().length() > 3) {
+                btnContinue.setEnabled(true);
+            }
+        });
+
+
+        FormLayout formLayout = new FormLayout();
+        //Form
+        formLayout.add(nameProfile);
+        formLayout.setColspan(nameProfile, 2);
+
+        btnContinue.setEnabled(false);
+        btnContinue.addClickShortcut(Key.ENTER);
+        btnContinue.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        btnContinue.addClickListener(e -> {
+            if (nameProfile.getValue().isEmpty()) {
+                NotificationUtil.showWarning("Perfil no válido");
+                return;
+            }
+
+            Profile profile = new Profile();
+            profile.setNameProfile(nameProfile.getValue());
+            profile.setStatus(Profile.Status.Activo);
+
+            //Agregar ROLE_ADMINISTRADOR sino existe
+            Role role = new Role("ROLE_ADMINISTRADOR");
+            Set<Role> roles = new HashSet<>(roleService.findAll(role.getName()));
+
+            profileService.save(profile);
+
+            //Asiga el PERFIL al ROLE
+            if (!roles.isEmpty()) {
+                //Actualizar el ROLE Existente
+                role = roles.iterator().next();
+            }
+            role.setProfiles(new HashSet<>(profileService.findAll(profile.getNameProfile())));
+            roleService.save(role);
+
+            continueToMainLayout(profile);
+        });
+
+        divnewprofile.add(h5, formLayout, btnContinue);
+
+        return divnewprofile;
+    }
 }

@@ -1,8 +1,8 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Role;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.RoleService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
@@ -106,22 +106,22 @@ public class ProfilePermissionView extends VerticalLayout implements HasUrlParam
         roleGrid.setItems(roleService.findAll());
         roleGrid.setSelectionMode(Grid.SelectionMode.MULTI);
         roleGrid.addColumn("name").setHeader("Roles");
-        roleGrid.addComponentColumn(role -> getSpanWorkItem(role.getWorks())).setHeader("Servicios Asignados");
+//        roleGrid.addComponentColumn(role -> getSpanWorkItem(role.getWorks())).setHeader("Servicios Asignados");
         updateInfoGrid();
     }
 
     /**
      * Crea una coleción de badges
-     * @param works
+     * @param products
      * @return
      */
-    private Div getSpanWorkItem(Set<Work> works) {
+    private Div getSpanWorkItem(Set<Product> products) {
         Div divworks = new Div();
         divworks.addClassNames(LumoUtility.Display.FLEX,
                 LumoUtility.Gap.Column.SMALL,
                 LumoUtility.Gap.Row.SMALL,
                 LumoUtility.FlexWrap.WRAP);
-        works.forEach(work -> {
+        products.forEach(work -> {
             Span spanw = new Span(work.getTitle());
             spanw.getElement().getThemeList().add("badge warning");
             divworks.add(spanw);

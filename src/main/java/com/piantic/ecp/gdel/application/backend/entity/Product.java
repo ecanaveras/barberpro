@@ -5,10 +5,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
-public class Work extends BaseEntity {
+public class Product extends BaseEntity {
 
     @NotNull
     @NotEmpty
@@ -19,13 +20,13 @@ public class Work extends BaseEntity {
     private String observations;
     private Double commissions;
 
-    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private Set<AppointmentWork> appointmentWorks = new HashSet<>();
 
-    @ManyToMany(mappedBy = "works")
-    private Set<Role> roles = new HashSet<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Set<ProfileProduct> profilesProducts = new HashSet<>();
 
-   public @NotNull String getTitle() {
+    public @NotNull String getTitle() {
         return title;
     }
 
@@ -79,5 +80,33 @@ public class Work extends BaseEntity {
 
     public void setAppointmentWorks(Set<AppointmentWork> appointmentWorks) {
         this.appointmentWorks = appointmentWorks;
+    }
+
+    public Set<Profile> getProfiles() {
+        Set<Profile> profiles = new HashSet<>();
+        profilesProducts.forEach(profileProduct -> profiles.add(profileProduct.getProfile()));
+        return profiles;
+    }
+
+    public Set<ProfileProduct> getProfilesProducts() {
+        return profilesProducts;
+    }
+
+    public void setProfilesProducts(Set<ProfileProduct> profilesProducts) {
+        this.profilesProducts = profilesProducts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Product product = (Product) o;
+        return Objects.equals(title, product.title) && Objects.equals(description, product.description) && Objects.equals(price, product.price) && Objects.equals(image, product.image) && Objects.equals(observations, product.observations) && Objects.equals(commissions, product.commissions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), title, description, price, image, observations, commissions);
     }
 }

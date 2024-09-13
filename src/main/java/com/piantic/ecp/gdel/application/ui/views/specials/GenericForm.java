@@ -1,8 +1,9 @@
 package com.piantic.ecp.gdel.application.ui.views.specials;
 
+import com.piantic.ecp.gdel.application.Application;
+import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.entity.Role;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
+import com.piantic.ecp.gdel.application.backend.entity.ProfileProduct;
 import com.piantic.ecp.gdel.application.backend.utils.generics.CloseEventListener;
 import com.piantic.ecp.gdel.application.backend.utils.generics.SaveEventListener;
 import com.vaadin.flow.component.Key;
@@ -26,10 +27,7 @@ public class GenericForm<T> extends Dialog {
     Button btnCancel = new Button("Cancelar");
 
     private T entity;
-    public Set<Work> workSet  = new HashSet<>();
     public Set<Profile> profileSet = new HashSet<>();
-//    public Set<Profile> profileSet;
-//    public Set<Role> roleSet;
 
     public Binder<T> binder = new BeanValidationBinder<>(getGenericType());
 
@@ -63,15 +61,19 @@ public class GenericForm<T> extends Dialog {
 
         btnCancel.addClickListener(e -> closeDialog());
         btnSave.addClickListener(e -> validateAndSave());
+        btnSave.addClickShortcut(Key.ENTER);
 
         binder.addStatusChangeListener(e -> btnSave.setEnabled(binder.isValid()));
     }
 
     private void validateAndSave() {
         if (binder.isValid() && saveEventListener != null) {
-            if(binder.getBean() instanceof Role){
-                ((Role) binder.getBean()).setWorks(workSet);
-                ((Role) binder.getBean()).setProfiles(profileSet);
+            if(binder.getBean() instanceof Product){
+                Set<ProfileProduct> profileProduct = new HashSet<>();
+                profileSet.forEach(profile -> {
+                    profileProduct.add(new ProfileProduct(profile, (Product) binder.getBean(), Application.getTenand()));
+                });
+                ((Product) binder.getBean()).setProfilesProducts(profileProduct);
             }
             saveEventListener.onSave(binder.getBean());
             this.close();

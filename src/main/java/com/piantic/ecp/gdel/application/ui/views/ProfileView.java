@@ -40,7 +40,6 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
     private VerticalLayout contentLeft;
     private ProfileViewDetail profileViewDetail;
     private Grid<Profile> grid = new Grid<>(Profile.class, false);
-    private RoleService roleService;
     public ProfileService profileService;
     private Boolean detailAdded = false;
 
@@ -48,9 +47,7 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         addClassName("profile-view");
         setSizeFull();
 
-
         this.profileService = profileService;
-        this.roleService = roleService;
 
         //Toolbar
         txtFilter = new TextField();
@@ -111,7 +108,7 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         grid.addColumn(Profile::getPhone).setHeader("Telefono");
         grid.addColumn(Profile::getEmail).setHeader("Email");
         grid.addColumn(Profile::getStatus).setHeader("Estado").setSortable(true);
-        grid.addComponentColumn(profile -> getSpanWorkItem(profile.getRoles())).setHeader("Roles Asignados");
+//        grid.addComponentColumn(profile -> getSpanWorkItem(profile.getRoles())).setHeader("Roles Asignados");
 
         createMenu();
 

@@ -1,7 +1,7 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
+import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Role;
-import com.piantic.ecp.gdel.application.backend.entity.Work;
 import com.piantic.ecp.gdel.application.backend.repository.RoleRepository;
 import com.piantic.ecp.gdel.application.backend.utils.generics.GenericService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +58,9 @@ public class RoleService implements GenericService<Role> {
         roleRepository.save(role);
     }
 
-    public Set<Work> getWorksByRoleId(Long roleId) {
-        return roleRepository.findByIdWithWorks(roleId)
-                .map(Role::getWorks)
+    public Set<Profile> getProfilesByRoleId(Long roleId) {
+        return roleRepository.findByIdWithProfile(roleId)
+                .map(Role::getProfiles)
                 .orElse(Collections.emptySet());
     }
 

@@ -11,12 +11,12 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
 
-    @Query("select r from Role r LEFT JOIN FETCH r.works " +
+    @Query("select r from Role r LEFT JOIN FETCH r.profiles " +
             " where lower(r.name) like lower(concat('%', :searchTerm, '%'))")
     List<Role> search(@Param("searchTerm") String searchTerm);
 
     // Método para obtener un Role junto con sus servicios (fetch join)
-    @Query("SELECT r FROM Role r LEFT JOIN FETCH r.works WHERE r.id = :id")
-    Optional<Role> findByIdWithWorks(@Param("id") Long id);
+    @Query("SELECT r FROM Role r LEFT JOIN FETCH r.profiles WHERE r.id = :id")
+    Optional<Role> findByIdWithProfile(@Param("id") Long id);
 
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -23,7 +24,6 @@ public class Profile extends BaseEntity {
     @NotNull
     private Profile.Status status;
 
-
     private String pin;
 
     @Email
@@ -31,12 +31,14 @@ public class Profile extends BaseEntity {
 
     private String phone;
 
-
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "profiles")
+    @ManyToMany(mappedBy = "profiles")
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private Set<Appointment> appointments = new HashSet<>();
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<ProfileProduct> products = new HashSet<>();
 
     public Profile() {}
 
@@ -46,17 +48,12 @@ public class Profile extends BaseEntity {
         this.pin = pin;
     }
 
+    public Set<ProfileProduct> getProducts() {
+        return products;
+    }
 
-    /**
-     * Devuelve los trabajos permitidos para el perfil
-     * @return
-     */
-    public Set<Work> getAllowedWorks(){
-        Set<Work> allowedWorks = new HashSet<>();
-        for(Role role : roles){
-            allowedWorks.addAll(role.getWorks());
-        }
-        return allowedWorks;
+    public void setProducts(Set<ProfileProduct> products) {
+        this.products = products;
     }
 
     public String getNameProfile() {
@@ -117,5 +114,19 @@ public class Profile extends BaseEntity {
 
     public void setAppointments(Set<Appointment> appointments) {
         this.appointments = appointments;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Profile profile = (Profile) o;
+        return Objects.equals(nameProfile, profile.nameProfile) && status == profile.status && Objects.equals(pin, profile.pin) && Objects.equals(email, profile.email) && Objects.equals(phone, profile.phone);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), nameProfile, status, pin, email, phone);
     }
 }
