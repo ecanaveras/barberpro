@@ -1,9 +1,7 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
-import com.piantic.ecp.gdel.application.backend.entity.Appointment;
-import com.piantic.ecp.gdel.application.backend.entity.Customer;
-import com.piantic.ecp.gdel.application.backend.entity.Product;
-import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.Application;
+import com.piantic.ecp.gdel.application.backend.entity.*;
 import com.piantic.ecp.gdel.application.backend.repository.AppointmentRepository;
 import com.piantic.ecp.gdel.application.backend.repository.CustomerRepository;
 import com.piantic.ecp.gdel.application.backend.repository.ProductRepository;
@@ -15,7 +13,9 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -98,6 +98,24 @@ public class AppointmentService implements GenericService<Appointment> {
     @Override
     public Long getId(Appointment entity) {
         return entity.getId();
+    }
+
+    public List<Appointment> findByDateRange(LocalDate start, LocalDate end) {
+        LocalDateTime inicio = start.atStartOfDay();
+        LocalDateTime fin = end.atTime(LocalTime.MAX);
+        return appointmentRepository.findByTenantAndDateRange(Application.getTenant(), inicio, fin);
+    }
+
+    public List<Object[]> findAggWorkProfileDate(LocalDate start, LocalDate end) {
+        LocalDateTime inicio = start.atStartOfDay();
+        LocalDateTime fin = end.atTime(LocalTime.MAX);
+        return appointmentRepository.findAggWorkProfileDate(Application.getTenant().getId(), inicio, fin);
+    }
+
+    public List<Object[]> findAggProductProfileDate(LocalDate start, LocalDate end){
+        LocalDateTime inicio = start.atStartOfDay();
+        LocalDateTime fin = end.atTime(LocalTime.MAX);
+        return appointmentRepository.findAggProductProfileDate(Application.getTenant().getId(), inicio, fin);
     }
 }
 

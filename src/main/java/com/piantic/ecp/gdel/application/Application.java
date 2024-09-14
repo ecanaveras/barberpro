@@ -49,7 +49,7 @@ public class Application implements AppShellConfigurator {
         return profile;
     }
 
-    public static Tenant getTenand() {
+    public static Tenant getTenant() {
         if (VaadinSession.getCurrent() != null) {
             Tenant tenand = (Tenant) VaadinSession.getCurrent().getAttribute(SESSION_TENANT);
             return tenand;

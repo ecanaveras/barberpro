@@ -169,7 +169,7 @@ public class ProductView extends HorizontalLayout implements HasUrlParameter<Lon
     }
 
     private void updateList() {
-        grid.setItems(productService.findAll(Application.getTenand(), txtFilter.getValue()));
+        grid.setItems(productService.findAll(Application.getTenant(), txtFilter.getValue()));
         count.setText(String.valueOf(productService.count()));
     }
 

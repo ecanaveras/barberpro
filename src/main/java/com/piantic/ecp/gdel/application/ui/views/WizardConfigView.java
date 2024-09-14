@@ -270,7 +270,7 @@ public class WizardConfigView extends Div {
             productForm.setSaveEventListener(work_return -> {
                 productService.save(work_return);
                 productForm.close();
-                grid.setItems(productService.findAll(Application.getTenand()));
+                grid.setItems(productService.findAll(Application.getTenant()));
             });
             productForm.open();
         });
@@ -278,7 +278,7 @@ public class WizardConfigView extends Div {
         contentTab1.add(btnAddService);
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.setItems(productService.findAll(Application.getTenand()));
+        grid.setItems(productService.findAll(Application.getTenant()));
         grid.addColumn(Product::getTitle).setHeader("Servicios");
         grid.addColumn(Product::getPrice).setHeader("Precio");
         grid.addColumn(Product::getProfiles).setHeader("Permisos");

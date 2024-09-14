@@ -297,7 +297,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
      */
     private void loadDataGridServices() {
         if(profileworking!=null) {
-            List<Product> productList = productService.findProductsByProfile(Application.getTenand(), profileworking);
+            List<Product> productList = productService.findProductsByProfile(Application.getTenant(), profileworking);
             if(productList.isEmpty()){
                 ConfirmDialog confirmDialog = new ConfirmDialog();
                 confirmDialog.setCloseOnEsc(true);

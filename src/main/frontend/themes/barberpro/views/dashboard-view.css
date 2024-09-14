@@ -1,0 +1,28 @@
+.dashboard-view {
+    padding-left: var(--lumo-space-s);
+    padding-right: var(--lumo-space-s);
+    font-family: var(--lumo-font-family);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.dash-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: end;
+    padding-right: var(--lumo-space-s);
+    flex-wrap: wrap;
+    column-gap: var(--lumo-space-s);
+    row-gap: 0;
+
+    > vaadin-date-picker {
+        width: 110px;
+        padding-top: var(--lumo-space-xs);
+    }
+
+}
+
+.highcharts-credits {
+    display: none;
+}

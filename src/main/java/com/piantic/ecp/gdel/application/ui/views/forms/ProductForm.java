@@ -70,7 +70,7 @@ public class ProductForm extends GenericForm<Product> {
         });
 
         //Profiles disponibles
-        mlboxprofiles.setItems(profileService.findByTenant(Application.getTenand()));
+        mlboxprofiles.setItems(profileService.findByTenant(Application.getTenant()));
         mlboxprofiles.setItemLabelGenerator(Profile::getNameProfile);
         mlboxprofiles.addSelectionListener(listener -> {
             profileSet = mlboxprofiles.getSelectedItems();

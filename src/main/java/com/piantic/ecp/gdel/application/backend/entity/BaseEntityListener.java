@@ -10,7 +10,7 @@ public class BaseEntityListener {
     @PrePersist
     @PreUpdate
     public void setTenant(BaseEntity entity) {
-        Tenant tenant = Application.getTenand();
+        Tenant tenant = Application.getTenant();
         if (tenant != null && entity.getTenant() == null) {
             entity.setTenant(tenant);
         }

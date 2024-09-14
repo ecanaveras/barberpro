@@ -71,7 +71,7 @@ public class GenericForm<T> extends Dialog {
             if(binder.getBean() instanceof Product){
                 Set<ProfileProduct> profileProduct = new HashSet<>();
                 profileSet.forEach(profile -> {
-                    profileProduct.add(new ProfileProduct(profile, (Product) binder.getBean(), Application.getTenand()));
+                    profileProduct.add(new ProfileProduct(profile, (Product) binder.getBean(), Application.getTenant()));
                 });
                 ((Product) binder.getBean()).setProfilesProducts(profileProduct);
             }

@@ -31,7 +31,7 @@ public class HomeView extends VerticalLayout {
 
     public HomeView(TenandRepository tenandService) {
         addClassName("home-view");
-        if (Application.getTenand() == null) {
+        if (Application.getTenant() == null) {
             tenant = tenandService.findTenantByEmail(Application.getEmailAccount());
             if (tenant == null) {
                 getUI().ifPresent(ui -> ui.navigate(WizardConfigView.class));
@@ -40,7 +40,7 @@ public class HomeView extends VerticalLayout {
                 UI.getCurrent().navigate(MainLayout.class);
             }
         } else {
-            tenant = Application.getTenand();
+            tenant = Application.getTenant();
         }
 
         Div divmain = new Div();
