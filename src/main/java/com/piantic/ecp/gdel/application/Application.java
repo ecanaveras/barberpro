@@ -52,8 +52,12 @@ public class Application implements AppShellConfigurator {
     public static Tenant getTenant() {
         if (VaadinSession.getCurrent() != null) {
             Tenant tenand = (Tenant) VaadinSession.getCurrent().getAttribute(SESSION_TENANT);
+            if(tenand == null) {
+                UI.getCurrent().navigate(WelcomeView.class);
+            }
             return tenand;
         }
+        UI.getCurrent().navigate(WelcomeView.class);
         return null;
     }
 

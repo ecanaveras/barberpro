@@ -4,7 +4,10 @@
     font-family: var(--lumo-font-family);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 100%;
+    background-color: var(--lumo-contrast-10pct);
+    align-content: flex-start;
+    justify-content: space-evenly;
 }
 
 .dash-toolbar {
@@ -26,3 +29,107 @@
 .highcharts-credits {
     display: none;
 }
+
+.dashboard-content{
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: var(--lumo-space-l);
+    justify-content: center;
+    align-content: flex-start;
+    /*align-items: flex-start;*/
+    /*flex-wrap: wrap;*/
+    padding: var(--lumo-space-m);
+    padding-top: 0;
+}
+
+.dashboard-content .dashboard-chart {
+    flex: 0 0 32%;
+    border-radius: var(--lumo-border-radius-l);
+    flex-grow: 1;
+    border: var(--lumo-space-m) solid var(--lumo-base-color);
+}
+
+.div-overview {
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    /*gap: var(--lumo-space-) !important;*/
+}
+
+.card-dash-kpi{
+    box-shadow: none;
+    flex: 0 0 20%;
+
+}
+
+.highcharts-container {
+    /*max-width: 500px;*/
+    min-width: 500px;
+    /*padding: var(--lumo-space-l) !important;*/
+    /*flex-grow: 1;*/
+}
+
+@media all and (max-width: 1200px) {
+    .card-dash-kpi {
+        flex: auto;
+    }
+}
+
+@media all and (max-width: 1000px) {
+    .dashboard-content{
+        flex-wrap: wrap;
+    }
+
+    .dashboard-content .dashboard-chart:first-child {
+        flex: 0 0 97.8%; /* El primer elemento ocupa toda la fila */
+    }
+
+    .card-dash-kpi {
+        flex: 0 0 40%;
+    }
+
+
+}
+
+@media all and (max-width: 950px) {
+
+}
+
+@media all and (max-width: 820px) {
+    .dashboard-content .dashboard-chart {
+        flex: 0 0 97.8%; /* El primer elemento ocupa toda la fila */
+    }
+}
+
+@media all and (max-width: 800px) {
+    .dashboard-content .dashboard-chart {
+        flex: 0 0 97.8%; /* El primer elemento ocupa toda la fila */
+    }
+}
+
+@media all and (max-width: 600px) {
+    .card-dash-kpi{
+        flex: 0 0 38%;
+        min-width: 100px;
+    }
+}
+
+@media all and (max-width: 400px) {
+    .div-overview{
+        gap: var(--lumo-space-m);
+        padding: var(--lumo-space-s);
+        padding-bottom: var(--lumo-space-l);;
+    }
+
+}
+
+@media all and (max-width: 380px) {
+    .card-dash-kpi{
+        flex: auto;
+        /*min-width: 100px;*/
+    }
+}
+
+
