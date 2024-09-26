@@ -13,6 +13,7 @@ import com.vaadin.flow.component.datepicker.DatePickerVariant;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.SvgIcon;
@@ -132,8 +133,11 @@ public class DashboardView extends Div {
         btnOpenDialog.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_CONTRAST);
         btnOpenDialog.addClickListener(e -> infoFilter.open());
 
+        H2 titleDash = new H2("Vista General");
 
-        toolbar.add(btnOpenDialog, dateStart, dateEnd, btnFilter);
+
+
+        toolbar.add(titleDash, btnOpenDialog, dateStart, dateEnd, btnFilter);
 
         return toolbar;
     }

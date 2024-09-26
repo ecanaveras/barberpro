@@ -5,6 +5,7 @@ import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
+import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
 import com.piantic.ecp.gdel.application.ui.views.forms.ActivityDetailForm;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.ComboBoxVariant;
@@ -19,7 +20,6 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -44,7 +44,7 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
         addClassName("activity-view");
         this.activities = activities;
         this.profileService = profileService;
-        activityDetailForm=new ActivityDetailForm(activities);
+        activityDetailForm = new ActivityDetailForm(activities);
 
         add(createToolbar());
 
@@ -90,7 +90,7 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
                 localDateEnd = localDate.plusDays(localDate.lengthOfMonth() - (localDate.getDayOfMonth())).atTime(LocalTime.MAX);
                 break;
         }
-        System.out.println("FECHAS: " + localDateStart + " - " + localDateEnd);
+//        System.out.println("FECHAS: " + localDateStart + " - " + localDateEnd);
 
         //Load Info
         content.removeAll();
@@ -145,8 +145,9 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
             getUI().ifPresent(ui -> ui.navigate(ActivityView.class, appointment.getId()));
         });
 
-        Span span = new Span(String.valueOf(appointment.getId()));
-        span.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.PRIMARY);
+
+        Span spanidappoinment = new Span(LineAwesomeIcon.MAGIC_SOLID.create(), new Span(appointment.getId().toString()));
+        spanidappoinment.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.PRIMARY);
         Div divservices = new Div();
         divservices.addClassName("div-services");
         appointment.getAppointmentWorks().forEach(appointmentWork -> {
@@ -156,31 +157,32 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
             divservices.add(service);
         });
 
-        Span span2 = new Span(appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-        span2.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.LIGHT);
+        Span spanfecha = new Span(appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+        spanfecha.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.FontWeight.LIGHT);
 
         HorizontalLayout hLayout = new HorizontalLayout();
         hLayout.setWidthFull();
         hLayout.addClassNames(
                 LumoUtility.BorderRadius.MEDIUM,
-                LumoUtility.BorderColor.CONTRAST_20,
-                LumoUtility.Background.CONTRAST_10,
                 LumoUtility.Padding.SMALL,
                 LumoUtility.Flex.GROW);
         hLayout.add(
                 new HorizontalLayout(LineAwesomeIcon.USER_CIRCLE.create(),
                         new Span(appointment.getProfile().getNameProfile())),
-                new Span(new DecimalFormat("#.##").format(appointment.getTotal())),
-                LineAwesomeIcon.PLUS_SOLID.create());
+                        new Span(LineAwesomeIcon.CASH_REGISTER_SOLID.create(), new Span(NumberUtil.formatNumber(appointment.getTotal()))
+                ));
 
-        content.add(span, divservices, span2, hLayout);
+        Div divfooter = new Div();
+        divfooter.addClassName("div-footer");
+        divfooter.add(spanidappoinment, new Span(LineAwesomeIcon.CALENDAR.create(), spanfecha));
+
+        content.add(hLayout, divservices, divfooter);
 
         content.addClassNames(
                 LumoUtility.Padding.MEDIUM,
                 LumoUtility.Margin.Bottom.SMALL,
                 LumoUtility.BorderRadius.LARGE,
                 LumoUtility.Background.BASE,
-                LumoUtility.BorderColor.CONTRAST_5,
                 LumoUtility.Border.ALL);
 
         return content;
