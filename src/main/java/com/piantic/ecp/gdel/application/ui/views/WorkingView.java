@@ -86,7 +86,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         //Profile
         profileworking = Application.getProfile();
         if (profileworking == null) {
-            getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
+            getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
         }
 
         divleft.addClassName("div-left");

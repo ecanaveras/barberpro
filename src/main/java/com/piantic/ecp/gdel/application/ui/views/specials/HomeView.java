@@ -4,7 +4,9 @@ import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import com.piantic.ecp.gdel.application.backend.repository.TenandRepository;
 import com.piantic.ecp.gdel.application.ui.views.MainLayout;
+import com.piantic.ecp.gdel.application.ui.views.WelcomeModeView;
 import com.piantic.ecp.gdel.application.ui.views.WizardConfigView;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -111,5 +113,13 @@ public class HomeView extends VerticalLayout {
         div.add(new Span(name));
 
         return div;
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        if(Application.getModeApp()==null){
+            UI.getCurrent().navigate(WelcomeModeView.class);
+        }
     }
 }

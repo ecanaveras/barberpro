@@ -2,6 +2,7 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.analytic.AnalyticSeries;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
+import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -10,10 +11,12 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePickerVariant;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.SvgIcon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -21,8 +24,11 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @PageTitle("Dashboard | Barberpro")
 @JsModule("https://code.highcharts.com/highcharts.js")
@@ -95,13 +101,39 @@ public class DashboardView extends Div {
         Button btnFilter = new Button("Filtrar");
         btnFilter.addThemeVariants(ButtonVariant.LUMO_SMALL);
         btnFilter.addClickListener(listener -> {
-            loadInfoAppointmentsLineChart();
-            loadInfoAppointmentsColumnChart();
-            loadInfoAppoimentsPieChart();
+            updateLineChart();
+            updateColumnChart();
+            updatePieChart();
             createOverView();
         });
 
-        toolbar.add(dateStart, dateEnd, btnFilter);
+        Dialog infoFilter = new Dialog("Filtro");
+        infoFilter.addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
+        infoFilter.setCloseOnEsc(true);
+        infoFilter.add(new Span("La información de la comparativa es de acuerdo al rango seleccionado."));
+        Div contentDialog = new Div();
+        contentDialog.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.Padding.SMALL);
+        infoFilter.add(contentDialog);
+        infoFilter.addAttachListener(a -> {
+            contentDialog.removeAll();
+            LocalDate startDate = dateStart.getValue();
+            LocalDate endDate = dateEnd.getValue();
+            startDate = startDate.minusMonths(1);
+            endDate = endDate.minusMonths(1);
+            DateTimeFormatter dateformat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            contentDialog.add(MessagesUtil.showPrimary("Rango de comparación: " + startDate.format(dateformat) + " - " + endDate.format(dateformat)));
+        });
+        Button aceptFilter = new Button("Aceptar");
+        aceptFilter.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_PRIMARY);
+        aceptFilter.addClickListener(event -> infoFilter.close());
+        infoFilter.getFooter().add(aceptFilter);
+
+        Button btnOpenDialog = new Button(VaadinIcon.INFO_CIRCLE.create());
+        btnOpenDialog.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_CONTRAST);
+        btnOpenDialog.addClickListener(e -> infoFilter.open());
+
+
+        toolbar.add(btnOpenDialog, dateStart, dateEnd, btnFilter);
 
         return toolbar;
     }
@@ -132,15 +164,35 @@ public class DashboardView extends Div {
             comisiones += ((Number) row[4]).doubleValue();
             trabajos += ((Number) row[5]).intValue();
         }
-        divoverview.add(createCardsItems(LineAwesomeIcon.CASH_REGISTER_SOLID.create(), "Facturado", NumberUtil.formatDouble(facturado), 0.0));
-        divoverview.add(createCardsItems(LineAwesomeIcon.WALLET_SOLID.create(), "Negocio", NumberUtil.formatDouble(negocio), 0.0));
-        divoverview.add(createCardsItems(LineAwesomeIcon.HAND_HOLDING_SOLID.create(), "Comisiones", NumberUtil.formatDouble(comisiones), 0.0));
-        divoverview.add(createCardsItems(LineAwesomeIcon.MAGIC_SOLID.create(), "Trabajos", NumberUtil.formatInteger(trabajos), 0.0));
+        //Crecimiento Periodo Anterior
+        LocalDate startDate = dateStart.getValue();
+        LocalDate endDate = dateEnd.getValue();
+        startDate = startDate.minusMonths(1);
+        endDate = endDate.minusMonths(1);
+        Double incfacturado = 0.0;
+        Double incnegocio = 0.0;
+        Double inccomisiones = 0.0;
+        Integer inctrabajos = 0;
+        List<Object[]> resulquery2 = appointmentService.findAggProductProfileDate(startDate, endDate);
+        for (Object[] row : resulquery2) {
+            incfacturado += ((Number) row[2]).doubleValue();
+            incnegocio += ((Number) row[3]).doubleValue();
+            inccomisiones += ((Number) row[4]).doubleValue();
+            inctrabajos += ((Number) row[5]).intValue();
+        }
+        divoverview.add(createCardsItems(LineAwesomeIcon.CASH_REGISTER_SOLID.create(),
+                "Facturado", facturado, calculateIncrementPorc(incfacturado, facturado), calculateIncrement(incfacturado, facturado)));
+        divoverview.add(createCardsItems(LineAwesomeIcon.WALLET_SOLID.create(),
+                "Negocio", negocio, calculateIncrementPorc(incnegocio, negocio), calculateIncrement(incnegocio, negocio)));
+        divoverview.add(createCardsItems(LineAwesomeIcon.HAND_HOLDING_SOLID.create(),
+                "Comisiones", comisiones, calculateIncrementPorc(inccomisiones, comisiones), calculateIncrement(inccomisiones, comisiones)));
+        divoverview.add(createCardsItems(LineAwesomeIcon.MAGIC_SOLID.create(),
+                "Trabajos", trabajos, calculateIncrementPorc(inctrabajos, trabajos), calculateIncrement(inctrabajos, trabajos).intValue()));
 //        divoverview.add(createCardsItems(LineAwesomeIcon.USER.create(), "Cant. Servicios", clientes, 0.0));
         return divoverview;
     }
 
-    private Div createCardsItems(SvgIcon icon, String title, String val, Number increment) {
+    private Div createCardsItems(SvgIcon icon, String title, Number val, Number increment, Number diff) {
         Div card = new Div();
         card.addClassName("card-dash-kpi");
         card.addClassNames(
@@ -160,37 +212,80 @@ public class DashboardView extends Div {
         HorizontalLayout hlayout = new HorizontalLayout();
         hlayout.setPadding(false);
 
-        H4 h4 = new H4(val.toString());
-        Span spanincrement = new Span(String.format("+  %s", increment));
+        H4 h4 = new H4(NumberUtil.formatNumber(val));
+        Span spanincrement = new Span();
         spanincrement.addClassName("card-dash-kpi-increment");
-        spanincrement.getElement().getThemeList().add("badge success");
+        spanincrement.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.SMALL);
+        String format = "%s%s";
+        if (increment.intValue() > 0) {
+            spanincrement.add(new Span(VaadinIcon.ARROW_UP.create()));
+            spanincrement.getElement().getThemeList().add("badge success small pill");
+        } else if (increment.intValue() < 0) {
+            spanincrement.add(new Span(VaadinIcon.ARROW_DOWN.create()));
+            spanincrement.getElement().getThemeList().add("badge error small pill");
+        } else {
+            spanincrement.getElement().getThemeList().add("badge contrast small pill");
+        }
+        spanincrement.add(new Span(String.format(format, NumberUtil.formatNumber(increment), "%")));
+
+        //Info periodo anterior
+        Span spananterior = new Span();
+        spananterior.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.XSMALL);
+        format = "$%s";
+        if(diff instanceof Integer) {
+            format = "%s";
+        }
+        if (diff.intValue() > 0) {
+            format = "+" + format;
+            spananterior.addClassNames(LumoUtility.TextColor.SUCCESS);
+        } else if (diff.intValue() < 0) {
+            format = "-" + format;
+            spananterior.addClassNames(LumoUtility.TextColor.ERROR);
+        } else {
+            spananterior.addClassNames(LumoUtility.TextColor.SECONDARY);
+        }
+        spananterior.setText(String.format(format, NumberUtil.formatNumber(Math.abs(diff.doubleValue()))));
+        Span spanlabel = new Span("que el mes anterior");
+        spanlabel.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.XXSMALL, LumoUtility.FontWeight.BOLD, LumoUtility.Padding.Left.XSMALL);
+
+        Span spanout = new Span(spananterior, spanlabel);
+
         card.add(spanincrement);
 
         hlayout.add(h4, spanincrement);
 
         card.add(hlayout);
 
+        card.add(spanout);
+
 
         return card;
 
     }
 
-    private void loadInfoAppointmentsLineChart() {
-//        ArrayList<String> categorias = new ArrayList<>(Arrays.asList("'Jan'", "'Feb'", "'Mar'", "'Apr'", "'May'", "'Jun'", "'Jul'", "'Aug'", "'Sep'", "'Oct'", "'Nov'", "'Dec'"));
+    /**
+     * Mapea los datos del Query, para las visualizaciones
+     *
+     * @param resulquery
+     * @param indexCategory
+     * @param indexSerie
+     * @param indexValue
+     * @return
+     */
+    private Map<ArrayList<String>, ArrayList<AnalyticSeries>> mapDataToChart(List<Object[]> resulquery, Integer indexCategory, Integer indexSerie, Integer indexValue) {
+
         ArrayList<String> categorias = new ArrayList<>();
         ArrayList<AnalyticSeries> series = new ArrayList<>();
-//        ArrayList<Double> valores = new ArrayList<>(Arrays.asList(5.1,3.2,8.9,0.0,10.1,25.3,80.0,3.0,45.0,56.0,11.0,12.0));
 
-        List<Object[]> resulquery = appointmentService.findAggWorkProfileDate(dateStart.getValue(), dateEnd.getValue());
-        AnalyticSeries newserie = new AnalyticSeries();
+//        List<Object[]> resulquery = appointmentService.findAggWorkProfileDate(dateStart.getValue(), dateEnd.getValue());
         for (Object[] row : resulquery) {
-            //Fecha
-            String fecha = encapsuleString((String) row[1]);
+            //(Categorias)
+            String fecha = encapsuleString((String) row[indexCategory]);
             if (!categorias.contains(fecha)) {
                 categorias.add(fecha);
             }
-            //perfil
-            String profileName = (String) row[0];
+            //Series
+            String profileName = (String) row[indexSerie];
             boolean found = false;
             for (AnalyticSeries s : series) {
                 if (s.getName().equals(profileName)) {
@@ -198,9 +293,8 @@ public class DashboardView extends Div {
                     break;
                 }
             }
-            //Agregar
             if (!found) {
-                newserie = new AnalyticSeries();
+                AnalyticSeries newserie = new AnalyticSeries();
                 newserie.setName(profileName);
                 series.add(newserie);
             }
@@ -212,12 +306,12 @@ public class DashboardView extends Div {
             for (AnalyticSeries serie : series) {
                 boolean found = false;
                 for (Object[] row : resulquery) {
-                    //Cartegoria | Fecha
-                    String fecha = encapsuleString((String) row[1]);
-                    //Series | Perfiles
-                    String profileName = (String) row[0];
+                    //Cartegoria
+                    String fecha = encapsuleString((String) row[indexCategory]);
+                    //Series
+                    String profileName = (String) row[indexSerie];
                     //Valores | Double
-                    Number valor = (Number) row[2];
+                    Number valor = (Number) row[indexValue];
                     if (category.equals(fecha) && serie.getName().equals(profileName)) {
                         found = true;
                         serie.getData().add(valor);
@@ -230,49 +324,28 @@ public class DashboardView extends Div {
             }
         }
 
-        getElement().executeJs(getLineChart(divlinechart, categorias, series));
-        System.out.println(getLineChart(divlinechart, categorias, series));
+        Map<ArrayList<String>, ArrayList<AnalyticSeries>> map = new HashMap<>();
+        map.put(categorias, series);
+
+        return map;
+
     }
 
-    private void loadInfoAppointmentsColumnChart() {
-        ArrayList<String> categorias = new ArrayList<>();
-        ArrayList<AnalyticSeries> series = new ArrayList<>();
+    private void updateLineChart() {
+        List<Object[]> resulquery = appointmentService.findAggWorkProfileDate(dateStart.getValue(), dateEnd.getValue());
+        mapDataToChart(resulquery, 1, 0, 2).forEach((category, series) -> {
+            getElement().executeJs(getLineChart(divlinechart, category, series));
+        });
+    }
 
+    private void updateColumnChart() {
         List<Object[]> resulquery = appointmentService.findAggProductProfileDate(dateStart.getValue(), dateEnd.getValue());
-        AnalyticSeries newserie = new AnalyticSeries();
-        ArrayList<Number> valores = new ArrayList<>();
-        for (Object[] row : resulquery) {
-            //ProductName
-            categorias.add(encapsuleString((String) row[1]));
-
-            //Perfil
-            String profileName = (String) row[0];
-            if (newserie.getName() == null) {
-                newserie.setName(profileName);
-                series.add(newserie);
-                //Subtotal
-                valores.add((Number) row[2]);
-                newserie.setData(valores);
-            } else if (newserie.getName().equals(profileName)) {
-                //Subtotal
-                valores.add((Number) row[2]);
-                newserie.setData(valores);
-            } else {
-                valores = new ArrayList<>();
-                //Revenue
-                valores.add((Number) row[2]);
-                newserie = new AnalyticSeries();
-                newserie.addSerieNumber(profileName, valores);
-                series.add(newserie);
-            }
-
-        }
-
-        getElement().executeJs(getColumnChart(divcolumnchart, categorias, series));
-        System.out.println(getColumnChart(divcolumnchart, categorias, series));
+        mapDataToChart(resulquery, 1, 0, 2).forEach((category, series) -> {
+            getElement().executeJs(getColumnChart(divcolumnchart, category, series));
+        });
     }
 
-    private void loadInfoAppoimentsPieChart() {
+    private void updatePieChart() {
         List<Object[]> resulquery = appointmentService.findAggProductProfileDate(dateStart.getValue(), dateEnd.getValue());
         List<String> products = new ArrayList<>();
         ArrayList<AnalyticSeries> series = new ArrayList<>();
@@ -298,14 +371,14 @@ public class DashboardView extends Div {
         getElement().executeJs(getPieChart(divpiechart, "Ingresos por Servicio", prepareDataPie(products, resulquery, series, 2)));
 //        System.out.println(getPieChart(divpiechart, "Ingresos por Servicios", prepareDataPie(products, resulquery, series, 2)));
         //Pie Total Works
-        getElement().executeJs(getPieChart(divpietwochart, "Trabajos por Servicio", prepareDataPie(products, resulquery, seriesclone, 5)));
+        getElement().executeJs(getPieChart(divpietwochart, "Cant. Trabajos por Servicio", prepareDataPie(products, resulquery, seriesclone, 5)));
     }
 
     private ArrayList<AnalyticSeries> prepareDataPie(List<String> products, List<Object[]> resulquery, ArrayList<AnalyticSeries> series, Integer indexValue) {
         for (String product : products) {
             Double valuequery = 0.0;
-            for(Object[] row : resulquery) {
-                if(product.equals(row[1].toString())) {
+            for (Object[] row : resulquery) {
+                if (product.equals(row[1].toString())) {
                     //Agg
                     valuequery = valuequery + ((Number) row[indexValue]).doubleValue();
                 }
@@ -414,7 +487,7 @@ public class DashboardView extends Div {
         String seriesfinal = " ";
         for (AnalyticSeries serie : series) {
 //            { name: 'Water', y: 55.02 } ,
-            seriesfinal += " { name:'"+serie.getName() + "', y: "+serie.getData().get(0)+" } ,";
+            seriesfinal += " { name:'" + serie.getName() + "', y: " + serie.getData().get(0) + " } ,";
         }
         //Quita la coma final
         seriesfinal = seriesfinal.substring(0, seriesfinal.length() - 1);
@@ -424,7 +497,7 @@ public class DashboardView extends Div {
                 "        type: 'pie'" +
                 "    }," +
                 "    title: {" +
-                "        text: '"+titlePie+"'," +
+                "        text: '" + titlePie + "'," +
                 "        align: 'left'" +
                 "    }," +
 //                "    tooltip: {" +
@@ -459,7 +532,7 @@ public class DashboardView extends Div {
                 "            minPointSize: 10," +
                 "            innerSize: '60%'," +
                 "            zMin: 0," +
-                "            borderRadius: 5,"+
+                "            borderRadius: 5," +
                 "            name: 'Total'," +
                 "            colorByPoint: true," +
                 "            data: [" + seriesfinal +
@@ -480,11 +553,26 @@ public class DashboardView extends Div {
         return dataout;
     }
 
+    private Number calculateIncrementPorc(Number valueStar, Number valueEnd) {
+        if (valueStar == null || valueEnd == null) {
+            return 0;
+        }
+        return ((valueEnd.doubleValue() - valueStar.doubleValue()) / valueStar.doubleValue()) * 100;
+    }
+
+    private Number calculateIncrement(Number valueStar, Number valueEnd) {
+        if (valueStar == null || valueEnd == null) {
+            return 0;
+        }
+        return ((valueEnd.doubleValue() - valueStar.doubleValue()));
+    }
+
+
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        loadInfoAppointmentsLineChart();
-        loadInfoAppointmentsColumnChart();
-        loadInfoAppoimentsPieChart();
+        updateLineChart();
+        updateColumnChart();
+        updatePieChart();
     }
 
 }

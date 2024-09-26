@@ -1,7 +1,16 @@
 {
-  "name": "no-name",
-  "license": "UNLICENSED",
-  "type": "module",
+  "name": "barberpro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ecanaveras/barberpro.git"
+  },
+  "private": true,
   "dependencies": {
     "@polymer/polymer": "3.5.1",
     "@vaadin/bundles": "24.4.2",
@@ -37,7 +46,7 @@
     "strip-css-comments": "5.0.0",
     "transform-ast": "2.4.4",
     "typescript": "5.4.5",
-    "vite": "5.3.3",
+    "vite": "^5.4.8",
     "vite-plugin-checker": "0.6.4",
     "workbox-build": "7.1.1",
     "workbox-core": "7.1.0",
@@ -106,6 +115,7 @@
       "workbox-core": "7.1.0",
       "workbox-precaching": "7.1.0"
     },
-    "hash": "bc805cfa117879aab579993d9ddf9ed70f0b33ecccea3a6cc5c4f766048e3ee5"
-  }
+    "hash": "584472264251e8b5979538c517aadda7d15de9f68d3df5b9e08a8117dcee95c7"
+  },
+  "type": "module"
 }

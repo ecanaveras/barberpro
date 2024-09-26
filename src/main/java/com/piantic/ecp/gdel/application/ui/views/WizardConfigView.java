@@ -314,7 +314,7 @@ public class WizardConfigView extends Div {
         btnFinish.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         btnFinish.addClickListener(e -> {
             if (saveTenandInfo(binder.getBean())) {
-                getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
+                getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
             }
         });
 

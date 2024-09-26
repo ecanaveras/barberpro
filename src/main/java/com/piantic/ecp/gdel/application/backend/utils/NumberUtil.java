@@ -11,4 +11,12 @@ public class NumberUtil {
     public static String formatInteger(double number) {
         return new DecimalFormat("#,###").format(number);
     }
+
+    public static String formatNumber(Number number) {
+        if(number instanceof Double){
+            return new DecimalFormat("#,###.##").format(number);
+        }
+        //Integer format
+        return new DecimalFormat("#,###").format(number);
+    }
 }

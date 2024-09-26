@@ -32,13 +32,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @PageTitle("Bienvenido | BarberPro")
-@Route("welcome")
-public class WelcomeView extends Div {
+@Route("welcome-profile")
+public class WelcomeProfileView extends Div {
 
     private ProfileService profileService;
     private RoleService roleService;
 
-    public WelcomeView(ProfileService profileService, RoleService roleService) {
+    public WelcomeProfileView(ProfileService profileService, RoleService roleService) {
         addClassName("welcome-view");
         this.profileService = profileService;
         this.roleService = roleService;

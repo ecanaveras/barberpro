@@ -61,8 +61,20 @@
 .card-dash-kpi{
     box-shadow: none;
     flex: 0 0 20%;
+}
+
+.card-dash-kpi [theme~='badge'] {
+    font-weight: bold;
+    padding: 0.2em calc(0.5em + var(--lumo-border-radius-s) / 4);
+
+    vaadin-icon{
+        height: var(--lumo-icon-size-s);
+    }
 
 }
+
+
+
 
 .highcharts-container {
     /*max-width: 500px;*/

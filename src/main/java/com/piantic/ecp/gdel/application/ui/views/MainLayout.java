@@ -135,7 +135,7 @@ public class MainLayout extends AppLayout {
             subMenu.add(new Hr());
             subMenu.addItem(LineAwesomeIcon.SIGN_OUT_ALT_SOLID.create(), event -> {
                 VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, null);
-                getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
+                getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
             }).add(new Text("Salir"));
 
             layout.add(menu);
@@ -150,7 +150,7 @@ public class MainLayout extends AppLayout {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         if (Application.getProfile() == null) {
-            getUI().ifPresent(ui -> ui.navigate(WelcomeView.class));
+            getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
         }
     }
 
