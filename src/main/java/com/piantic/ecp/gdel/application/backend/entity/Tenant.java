@@ -33,6 +33,9 @@ public class Tenant {
     @Column(name = "logo", columnDefinition = "BLOB")
     private byte[] logo;
 
+    @Column(name = "enabled", nullable = true, columnDefinition = "INT(1)")
+    private Boolean enabled = true;
+
     public Tenant() {}
 
     public Tenant(String nameTenant, String email) {
@@ -102,6 +105,14 @@ public class Tenant {
 
     public void setNit(String nit) {
         this.nit = nit;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

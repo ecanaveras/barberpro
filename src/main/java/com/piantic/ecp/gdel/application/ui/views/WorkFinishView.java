@@ -56,6 +56,8 @@ public class WorkFinishView extends Div {
 
         //Profile
         profileworking = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
+        Span spanprofile = new Span("Perfil");
+        H4 h4nameprofile = new H4(profileworking.getNameProfile());
 
         //Cliente
         findCustomer();
@@ -80,6 +82,8 @@ public class WorkFinishView extends Div {
 
         VerticalLayout layout = new VerticalLayout(
                 new Div(iconfinish, title, new Span("Verifique que la información es correcta"))
+                , spanprofile
+                , h4nameprofile
                 , spancliente
                 , h4name
                 , detailsServices

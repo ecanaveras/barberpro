@@ -11,6 +11,7 @@ import com.piantic.ecp.gdel.application.ui.views.WorkingView;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -79,15 +80,20 @@ public class AppointmentService implements GenericService<Appointment> {
     }
 
     public List<Appointment> findAppointmentByProfile(Profile profile) {
-        return appointmentRepository.findByProfileId(profile.getId());
+        return appointmentRepository.findByProfileId(Application.getTenant(), profile.getId());
     }
 
-    public List<Appointment> findAppointmentByProfileAndDate(Profile profile, LocalDateTime startOfDay, LocalDateTime endOfDay) {
-        return appointmentRepository.findByProfileAndDate(profile.getId(), startOfDay, endOfDay);
+    public List<Appointment> findAppointmentByProfileAndDate(Long profileId, LocalDateTime startOfDay, LocalDateTime endOfDay) {
+        return appointmentRepository.findByProfileAndDate(Application.getTenant(), profileId, startOfDay, endOfDay);
+    }
+
+    public List<Appointment> findLastTenAppointmentsOfCurrentMonth(Profile profile, LocalDateTime start, LocalDateTime end){
+        PageRequest topTen = PageRequest.of(0, 10);
+        return  appointmentRepository.findByTenantAndProfileAndAppointmentTimeBetweenAndEnabledTrueOrderByAppointmentTimeDesc(Application.getTenant(), profile, start, end, topTen);
     }
 
     public Appointment findByAppointmentId(Long appointmentId) {
-        return appointmentRepository.findbyId(appointmentId);
+        return appointmentRepository.findbyId(Application.getTenant(), appointmentId);
     }
 
     @Override
@@ -100,10 +106,8 @@ public class AppointmentService implements GenericService<Appointment> {
         return entity.getId();
     }
 
-    public List<Appointment> findByDateRange(LocalDate start, LocalDate end) {
-        LocalDateTime inicio = start.atStartOfDay();
-        LocalDateTime fin = end.atTime(LocalTime.MAX);
-        return appointmentRepository.findByTenantAndDateRange(Application.getTenant(), inicio, fin);
+    public List<Appointment> findByDateRange(LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByTenantAndDateRange(Application.getTenant(), start, end);
     }
 
     public List<Object[]> findAggWorkProfileDate(LocalDate start, LocalDate end) {
@@ -116,6 +120,10 @@ public class AppointmentService implements GenericService<Appointment> {
         LocalDateTime inicio = start.atStartOfDay();
         LocalDateTime fin = end.atTime(LocalTime.MAX);
         return appointmentRepository.findAggProductProfileDate(Application.getTenant().getId(), inicio, fin);
+    }
+
+    public void delete(Appointment appointment) {
+        appointmentRepository.deleteByTenantAndId(Application.getTenant(), appointment.getId());
     }
 }
 

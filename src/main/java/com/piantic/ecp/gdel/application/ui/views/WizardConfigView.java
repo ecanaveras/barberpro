@@ -237,7 +237,7 @@ public class WizardConfigView extends Div {
             profileForm.setSaveEventListener(profile -> {
                 profileService.save(profile);
                 profileForm.close();
-                grid.setItems(profileService.findByTenant(tenant));
+                grid.setItems(profileService.findByTenant());
             });
             profileForm.open();
         });
@@ -281,7 +281,16 @@ public class WizardConfigView extends Div {
         grid.setItems(productService.findAll(Application.getTenant()));
         grid.addColumn(Product::getTitle).setHeader("Servicios");
         grid.addColumn(Product::getPrice).setHeader("Precio");
-        grid.addColumn(Product::getProfiles).setHeader("Permisos");
+        grid.addComponentColumn(product -> {
+            Div divcontent = new Div();
+            divcontent.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.XSMALL);
+            product.getProfiles().forEach(profile -> {
+                divcontent.add(createBadge(profile.getNameProfile()));
+            });
+            return divcontent;
+        }).setHeader("Perfiles autorizados");
+
+
         contentTab1.add(grid);
 
         return contentTab1;
@@ -314,7 +323,7 @@ public class WizardConfigView extends Div {
         btnFinish.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         btnFinish.addClickListener(e -> {
             if (saveTenandInfo(binder.getBean())) {
-                getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
+                getUI().ifPresent(ui -> ui.navigate(WelcomeModeView.class));
             }
         });
 
@@ -389,7 +398,7 @@ public class WizardConfigView extends Div {
 
     private Span createBadge(String text) {
         Span badge = new Span(text);
-        badge.getElement().getThemeList().add("badge");
+        badge.getElement().getThemeList().add("badge warning");
         return badge;
     }
 

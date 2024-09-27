@@ -24,7 +24,7 @@ public class Appointment extends BaseEntity {
     private Set<AppointmentWork> appointmentWorks = new HashSet<>();
 
     @NotNull
-    private Double total;
+    private Double total = 0.0;
 
     public Appointment() {}
 
@@ -74,6 +74,7 @@ public class Appointment extends BaseEntity {
     public void setTotal(Double total) {
         this.total = total;
     }
+
 
     /**
      * Permite agregar trabajos realizados por el perfil.

@@ -1,8 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
-import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
-import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
@@ -25,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @PageTitle("Actividad")
@@ -37,8 +36,9 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
 
     private ActivityDetailForm activityDetailForm;
 
-    private Profile currentProfile;
     private VerticalLayout content;
+    private Tabs tabs;
+    private ComboBox<Integer> comboFilter;
 
     public ActivityView(AppointmentService activities, ProfileService profileService) {
         addClassName("activity-view");
@@ -48,13 +48,11 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
 
         add(createToolbar());
 
-        currentProfile = Application.getProfile();
-
         //Info de hoy
         content = new VerticalLayout();
         content.addClassName("activity-content");
 
-        loadInfoActivity(null, 1);
+        loadInfoActivity(tabs.getSelectedTab(), 1);
 
         add(activityDetailForm);
         add(content);
@@ -94,9 +92,24 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
 
         //Load Info
         content.removeAll();
-        activities.findAppointmentByProfileAndDate(Application.getProfile(), localDateStart, localDateEnd).forEach(appointment -> {
-            content.add(createContentLayout(appointment));
+        List<Appointment> result;
+        if (tabs.getTabAt(0).equals(tab)) {
+            result = activities.findByDateRange(localDateStart, localDateEnd);
+            result.forEach(appointment -> {
+                content.add(createContentLayout(appointment));
+            });
+        } else {
+            result = activities.findAppointmentByProfileAndDate(Long.valueOf(tab.getId().get()), localDateStart, localDateEnd);
+            result.forEach(appointment -> {
+                content.add(createContentLayout(appointment));
+            });
+        }
+        tab.getChildren().forEach(children -> {
+            if (children.getElement().toString().length()>20) {
+                tab.remove(children);
+            }
         });
+        tab.add(createBadge(result.size()));
     }
 
     private Div createToolbar() {
@@ -104,15 +117,20 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
         toolbar.addClassName("toolbar-feed");
         toolbar.addClassNames(LumoUtility.Position.STICKY);
         //TODO Controlar cuando mostrar estos TABS
-        Tabs tabs = new Tabs();
+        tabs = new Tabs();
         tabs.addThemeVariants(TabsVariant.LUMO_HIDE_SCROLL_BUTTONS);
         tabs.addThemeVariants(TabsVariant.LUMO_SMALL);
         tabs.addClassNames(LumoUtility.FontSize.SMALL);
-        Tab alltab = new Tab("TODOS");
+        Tab alltab = new Tab(new Span("TODOS"));
         tabs.add(alltab);
-        profileService.findAll().forEach(profile -> {
-            tabs.add(new Tab(profile.getNameProfile().toUpperCase()));
+        tabs.addSelectedChangeListener(event -> loadInfoActivity(tabs.getSelectedTab(), comboFilter.getValue()));
+        profileService.findProfilesActives().forEach(profile -> {
+            Tab tab = new Tab(profile.getNameProfile().toUpperCase());
+            tab.setId(profile.getId().toString());
+            tabs.add(tab);
+
         });
+
         Map<Integer, String> optionFilterDate = new HashMap<>();
         optionFilterDate.put(1, "Hoy");
         optionFilterDate.put(2, "Ayer");
@@ -122,7 +140,7 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
         optionFilterDate.put(6, "Mes anterior");
 
         //TODO Contemplar la opcion PopoverDropdownField en Vaadin (POPOVER)
-        ComboBox<Integer> comboFilter = new ComboBox();
+        comboFilter = new ComboBox();
         comboFilter.addClassNames(LumoUtility.FontSize.XSMALL);
         comboFilter.addThemeVariants(ComboBoxVariant.LUMO_SMALL);
         comboFilter.setItems(optionFilterDate.keySet());
@@ -134,6 +152,14 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
         toolbar.add(comboFilter);
 
         return toolbar;
+    }
+
+    private Span createBadge(int value) {
+        Span badge = new Span(String.valueOf(value));
+        badge.setId("badge");
+        badge.getElement().getThemeList().add("badge small pill");
+        badge.getStyle().set("margin-inline-start", "var(--lumo-space-xs)");
+        return badge;
     }
 
 
@@ -169,7 +195,7 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
         hLayout.add(
                 new HorizontalLayout(LineAwesomeIcon.USER_CIRCLE.create(),
                         new Span(appointment.getProfile().getNameProfile())),
-                        new Span(LineAwesomeIcon.CASH_REGISTER_SOLID.create(), new Span(NumberUtil.formatNumber(appointment.getTotal()))
+                new Span(LineAwesomeIcon.CASH_REGISTER_SOLID.create(), new Span(NumberUtil.formatNumber(appointment.getTotal()))
                 ));
 
         Div divfooter = new Div();

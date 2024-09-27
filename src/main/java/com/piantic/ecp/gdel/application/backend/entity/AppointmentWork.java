@@ -19,6 +19,7 @@ public class AppointmentWork extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @NotNull
     private int quantity;
 
     @NotNull

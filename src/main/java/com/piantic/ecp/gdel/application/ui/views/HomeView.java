@@ -1,12 +1,8 @@
-package com.piantic.ecp.gdel.application.ui.views.specials;
+package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import com.piantic.ecp.gdel.application.backend.repository.TenandRepository;
-import com.piantic.ecp.gdel.application.ui.views.MainLayout;
-import com.piantic.ecp.gdel.application.ui.views.WelcomeModeView;
-import com.piantic.ecp.gdel.application.ui.views.WizardConfigView;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -33,16 +29,23 @@ public class HomeView extends VerticalLayout {
 
     public HomeView(TenandRepository tenandService) {
         addClassName("home-view");
+
+        //Manager TENANT
         if (Application.getTenant() == null) {
-            tenant = tenandService.findTenantByEmail(Application.getEmailAccount());
+            tenant = tenandService.findTenantByEmailAndEnabledTrue(Application.getEmailAccount());
             if (tenant == null) {
                 getUI().ifPresent(ui -> ui.navigate(WizardConfigView.class));
             } else {
                 VaadinSession.getCurrent().setAttribute(Application.SESSION_TENANT, tenant);
-                UI.getCurrent().navigate(MainLayout.class);
+                UI.getCurrent().navigate(WelcomeModeView.class);
             }
         } else {
             tenant = Application.getTenant();
+        }
+
+        //Manager MODE
+        if(Application.getModeApp()==null){
+            UI.getCurrent().navigate(WelcomeModeView.class);
         }
 
         Div divmain = new Div();
@@ -113,13 +116,5 @@ public class HomeView extends VerticalLayout {
         div.add(new Span(name));
 
         return div;
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
-        if(Application.getModeApp()==null){
-            UI.getCurrent().navigate(WelcomeModeView.class);
-        }
     }
 }

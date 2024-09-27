@@ -4,7 +4,7 @@ import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import com.piantic.ecp.gdel.application.backend.service.TenandService;
-import com.piantic.ecp.gdel.application.ui.views.specials.HomeView;
+import com.piantic.ecp.gdel.application.ui.views.specials.SelectProfileView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -72,7 +72,11 @@ public class MainLayout extends AppLayout {
 
         nav.addItem(new SideNavItem("Inicio", HomeView.class, LineAwesomeIcon.HOME_SOLID.create()));
         nav.addItem(new SideNavItem("Mi Negocio", DashboardView.class, LineAwesomeIcon.CHART_AREA_SOLID.create()));
-        nav.addItem(new SideNavItem("Area de Trabajo", WorkingView.class, LineAwesomeIcon.FIRE_ALT_SOLID.create()));
+        if(Application.getModeApp()==1) {
+            nav.addItem(new SideNavItem("Area de Trabajo", SelectProfileView.class, LineAwesomeIcon.FIRE_ALT_SOLID.create()));
+        }else {
+            nav.addItem(new SideNavItem("Area de Trabajo", WorkingView.class, LineAwesomeIcon.FIRE_ALT_SOLID.create()));
+        }
         nav.addItem(new SideNavItem("Actividad", ActivityView.class, LineAwesomeIcon.HEARTBEAT_SOLID.create()));
         nav.addItem(new SideNavItem("Clientes", CustomerView.class, LineAwesomeIcon.ADDRESS_BOOK.create()));
 
@@ -92,64 +96,66 @@ public class MainLayout extends AppLayout {
     private Footer createFooter() {
         Footer layout = new Footer();
         Profile profile = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
-        if (profile != null) {
-
-            Div divencabezado = new Div();
-            divencabezado.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.SMALL, LumoUtility.AlignItems.CENTER);
-
-            Avatar avatarprofile = new Avatar(profile.getNameProfile());
-
-            Span nameprofile = new Span(profile.getNameProfile());
-            nameprofile.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.TextColor.BODY, LumoUtility.FontSize.SMALL);
-
-            Span activeprofile = new Span("Activo");
-            activeprofile.getElement().getThemeList().add("badge success");
-
-            Div divprofilename = new Div(nameprofile);
-            divprofilename.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START, LumoUtility.Gap.XSMALL);
-            divprofilename.add(nameprofile, activeprofile);
-
-            divencabezado.add(avatarprofile, divprofilename);
-
-
-            Avatar avatarprofile2 = new Avatar(profile.getNameProfile());
-            MenuBar menu = new MenuBar();
-            menu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY, MenuBarVariant.LUMO_SMALL);
-            MenuItem avataritem = menu.addItem(avatarprofile2);
-            SubMenu subMenu = avataritem.getSubMenu();
-            subMenu.addItem(divencabezado).setEnabled(false);
-            subMenu.add(new Hr());
-            subMenu.addItem(LineAwesomeIcon.USER.create(), e -> {
-            }).add(new Text("Perfil"));
-            subMenu.addItem(LineAwesomeIcon.TOOLS_SOLID.create(), e -> {
-            }).add(new Text("Preferencias"));
-            MenuItem tema = subMenu.addItem(LineAwesomeIcon.SUN.create());
-            tema.add(new Text("Tema"));
-            SubMenu subMenu1 = tema.getSubMenu();
-            subMenu1.addItem(LineAwesomeIcon.SUN.create(), e -> {
-                UI.getCurrent().getElement().getThemeList().remove("dark");
-            }).add(new Text("Claro"));
-            subMenu1.addItem(LineAwesomeIcon.MOON.create(), e -> {
-                UI.getCurrent().getElement().getThemeList().add("dark");
-            }).add(new Text("Oscuro"));
-            subMenu.add(new Hr());
-            subMenu.addItem(LineAwesomeIcon.SIGN_OUT_ALT_SOLID.create(), event -> {
-                VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, null);
-                getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
-            }).add(new Text("Salir"));
-
-            layout.add(menu);
-
+        if (profile == null) {
+            profile = new Profile();
+            profile.setNameProfile("MODO ASISITIDO");
         }
+
+        Div divencabezado = new Div();
+        divencabezado.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.SMALL, LumoUtility.AlignItems.CENTER);
+
+        Avatar avatarprofile = new Avatar(profile.getNameProfile());
+
+        Span nameprofile = new Span(profile.getNameProfile());
+        nameprofile.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.TextColor.BODY, LumoUtility.FontSize.SMALL);
+
+        Span activeprofile = new Span("Activo");
+        activeprofile.getElement().getThemeList().add("badge success");
+
+        Div divprofilename = new Div(nameprofile);
+        divprofilename.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignItems.START, LumoUtility.Gap.XSMALL);
+        divprofilename.add(nameprofile, activeprofile);
+
+        divencabezado.add(avatarprofile, divprofilename);
+
+
+        Avatar avatarprofile2 = new Avatar(profile.getNameProfile());
+        MenuBar menu = new MenuBar();
+        menu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY, MenuBarVariant.LUMO_SMALL);
+        MenuItem avataritem = menu.addItem(avatarprofile2);
+        SubMenu subMenu = avataritem.getSubMenu();
+        subMenu.addItem(divencabezado).setEnabled(false);
+        subMenu.add(new Hr());
+        subMenu.addItem(LineAwesomeIcon.USER.create(), e -> {
+        }).add(new Text("Perfil"));
+        subMenu.addItem(LineAwesomeIcon.TOOLS_SOLID.create(), e -> {
+        }).add(new Text("Preferencias"));
+        MenuItem tema = subMenu.addItem(LineAwesomeIcon.SUN.create());
+        tema.add(new Text("Tema"));
+        SubMenu subMenu1 = tema.getSubMenu();
+        subMenu1.addItem(LineAwesomeIcon.SUN.create(), e -> {
+            UI.getCurrent().getElement().getThemeList().remove("dark");
+        }).add(new Text("Claro"));
+        subMenu1.addItem(LineAwesomeIcon.MOON.create(), e -> {
+            UI.getCurrent().getElement().getThemeList().add("dark");
+        }).add(new Text("Oscuro"));
+        subMenu.add(new Hr());
+        subMenu.addItem(LineAwesomeIcon.SIGN_OUT_ALT_SOLID.create(), event -> {
+            VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, null);
+            VaadinSession.getCurrent().setAttribute(Application.SESSION_MODE_APP, null);
+            getUI().ifPresent(ui -> ui.navigate(WelcomeModeView.class));
+        }).add(new Text("Salir"));
+
+        layout.add(menu);
+
         return layout;
     }
-
 
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
-        if (Application.getProfile() == null) {
+        if (Application.getModeApp() == 2 && Application.getProfile() == null) {
             getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
         }
     }

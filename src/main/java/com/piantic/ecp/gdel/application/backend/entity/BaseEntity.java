@@ -12,6 +12,21 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @ManyToOne()
+    @JoinColumn(name = "tenant_id", nullable = false)
+    private Tenant tenant;
+
+    @Column(name = "enabled", nullable = true, columnDefinition = "INT(1)")
+    private Boolean enabled = true;
+
+    public Tenant getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
+    }
+
     public Long getId() {
         return id;
     }
@@ -20,16 +35,16 @@ public class BaseEntity {
         return id != null;
     }
 
-    @ManyToOne()
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
-
-    public Tenant getTenant() {
-        return tenant;
+    public Boolean isEnabled() {
+        return enabled;
     }
 
-    public void setTenant(Tenant tenant) {
-        this.tenant = tenant;
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

@@ -1,10 +1,14 @@
 package com.piantic.ecp.gdel.application.ui.views.details;
 
+import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
+import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
 import com.piantic.ecp.gdel.application.ui.views.ProfileView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,11 +16,13 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.time.format.DateTimeFormatter;
+
 
 public class ProfileViewDetail extends VerticalLayout {
 
-    private final ProfileService profileService;
-    private final Long id;
+    private ProfileService profileService;
+    private Long id;
     private Profile profile;
     private Div content;
     Binder<Profile> binder = new Binder<>(Profile.class);
@@ -56,7 +62,7 @@ public class ProfileViewDetail extends VerticalLayout {
         getData(id);
         H4 personalInfo = new H4("Información Personal");
         H4 contactInfo = new H4("Información de Contacto");
-        H4 rolesInfo = new H4("Roles");
+        H4 rolesInfo = new H4("Servicios Autorizados");
         H4 activityInfo = new H4("Actividad Reciente");
 
         if (content != null) {
@@ -66,6 +72,7 @@ public class ProfileViewDetail extends VerticalLayout {
 
         if (content == null)
             content = new Div();
+        content.setWidthFull();
         content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Gap.MEDIUM);
 
         content.add(personalInfo);
@@ -80,23 +87,30 @@ public class ProfileViewDetail extends VerticalLayout {
         content.add(rolesInfo);
 
 
-        Div divroles = new Div();
-        divroles.addClassName("div-roles");
-        divroles.addClassNames(LumoUtility.Display.FLEX
+        Div divservices = new Div();
+        divservices.addClassName("div-services");
+        divservices.addClassNames(LumoUtility.Display.FLEX
                 , LumoUtility.FlexWrap.WRAP
-                , LumoUtility.Gap.Column.SMALL);
-        profileService.getRolesByProfileId(id).forEach(role -> {
-            Span spanrole = new Span(role.getName());
-            spanrole.getElement().getThemeList().add("badge");
-            divroles.add(spanrole);
+                , LumoUtility.Gap.XSMALL);
+        profileService.getProductsByProfileId(profile).forEach(product -> {
+            Span spanrole = new Span(product.getTitle());
+            spanrole.getElement().getThemeList().add("badge warning pill");
+            divservices.add(spanrole);
         });
 
-        content.add(divroles);
+        content.add(divservices);
 
         content.add(activityInfo);
 
-        //TODO Agregar Actividad reciente
+        Grid<Appointment> gridlastappoint = new Grid<>(Appointment.class, false);
+        gridlastappoint.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COMPACT);
+        gridlastappoint.setItems(profileService.getTenLastAppoimentsByProfileId(profile));
+        gridlastappoint.addComponentColumn(appointment-> new Span(appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"))))
+                .setAutoWidth(true).setFlexGrow(1);
+        gridlastappoint.addComponentColumn(appointment -> new Span(appointment.getCustomer().getName())).setAutoWidth(true);
+        gridlastappoint.addComponentColumn(appointment -> new Span(NumberUtil.formatNumber(appointment.getTotal()))).setAutoWidth(true);
 
+        content.add(gridlastappoint);
 
         add(content);
     }

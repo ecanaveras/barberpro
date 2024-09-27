@@ -1,6 +1,5 @@
 package com.piantic.ecp.gdel.application.ui.views.forms;
 
-import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Product;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
@@ -70,13 +69,13 @@ public class ProductForm extends GenericForm<Product> {
         });
 
         //Profiles disponibles
-        mlboxprofiles.setItems(profileService.findByTenant(Application.getTenant()));
+        mlboxprofiles.setItems(profileService.findProfilesActives());
         mlboxprofiles.setItemLabelGenerator(Profile::getNameProfile);
         mlboxprofiles.addSelectionListener(listener -> {
             profileSet = mlboxprofiles.getSelectedItems();
         });
         VerticalLayout vlprofiles = new VerticalLayout();
-        vlprofiles.add(new Span(new Span(LineAwesomeIcon.USER_CIRCLE.create()), new Span("¿Qué perfil lo puede trabajar?")), mlboxprofiles);
+        vlprofiles.add(new Span(new Span(LineAwesomeIcon.USER_CIRCLE.create()), new Span("¿Qué perfil puede usar el servicio?")), mlboxprofiles);
 
         // Form Layout
 //        formLayout.add(title, description, price, commissions, gain, commission, observations);

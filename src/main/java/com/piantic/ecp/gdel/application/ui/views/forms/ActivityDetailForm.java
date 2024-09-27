@@ -2,10 +2,16 @@ package com.piantic.ecp.gdel.application.ui.views.forms;
 
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
+import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
+import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
+import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
+import com.piantic.ecp.gdel.application.ui.views.ActivityView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.SvgIcon;
@@ -15,7 +21,6 @@ import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -80,6 +85,7 @@ public class ActivityDetailForm extends Div {
         tabSheet.setWidthFull();
         tabSheet.add("Actividad", getAppointment());
         tabSheet.add("Rentabilidad", getRentabilidad());
+        tabSheet.add("Opciones", getOpciones());
         formLayout.add(tabSheet);
 
     }
@@ -102,10 +108,10 @@ public class ActivityDetailForm extends Div {
             sumPer.set(sumPer.get() + appointmentWork.getValueCommision());
             porc.set(appointmentWork.getCommissions());
         });
-        layout.add(cardItem(LineAwesomeIcon.WALLET_SOLID.create(), "Negocio $", new DecimalFormat("#,###.##").format(sumGan.get())));
-        layout.add(cardItem(LineAwesomeIcon.HAND_HOLDING_SOLID.create(), "Perfil $", new DecimalFormat("#,###.##").format(sumPer.get())));
+        layout.add(cardItem(LineAwesomeIcon.WALLET_SOLID.create(), "Negocio $", NumberUtil.formatNumber(sumGan.get())));
+        layout.add(cardItem(LineAwesomeIcon.HAND_HOLDING_SOLID.create(), "Perfil $", NumberUtil.formatNumber(sumPer.get())));
         if (appointment.getAppointmentWorks().size() == 1)
-            layout.add(cardItem(LineAwesomeIcon.PERCENTAGE_SOLID.create(), "Porcentaje", new DecimalFormat("###.##").format(porc.get())));
+            layout.add(cardItem(LineAwesomeIcon.PERCENTAGE_SOLID.create(), "Porcentaje", NumberUtil.formatNumber(porc.get())));
 
         return layout;
     }
@@ -131,6 +137,49 @@ public class ActivityDetailForm extends Div {
         return layout;
     }
 
+
+    private Component getOpciones() {
+        VerticalLayout layout = new VerticalLayout();
+        H4 title = new H4("Opciones");
+        title.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
+        Button btnDelete = new Button("Eliminar Actividad", LineAwesomeIcon.TRASH_ALT.create());
+        btnDelete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+        btnDelete.addClassNames(LumoUtility.Margin.AUTO);
+        btnDelete.addClickListener(e -> {
+            Span idactividad = new Span(appointment.getId().toString());
+            idactividad.getElement().getThemeList().add("badge");
+
+            ConfirmDialog dialog = getConfirmDialog(idactividad);
+            dialog.addConfirmListener(l -> {
+                appointment.setEnabled(false);
+                appointmentService.save(appointment);
+                NotificationUtil.showSuccess("Actividad eliminada");
+                dialog.close();
+                getUI().ifPresent(ui -> ui.navigate(ActivityView.class));
+                UI.getCurrent().refreshCurrentRoute(true);
+                this.removeClassName("visible");
+            });
+
+            dialog.open();
+        });
+
+        layout.add(title, MessagesUtil.showWarning("IMPORNTANTE: Las actividades eliminadas afectan las cifras, y demás datos relacionados, actue con precaución!"), btnDelete);
+        return layout;
+    }
+
+    private static ConfirmDialog getConfirmDialog(Span idactividad) {
+        ConfirmDialog dialog = new ConfirmDialog();
+        dialog.setHeader("Eliminar Actividad");
+        dialog.setText(new Span(new Span("¿Seguro que desea eliminar la Actividad? "), idactividad));
+        dialog.setCloseOnEsc(true);
+        dialog.setCancelable(true);
+        dialog.setCancelText("Cancelar");
+        dialog.setConfirmText("Eliminar");
+        dialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName() + " " + ButtonVariant.LUMO_PRIMARY.getVariantName());
+        dialog.setCancelButtonTheme(ButtonVariant.LUMO_TERTIARY.getVariantName());
+        dialog.addCancelListener(e -> e.getSource().close());
+        return dialog;
+    }
 
     public void updateUI() {
         removeAll();

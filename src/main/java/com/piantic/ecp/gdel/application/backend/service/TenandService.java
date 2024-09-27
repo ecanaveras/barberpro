@@ -20,7 +20,7 @@ public class TenandService {
     }
 
     public Tenant findTenantByEmail(String email) {
-        return tenandRepository.findTenantByEmail(email);
+        return tenandRepository.findTenantByEmailAndEnabledTrue(email);
     }
 
     public void save(Tenant tenand) {

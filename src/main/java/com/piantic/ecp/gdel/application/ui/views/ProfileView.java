@@ -1,7 +1,6 @@
 package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.RoleService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
@@ -25,8 +24,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-
-import java.util.Set;
 
 @PageTitle("Perfiles")
 @Route(value = "profile", layout = MainLayout.class)
@@ -130,7 +127,8 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + profile.getNameProfile() + "\"?",
                 "¿Desea borrar el registro?",
                 "Eliminar", e -> {
-            profileService.delete(profile);
+            profile.setEnabled(false);
+            profileService.save(profile);
             updateList();
             getUI().ifPresent(ui -> ui.navigate(ProfileView.class));
         }, "Cancelar", e -> e.getSource().close());
@@ -156,25 +154,6 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         } else {
             getUI().ifPresent(ui -> ui.navigate(ProfileView.class));
         }
-    }
-
-    /**
-     * Crea una coleción de badges
-     * @param roles
-     * @return
-     */
-    private Div getSpanWorkItem(Set<Role> roles) {
-        Div divspan = new Div();
-        divspan.addClassNames(LumoUtility.Display.FLEX,
-                LumoUtility.Gap.Column.SMALL,
-                LumoUtility.Gap.Row.SMALL,
-                LumoUtility.FlexWrap.WRAP);
-        roles.forEach(work -> {
-            Span spanw = new Span(work.getName());
-            spanw.getElement().getThemeList().add("badge warning");
-            divspan.add(spanw);
-        });
-        return divspan;
     }
 
     @Override

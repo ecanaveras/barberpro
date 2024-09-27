@@ -137,7 +137,8 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + customer.getName() + "\"?",
                 "¿Desea borrar el registro?",
                 "Eliminar", e -> {
-            customerService.delete(customer);
+            customer.setEnabled(false);
+            customerService.save(customer);
             updateList();
             getUI().ifPresent(ui -> ui.navigate(CustomerView.class));
         }, "Cancelar", e -> e.getSource().close());

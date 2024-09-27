@@ -148,7 +148,8 @@ public class RoleView extends HorizontalLayout implements HasUrlParameter<Long> 
                 NotificationUtil.showWarning("No es posible borrar el ROLE_ADMINISTRADOR");
                 return;
             }
-            roleService.delete(role);
+            role.setEnabled(false);
+            roleService.save(role);
             updateList();
             getUI().ifPresent(ui -> ui.navigate(RoleView.class));
         }, "Cancelar", e -> e.getSource().close());

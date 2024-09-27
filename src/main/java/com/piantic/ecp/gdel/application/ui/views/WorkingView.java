@@ -8,7 +8,9 @@ import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.service.ProductService;
 import com.piantic.ecp.gdel.application.ui.views.dialog.FindDialogView;
+import com.piantic.ecp.gdel.application.ui.views.specials.SelectProfileView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -26,14 +28,10 @@ import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.validation.constraints.NotNull;
 import org.vaadin.lineawesome.LineAwesomeIcon;
@@ -45,7 +43,7 @@ import java.util.stream.Collectors;
 
 @PageTitle("Trabajando")
 @Route(value = "working", layout = MainLayout.class)
-public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
+public class WorkingView extends VerticalLayout implements BeforeEnterObserver, BeforeLeaveObserver {
 
     CustomerService customerService;
     ProductService productService;
@@ -68,6 +66,8 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     Profile profileworking;
 
+    private Integer modeApp = 1;
+
 //    Editor<WorkAdded> editorsales = gridsales.getEditor();
 
     //Preferents
@@ -83,20 +83,25 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         this.customerService = customerService;
         this.appointmentService = appointmentService;
 
+        //Modo APP
+        modeApp = Application.getModeApp();
+
         //Profile
         profileworking = Application.getProfile();
         if (profileworking == null) {
-            getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
+            if (modeApp == 1) {
+                getUI().ifPresent(ui -> ui.navigate(SelectProfileView.class));
+            } else {
+                getUI().ifPresent(ui -> ui.navigate(WelcomeProfileView.class));
+            }
         }
+
 
         divleft.addClassName("div-left");
         divright.addClassName("div-right");
         divsummary.addClassName("div-summary");
 
         divfinal.addClassName("div-final");
-
-        //Carga información local de preferencias.
-        loadInfoLocalStorage();
 
         configureGrids();
 
@@ -117,9 +122,22 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         content.add(divleft, divright, divfinal);
 
         //Title
-        H3 title = new H3(Application.getProfile().getNameProfile());
+
+        H3 title = new H3();
+        Button btnChangeProfile = new Button(LineAwesomeIcon.EXCHANGE_ALT_SOLID.create(), event -> UI.getCurrent().navigate(SelectProfileView.class));
+        btnChangeProfile.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
+        btnChangeProfile.setTooltipText("Cambiar perfil");
+        btnChangeProfile.setVisible(false);
+        if (modeApp == 2) {
+            title.setText(String.format("%s", profileworking.getNameProfile()));
+            UI.getCurrent().getPage().setTitle("Trabajando: MODO PERFIL");
+        } else {
+            btnChangeProfile.setVisible(true);
+            UI.getCurrent().getPage().setTitle("Trabajando: MODO ASISTIDO");
+            title.setText(String.format("%s", profileworking.getNameProfile()));
+        }
         //title.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.FontSize.MEDIUM);
-        HorizontalLayout contentTitle = new HorizontalLayout(title, divtoolbar);
+        HorizontalLayout contentTitle = new HorizontalLayout(title, btnChangeProfile, divtoolbar);
         contentTitle.addClassName("content-title");
         contentTitle.setWidthFull();
         add(contentTitle, content);
@@ -151,6 +169,9 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
                         controlShowViews(false);
                         if (vfinal.isSaved()) {
                             resetWorkspace();
+                            if (Application.getModeApp() == 1) {
+                                getUI().ifPresent(ui -> ui.navigate(SelectProfileView.class));
+                            }
                         }
                     });
                     divfinal.add(vfinal);
@@ -165,7 +186,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         btnLimpiar = new Button("Reiniciar", LineAwesomeIcon.UNDO_ALT_SOLID.create());
         btnLimpiar.addThemeVariants(ButtonVariant.LUMO_ERROR);
         btnLimpiar.addThemeVariants(ButtonVariant.LUMO_ICON);
-        btnLimpiar.addClickListener(e -> getUI().flatMap(ui -> ui.navigate(WorkingView.class)).ifPresent(workingView -> {
+        btnLimpiar.addClickListener(e -> {
             //Limpiar zona de trabajo
             ConfirmDialog confirmDialog = new ConfirmDialog("Aviso!", "¿Seguro quieres empezar de Nuevo?", "Cancelar", event -> {
             });
@@ -176,28 +197,9 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
                 resetWorkspace();
             });
             confirmDialog.open();
-        }));
-
-        /*MenuBar menuBar = new MenuBar();
-        menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
-        MenuItem options = menuBar.addItem(LineAwesomeIcon.BARS_SOLID.create());
-        SubMenu subMenu = options.getSubMenu();
-        MenuItem showbtns = subMenu.addItem("Mostrar Boton Agregar", event -> {
-            WebStorage.setItem("working.grid.show_buttons", String.valueOf(!showbuttons));
-            this.getUI().ifPresent(ui -> {
-                ui.navigate(WorkingView.class).ifPresent(e -> {
-                    loadInfoLocalStorage();
-                });
-            });
         });
-        showbtns.setCheckable(true);
-        showbtns.setChecked(showbuttons);*/
 
-
-//        toolbar.add(btnContinuar, btnLimpiar, menuBar, getProgreso());
         toolbar.add(btnContinuar, btnLimpiar, getProgreso());
-//        toolbar.setAlignSelf(Alignment.END, btnContinuar);
-
         divtoolbar.add(toolbar);
     }
 
@@ -296,9 +298,9 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
      * Carga los servicios disponibles para el perfil
      */
     private void loadDataGridServices() {
-        if(profileworking!=null) {
+        if (profileworking != null) {
             List<Product> productList = productService.findProductsByProfile(Application.getTenant(), profileworking);
-            if(productList.isEmpty()){
+            if (productList.isEmpty()) {
                 ConfirmDialog confirmDialog = new ConfirmDialog();
                 confirmDialog.setCloseOnEsc(true);
                 confirmDialog.setHeader("Aviso");
@@ -369,7 +371,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
     /**
      * Limpia la zona de Trabajo
      */
-    private void resetWorkspace() {
+    public void resetWorkspace() {
         gridservices.setItems(new ArrayList<>());
         gridsales.setItems(new ArrayList<>());
         loadDataGridServices();
@@ -485,12 +487,6 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
         return p;
     }
 
-    private void loadInfoLocalStorage() {
-        //TODO Accer diccionario de opciones
-        WebStorage.getItem("working.grid.show_buttons", value -> {
-            showbuttons = Boolean.parseBoolean(value);
-        });
-    }
 
     /**
      * Oculta o muestra los elementos de la UI
@@ -515,7 +511,51 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        loadInfoLocalStorage();
+        if (Application.getModeApp() == 0) {
+            event.forwardTo(WelcomeModeView.class);
+        } else if (Application.getModeApp() == 1 && Application.getProfile() == null) {
+            event.forwardTo(SelectProfileView.class);
+        } else if (Application.getModeApp() == 2 && Application.getProfile() == null) {
+            event.forwardTo(WelcomeProfileView.class);
+        }
+//        UI.getCurrent().getPage().executeJs(
+//                "window.addEventListener('beforeunload', function (event) {" +
+//                        "  event.preventDefault();" +
+//                        "  event.returnValue = 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?';" +
+//                        "});"
+//        );
+
+        if (modeApp == 2) {
+            UI.getCurrent().getPage().setTitle("Trabajando: MODO PERFIL");
+        } else {
+            UI.getCurrent().getPage().setTitle("Trabajando: MODO ASISTIDO");
+        }
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        if (gridsales.getListDataView().getItemCount() > 0) {
+            // Evitar la navegación y mostrar el diálogo de confirmación
+            ConfirmDialog dialog = new ConfirmDialog();
+            dialog.setHeader("Cambios sin guardar");
+            dialog.setText("Tienes cambios sin guardar. ¿Estás seguro de que quieres salir de esta página?");
+            dialog.setCancelable(true);
+            dialog.setConfirmText("Salir");
+            dialog.setCancelText("Cancelar");
+            dialog.setCancelButtonTheme(ButtonVariant.LUMO_CONTRAST.getVariantName());
+            dialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName());
+
+            dialog.addConfirmListener(e -> {
+                // Si el usuario confirma, permite la navegación
+                // Se asume que si el usuario confirmó, está bien salir
+                event.getContinueNavigationAction().proceed();  // Permitir la navegación
+            });
+
+            dialog.open();
+
+            // Cancelar la navegación temporalmente hasta que el usuario confirme
+            event.postpone();
+        }
     }
 
 

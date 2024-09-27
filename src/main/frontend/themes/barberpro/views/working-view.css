@@ -157,6 +157,9 @@ div.no-visible {
     }
 }
 
+.div-selectprofile.select-profile-on {
+    display: block;
+}
 
 .content-title {
     align-self: baseline;
@@ -221,7 +224,8 @@ div.no-visible {
 .avatar-service {
     max-height: 32px;
     max-width: 32px;
-    color: white;
+    color: var(--lumo-base-color);
+    font-weight: bold;
 }
 
 .mini-form > vaadin-number-field {

@@ -2,7 +2,9 @@ package com.piantic.ecp.gdel.application;
 
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
+import com.piantic.ecp.gdel.application.ui.views.WelcomeModeView;
 import com.piantic.ecp.gdel.application.ui.views.WelcomeProfileView;
+import com.piantic.ecp.gdel.application.ui.views.HomeView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.WebStorage;
@@ -46,7 +48,12 @@ public class Application implements AppShellConfigurator {
      * @return
      */
     public static Integer getModeApp(){
-        return (Integer) VaadinSession.getCurrent().getAttribute(SESSION_MODE_APP);
+        Integer mode = (Integer) VaadinSession.getCurrent().getAttribute(SESSION_MODE_APP);
+        if(mode == null){
+            UI.getCurrent().navigate(WelcomeModeView.class);
+            return 0;
+        }
+        return mode;
     }
 
     /**
@@ -55,8 +62,10 @@ public class Application implements AppShellConfigurator {
      */
     public static Profile getProfile() {
         Profile profile = (Profile) VaadinSession.getCurrent().getAttribute(SESSION_PROFILE);
-        if (profile == null) {
-            UI.getCurrent().navigate(WelcomeProfileView.class);
+        if(getModeApp()==2) {
+            if (profile == null) {
+                UI.getCurrent().navigate(WelcomeProfileView.class);
+            }
         }
         return profile;
     }
@@ -69,11 +78,11 @@ public class Application implements AppShellConfigurator {
         if (VaadinSession.getCurrent() != null) {
             Tenant tenand = (Tenant) VaadinSession.getCurrent().getAttribute(SESSION_TENANT);
             if(tenand == null) {
-                UI.getCurrent().navigate(WelcomeProfileView.class);
+                UI.getCurrent().navigate(HomeView.class);
             }
             return tenand;
         }
-        UI.getCurrent().navigate(WelcomeProfileView.class);
+        UI.getCurrent().navigate(WelcomeModeView.class);
         return null;
     }
 

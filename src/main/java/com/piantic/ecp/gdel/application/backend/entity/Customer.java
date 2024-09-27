@@ -27,6 +27,9 @@ public class Customer extends BaseEntity {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<Appointment> appointments = new HashSet<>();
 
+    @Column(name = "enabled", nullable = false, columnDefinition = "INT(1)")
+    private Boolean enabled = true;
+
     public Customer() {}
 
     public Customer(String name, String phone, String email, Boolean favorite) {
@@ -78,5 +81,13 @@ public class Customer extends BaseEntity {
 
     public void setAppointments(Set<Appointment> appointments) {
         this.appointments = appointments;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

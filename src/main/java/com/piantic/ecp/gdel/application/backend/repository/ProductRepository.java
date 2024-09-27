@@ -12,17 +12,17 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("select t from Product t " +
-            " where lower(t.title) like lower(concat('%', :searchTerm, '%')) ")
-    List<Product> search(@Param("searchTerm") String searchTerm);
+            " where t.enabled=true and t.tenant=:tenant and lower(t.title) like lower(concat('%', :searchTerm, '%')) ")
+    List<Product> search(Tenant tenant, @Param("searchTerm") String searchTerm);
 
-    @Query("select a from Product a LEFT JOIN FETCH a.profilesProducts p where a.tenant=:tenantId")
+    @Query("select a from Product a LEFT JOIN FETCH a.profilesProducts p where a.enabled=true and a.tenant=:tenantId")
     List<Product> findAllByTenant(@Param("tenantId") Tenant tenantId);
 
-    @Query("select a from Product a LEFT JOIN FETCH a.profilesProducts p where a.tenant=:tenantId and lower(a.title) like lower(concat('%', :searchTerm, '%'))")
+    @Query("select a from Product a LEFT JOIN FETCH a.profilesProducts p where a.enabled=true and a.tenant=:tenantId and lower(a.title) like lower(concat('%', :searchTerm, '%'))")
     List<Product> searchByTenant(@Param("tenantId") Tenant tenantId, @Param("searchTerm") String searchTerm);
 
 
-    @Query("SELECT w FROM Product w LEFT JOIN FETCH w.profilesProducts p WHERE p.tenant=:tenantId and p.profile=:profileId")
+    @Query("SELECT w FROM Product w LEFT JOIN FETCH w.profilesProducts p WHERE w.enabled=true and p.tenant=:tenantId and p.profile=:profileId")
     List<Product> findProductsByProfile(@Param("tenantId") Tenant tenantId, @Param("profileId") Profile profileId);
 
 }

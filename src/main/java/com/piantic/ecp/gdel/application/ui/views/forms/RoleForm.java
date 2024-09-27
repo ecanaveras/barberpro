@@ -78,7 +78,7 @@ public class RoleForm extends GenericForm<Role> {
 
     private void configureGrids() {
         //Perfiles
-        mlboxprofiles.setItems(profileService.findAll());
+        mlboxprofiles.setItems(profileService.findByTenant());
         mlboxprofiles.setItemLabelGenerator(Profile::getNameProfile);
         mlboxprofiles.addSelectionListener(listener -> {
             profileSet = mlboxprofiles.getSelectedItems();

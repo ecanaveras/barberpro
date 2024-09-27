@@ -27,6 +27,8 @@ public class ProfileProduct{
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
 
+    @Column(name = "enabled", nullable = false, columnDefinition = "INT(1)")
+    private Boolean enabled = true;
 
     public ProfileProduct() {
     }
@@ -64,6 +66,14 @@ public class ProfileProduct{
 
     public void setTenant(Tenant tenant) {
         this.tenant = tenant;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

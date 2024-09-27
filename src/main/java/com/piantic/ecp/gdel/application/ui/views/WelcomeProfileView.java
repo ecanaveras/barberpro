@@ -2,46 +2,32 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
-import com.piantic.ecp.gdel.application.backend.service.RoleService;
 import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
-import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
-import com.piantic.ecp.gdel.application.ui.views.specials.HomeView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @PageTitle("Bienvenido | BarberPro")
 @Route("welcome-profile")
 public class WelcomeProfileView extends Div {
 
-    private ProfileService profileService;
-    private RoleService roleService;
 
-    public WelcomeProfileView(ProfileService profileService, RoleService roleService) {
+    public WelcomeProfileView(ProfileService profileService) {
         addClassName("welcome-view");
-        this.profileService = profileService;
-        this.roleService = roleService;
 
         Div divtitle = new Div();
         H3 welcome = new H3("Bienvenido a BarberPro");
@@ -53,7 +39,7 @@ public class WelcomeProfileView extends Div {
         Div divcards = new Div();
         divcards.addClassName("welcome-cards");
 
-        profileService.findAll().forEach(profile -> {
+        profileService.findProfilesActives().forEach(profile -> {
             divcards.add(getCardProfile(profile));
         });
 
@@ -65,7 +51,7 @@ public class WelcomeProfileView extends Div {
         } else {
             divtitle.add(welcome);
             divcontent.add(divtitle);
-            Div div = MessagesUtil.showWarning("No hay perfiles en tu cuenta, por favor configura tu Negocio!");
+            Div div = MessagesUtil.showWarning("No hay perfiles activos en tu cuenta, por favor configura tu Negocio!");
             div.addClassNames(LumoUtility.TextTransform.UPPERCASE);
 
             Button btngoto = new Button("Asistente de Configuración", LineAwesomeIcon.HAND_POINT_UP.create());
@@ -157,66 +143,5 @@ public class WelcomeProfileView extends Div {
         VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, profile);
         getUI().ifPresent(ui -> ui.navigate(HomeView.class));
         saveLocalSession();
-    }
-
-    private Component getUINewProfile() {
-        Div divnewprofile = new Div();
-        divnewprofile.addClassName("welcome-newprofile");
-        H5 h5 = new H5("Crea un PERFIL para continuar");
-        h5.addClassName(LumoUtility.TextColor.PRIMARY);
-
-        Button btnContinue = new Button("Continuar");
-
-        //Inputs
-        TextField nameProfile = new TextField();
-        nameProfile.focus();
-        nameProfile.setPlaceholder("Nombre del Peril");
-        nameProfile.setRequired(true);
-        nameProfile.setValueChangeMode(ValueChangeMode.LAZY);
-        nameProfile.addValueChangeListener(listener -> {
-            if (!nameProfile.getValue().isEmpty() && nameProfile.getValue().toString().length() > 3) {
-                btnContinue.setEnabled(true);
-            }
-        });
-
-
-        FormLayout formLayout = new FormLayout();
-        //Form
-        formLayout.add(nameProfile);
-        formLayout.setColspan(nameProfile, 2);
-
-        btnContinue.setEnabled(false);
-        btnContinue.addClickShortcut(Key.ENTER);
-        btnContinue.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        btnContinue.addClickListener(e -> {
-            if (nameProfile.getValue().isEmpty()) {
-                NotificationUtil.showWarning("Perfil no válido");
-                return;
-            }
-
-            Profile profile = new Profile();
-            profile.setNameProfile(nameProfile.getValue());
-            profile.setStatus(Profile.Status.Activo);
-
-            //Agregar ROLE_ADMINISTRADOR sino existe
-            Role role = new Role("ROLE_ADMINISTRADOR");
-            Set<Role> roles = new HashSet<>(roleService.findAll(role.getName()));
-
-            profileService.save(profile);
-
-            //Asiga el PERFIL al ROLE
-            if (!roles.isEmpty()) {
-                //Actualizar el ROLE Existente
-                role = roles.iterator().next();
-            }
-            role.setProfiles(new HashSet<>(profileService.findAll(profile.getNameProfile())));
-            roleService.save(role);
-
-            continueToMainLayout(profile);
-        });
-
-        divnewprofile.add(h5, formLayout, btnContinue);
-
-        return divnewprofile;
     }
 }

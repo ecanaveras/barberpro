@@ -2,9 +2,10 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Product;
-import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.ProductService;
+import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
+import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
 import com.piantic.ecp.gdel.application.ui.views.forms.ProductForm;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
@@ -25,8 +26,6 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-
-import java.text.DecimalFormat;
 
 @PageTitle("Servicios | Productos")
 @Route(value = "product", layout = MainLayout.class)
@@ -117,28 +116,25 @@ public class ProductView extends HorizontalLayout implements HasUrlParameter<Lon
 
         grid.addComponentColumn(product -> {
             Span span = new Span();
-            span.setText(new DecimalFormat("$ #,###.##").format(product.getPrice()));
+            span.setText(NumberUtil.formatNumber(product.getPrice()));
             span.getElement().getThemeList().add("badge success");
             return span;
         }).setHeader("Precio").setComparator(Product::getPrice);
 
         grid.addComponentColumn(product -> {
             Span span = new Span();
-            span.setText(new DecimalFormat("###.##").format(product.getCommissions())+" %");
+            span.setText(NumberUtil.formatNumber(product.getCommissions())+" %");
             span.getElement().getThemeList().add("badge");
             return span;
         }).setHeader("Comisión").setComparator(Product::getCommissions);
 
         grid.addComponentColumn(product -> {
-            Span span = new Span();
-            span.getElement().getThemeList().add("badge warning");
-//            product.getProfiles().forEach(profileProduct -> {
-//                span.setText(profileProduct.getProfile().getNameProfile());
-//            });
-            profileService.findProfileByProduct(product).forEach(profile -> {
-                span.setText(profile.getNameProfile());
+            Div divcontent = new Div();
+            divcontent.addClassNames(LumoUtility.Display.FLEX, LumoUtility.Gap.XSMALL);
+            product.getProfiles().forEach(profile -> {
+                divcontent.add(createBadge(profile.getNameProfile()));
             });
-            return span;
+            return divcontent;
         }).setHeader("Perfiles");
         grid.addComponentColumn(product -> {
             Button btnedit = new Button("Editar", LineAwesomeIcon.EDIT.create());
@@ -183,7 +179,8 @@ public class ProductView extends HorizontalLayout implements HasUrlParameter<Lon
         ConfirmDialog confirmDialog = new ConfirmDialog("¿Eliminar a \"" + product.getTitle() + "\"?",
                 "¿Desea borrar el registro?",
                 "Eliminar", e -> {
-            productService.delete(product);
+            product.setEnabled(false);
+            productService.save(product);
             updateList();
             getUI().ifPresent(ui -> ui.navigate(ProductView.class));
         }, "Cancelar", e -> e.getSource().close());
@@ -211,6 +208,12 @@ public class ProductView extends HorizontalLayout implements HasUrlParameter<Lon
         } else {
             getUI().ifPresent(ui -> ui.navigate(ProductView.class));
         }
+    }
+
+    private Span createBadge(String text) {
+        Span badge = new Span(text);
+        badge.getElement().getThemeList().add("badge warning small");
+        return badge;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.piantic.ecp.gdel.application.ui.views;
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
-import com.piantic.ecp.gdel.application.ui.views.specials.HomeView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;

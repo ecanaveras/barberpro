@@ -1,5 +1,6 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
+import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Role;
 import com.piantic.ecp.gdel.application.backend.repository.RoleRepository;
@@ -23,14 +24,14 @@ public class RoleService implements GenericService<Role> {
     private RoleRepository roleRepository;
 
     public List<Role> findAll() {
-        return roleRepository.findAll();
+        return roleRepository.findByTenantAndEnabledTrue(Application.getTenant());
     }
 
     public List<Role> findAll(String filter) {
         if (filter == null || filter.isEmpty()) {
-            return roleRepository.findAll();
+            return roleRepository.findByTenantAndEnabledTrue(Application.getTenant());
         } else {
-            return roleRepository.search(filter);
+            return roleRepository.search(Application.getTenant(), filter);
         }
     }
 
@@ -59,7 +60,7 @@ public class RoleService implements GenericService<Role> {
     }
 
     public Set<Profile> getProfilesByRoleId(Long roleId) {
-        return roleRepository.findByIdWithProfile(roleId)
+        return roleRepository.findByIdWithProfile(Application.getTenant(), roleId)
                 .map(Role::getProfiles)
                 .orElse(Collections.emptySet());
     }
