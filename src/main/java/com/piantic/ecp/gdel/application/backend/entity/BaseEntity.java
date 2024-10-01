@@ -16,7 +16,8 @@ public class BaseEntity {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
-    @Column(name = "enabled", nullable = true, columnDefinition = "INT(1)")
+//    @Column(name = "enabled", nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
     public Tenant getTenant() {

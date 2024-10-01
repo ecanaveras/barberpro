@@ -1,0 +1,42 @@
+.settings-view {
+    /*background-color: var(--lumo-contrast-10pct);*/
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > vaadin-horizontal-layout, h5{
+        padding-left: var(--lumo-space-l);
+    }
+    > vaadin-horizontal-layout {
+        padding-top: var(--lumo-space-l);
+        > h3 {
+            color: var(--lumo-contrast-80pct);
+        }
+    }
+
+    > h3, h5 {
+        color: var(--lumo-contrast-80pct);
+    }
+
+}
+
+.settings-view > vaadin-tabsheet {
+    margin-top: var(--lumo-space-m);
+    border-radius: var(--lumo-space-s);
+    flex-grow: 1;
+}
+
+
+.settings-view > vaadin-tabsheet::part(content) {
+    padding-top: var(--lumo-space-l);
+    background-color: var(--lumo-contrast-10pct);
+}
+
+.settings-view > vaadin-tabsheet {
+
+    > vaadin-vertical-layout {
+        background-color: var(--lumo-base-color);
+        border-radius: var(--lumo-space-s);
+    }
+}

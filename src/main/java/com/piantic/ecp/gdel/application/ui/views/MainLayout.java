@@ -4,6 +4,7 @@ import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
 import com.piantic.ecp.gdel.application.backend.service.TenandService;
+import com.piantic.ecp.gdel.application.ui.views.admin.SettingsView;
 import com.piantic.ecp.gdel.application.ui.views.specials.SelectProfileView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Text;
@@ -94,6 +95,7 @@ public class MainLayout extends AppLayout {
 
 
     private Footer createFooter() {
+        //TODO Controlar el menú según el perfil activo.
         Footer layout = new Footer();
         Profile profile = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
         if (profile == null) {
@@ -129,6 +131,7 @@ public class MainLayout extends AppLayout {
         subMenu.addItem(LineAwesomeIcon.USER.create(), e -> {
         }).add(new Text("Perfil"));
         subMenu.addItem(LineAwesomeIcon.TOOLS_SOLID.create(), e -> {
+            UI.getCurrent().navigate(SettingsView.class);
         }).add(new Text("Preferencias"));
         MenuItem tema = subMenu.addItem(LineAwesomeIcon.SUN.create());
         tema.add(new Text("Tema"));

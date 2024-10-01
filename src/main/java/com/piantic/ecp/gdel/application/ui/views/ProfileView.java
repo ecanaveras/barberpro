@@ -102,9 +102,18 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         grid.addComponentColumn(profile ->
                 new H5(profile.getNameProfile())
         ).setKey("name1").setAutoWidth(true).setHeader("Perfil").setSortable(true).setComparator(Profile::getNameProfile).getStyle().set("min-width", "200px");
+//        grid.addColumn(Profile::getStatus).setHeader("Estado").setSortable(true);
+        grid.addComponentColumn(profile -> {
+            Span span = new Span(profile.getStatus().toString());
+            if (profile.getStatus().equals(Profile.Status.Activo)) {
+                span.getElement().getThemeList().add("badge success");
+            } else {
+                span.getElement().getThemeList().add("badge error");
+            }
+            return span;
+        }).setHeader("Estado").setSortable(true).setComparator(Profile::getStatus);
         grid.addColumn(Profile::getPhone).setHeader("Telefono");
         grid.addColumn(Profile::getEmail).setHeader("Email");
-        grid.addColumn(Profile::getStatus).setHeader("Estado").setSortable(true);
 //        grid.addComponentColumn(profile -> getSpanWorkItem(profile.getRoles())).setHeader("Roles Asignados");
 
         createMenu();
