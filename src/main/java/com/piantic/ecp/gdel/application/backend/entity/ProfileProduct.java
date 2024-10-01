@@ -27,7 +27,7 @@ public class ProfileProduct{
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
 
-    @Column(name = "enabled", nullable = false, columnDefinition = "INT(1)")
+    @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
     public ProfileProduct() {

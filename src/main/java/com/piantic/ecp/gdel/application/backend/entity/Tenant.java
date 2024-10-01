@@ -33,7 +33,7 @@ public class Tenant {
     @Column(name = "logo", columnDefinition = "BLOB")
     private byte[] logo;
 
-    @Column(name = "enabled", nullable = true, columnDefinition = "INT(1)")
+    @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
     public Tenant() {}
