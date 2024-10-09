@@ -87,11 +87,46 @@ public class AppointmentService implements GenericService<Appointment> {
         return appointmentRepository.findByProfileAndDate(Application.getTenant(), profileId, startOfDay, endOfDay);
     }
 
+    /**
+     * Busca las ultimas 10 citas de un estilista
+     * @param profile
+     * @param start
+     * @param end
+     * @return
+     */
     public List<Appointment> findLastTenAppointmentsOfCurrentMonth(Profile profile, LocalDateTime start, LocalDateTime end){
         PageRequest topTen = PageRequest.of(0, 10);
         return  appointmentRepository.findByTenantAndProfileAndAppointmentTimeBetweenAndEnabledTrueOrderByAppointmentTimeDesc(Application.getTenant(), profile, start, end, topTen);
     }
 
+    /**
+     * BUscar las ultimas 10 citas de un cliente
+     * @param customer
+     * @param start
+     * @param end
+     * @return
+     */
+    public List<Appointment> findLastTenAppointmentsOfCurrentMonth(Customer customer, LocalDateTime start, LocalDateTime end){
+        PageRequest topTen = PageRequest.of(0, 10);
+        return  appointmentRepository.findByTenantAndCustomerAndAppointmentTimeBetweenAndEnabledTrueOrderByAppointmentTimeDesc(Application.getTenant(), customer, start, end, topTen);
+    }
+
+
+    /**
+     * Cuenta las citas de un cliente
+     * @param tenant
+     * @param customer
+     * @return
+     */
+    public Integer countByCustomer(Tenant tenant, Customer customer) {
+        return appointmentRepository.countByTenantAndCustomerAndEnabledTrue(tenant, customer);
+    }
+
+    /**
+     * Buscar una cita por su ID
+     * @param appointmentId
+     * @return
+     */
     public Appointment findByAppointmentId(Long appointmentId) {
         return appointmentRepository.findbyId(Application.getTenant(), appointmentId);
     }

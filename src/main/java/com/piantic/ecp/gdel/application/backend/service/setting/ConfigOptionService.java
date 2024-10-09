@@ -46,24 +46,24 @@ public class ConfigOptionService {
         if (optionRepository.count() == 0) {
             //Opciones por defecto
             ArrayList<ConfigOption> options = new ArrayList<>();
-            ConfigOption opteoa = new ConfigOption(ENABLE_OPTION_ASISTIDO, "Permite usar el modo asistido en la aplicación", "false");
-            ConfigOption optepa = new ConfigOption(ENABLE_PIN_ASISTIDO, "Solicitar PIN en el modo asistido", "false");
-            ConfigOption optvps = new ConfigOption(VALUE_PIN_ASISTIDO, "PIN para el modo asistido", null);
+            ConfigOption opteoa = new ConfigOption(ENABLE_OPTION_ASISTIDO, "Permite usar el modo asistido en la aplicación.", "false");
+            ConfigOption optepa = new ConfigOption(ENABLE_PIN_ASISTIDO, "Solicitar PIN en el modo asistido.", "false");
+            ConfigOption optvps = new ConfigOption(VALUE_PIN_ASISTIDO, "PIN para el modo asistido.", null);
             options.add(opteoa);
             options.add(optepa);
             options.add(optvps);
 
             //Perfiles
-            ConfigOption opteopdw = new ConfigOption(ENABLE_OPTION_PERFIL_DELETE_WORK, "Permite que los perfiles puedan borrar tareas realizadas por el mismo.", "false");
+            ConfigOption opteopdw = new ConfigOption(ENABLE_OPTION_PERFIL_DELETE_WORK, "Permite que el perfil pueda borrar tareas realizadas por el mismo.", "false");
             options.add(opteopdw);
 
             //Actividades
-            ConfigOption opteoadw = new ConfigOption(ENABLE_OPTION_ACTIVIDAD_DELETE_WORK, "Permite la eliminación de una actividad", "false");
-            ConfigOption opteoab = new ConfigOption(ENABLE_OPTION_ACTIVIDAD_BLOQUEO, "Bloquea las actividades que hayan finazado hace más de 1 hora", "false");
+            ConfigOption opteoadw = new ConfigOption(ENABLE_OPTION_ACTIVIDAD_DELETE_WORK, "Permite la eliminación de una actividad.", "false");
+            ConfigOption opteoab = new ConfigOption(ENABLE_OPTION_ACTIVIDAD_BLOQUEO, "Bloquea las actividades que hayan finazado hace más de 1 hora.", "false");
             options.add(opteoadw);
             options.add(opteoab);
 
-            //Guardar todo
+            //Guardar all
             optionRepository.saveAll(options);
         }
     }

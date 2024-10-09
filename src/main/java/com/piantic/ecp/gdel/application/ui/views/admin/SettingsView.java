@@ -14,6 +14,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -23,7 +25,7 @@ import java.util.Optional;
 
 @PageTitle("Configuración")
 @Route(value = "settings", layout = MainLayout.class)
-public class SettingsView extends Div {
+public class SettingsView extends Div implements BeforeLeaveObserver {
 
     private ConfigOptionService optionService;
 
@@ -41,6 +43,10 @@ public class SettingsView extends Div {
         tabSheet.add(new Span("Actividades"), createUIActividades());
         tabSheet.add(new Span("Subscripción"), createUISubscription());
         tabSheet.add(new Span("Feedback"), createUIFeedback());
+//        tabSheet.add(new Span("Dispositivos"), createUIFeedback());
+//        tabSheet.add(new Span("Administradores"), createUIFeedback());
+//        tabSheet.add(new Span("Exportar Info"), createUIFeedback());
+//        tabSheet.add(new Span("Notificaciones"), createUIFeedback());
         add(tabSheet);
     }
 
@@ -141,9 +147,13 @@ public class SettingsView extends Div {
 
         //Option 1
         VerticalLayout optionItem1 = optionLayout(ConfigOptionService.ENABLE_OPTION_PERFIL_DELETE_WORK);
+        optionItem1.addClassNames(LumoUtility.Gap.XSMALL);
         Checkbox chpermitir = getCheckComponent("Permitir borrar actividades propias", ConfigOptionService.ENABLE_OPTION_PERFIL_DELETE_WORK);
 
-        optionItem1.add(chpermitir, MessagesUtil.showWarning("Esta configuración solo aplica si está habilitada la actividad"));
+        Div hori = MessagesUtil.showWarning("Esta configuración solo aplica, si es permitido borrar actividades (menú actividades) y además está habilitada la actividad");
+        hori.addClassNames(LumoUtility.Padding.XSMALL, LumoUtility.Margin.Left.LARGE);
+        optionItem1.add(chpermitir, hori);
+
 
         card.add(optionItem1);
 
@@ -162,7 +172,7 @@ public class SettingsView extends Div {
 
         //Option 1
         VerticalLayout optionItem1 = optionLayout(ConfigOptionService.ENABLE_OPTION_ACTIVIDAD_DELETE_WORK);
-        Checkbox chpermitir = getCheckComponent("Permitir borrar actividades propias", ConfigOptionService.ENABLE_OPTION_ACTIVIDAD_DELETE_WORK);
+        Checkbox chpermitir = getCheckComponent("Permitir borrar actividades", ConfigOptionService.ENABLE_OPTION_ACTIVIDAD_DELETE_WORK);
 
         //Option 2
         VerticalLayout optionItem2 = optionLayout(ConfigOptionService.ENABLE_OPTION_ACTIVIDAD_BLOQUEO);
@@ -261,5 +271,9 @@ public class SettingsView extends Div {
     }
 
 
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        // TODO: Cargar la configuración a la Session activa.
+    }
 }
 

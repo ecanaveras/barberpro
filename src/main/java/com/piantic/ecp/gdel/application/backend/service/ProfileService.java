@@ -1,10 +1,7 @@
 package com.piantic.ecp.gdel.application.backend.service;
 
 import com.piantic.ecp.gdel.application.Application;
-import com.piantic.ecp.gdel.application.backend.entity.Appointment;
-import com.piantic.ecp.gdel.application.backend.entity.Product;
-import com.piantic.ecp.gdel.application.backend.entity.Profile;
-import com.piantic.ecp.gdel.application.backend.entity.Role;
+import com.piantic.ecp.gdel.application.backend.entity.*;
 import com.piantic.ecp.gdel.application.backend.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

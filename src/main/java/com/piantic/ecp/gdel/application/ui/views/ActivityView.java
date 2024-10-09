@@ -3,6 +3,7 @@ package com.piantic.ecp.gdel.application.ui.views;
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
+import com.piantic.ecp.gdel.application.backend.service.setting.ConfigOptionService;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
 import com.piantic.ecp.gdel.application.ui.views.forms.ActivityDetailForm;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -32,7 +33,8 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
 
 
     private ProfileService profileService;
-    private AppointmentService activities;
+    private AppointmentService appointmentService;
+    private ConfigOptionService configOptionService;
 
     private ActivityDetailForm activityDetailForm;
 
@@ -40,11 +42,12 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
     private Tabs tabs;
     private ComboBox<Integer> comboFilter;
 
-    public ActivityView(AppointmentService activities, ProfileService profileService) {
+    public ActivityView(AppointmentService activities, ProfileService profileService, ConfigOptionService configOptionService) {
         addClassName("activity-view");
-        this.activities = activities;
+        this.appointmentService = activities;
         this.profileService = profileService;
-        activityDetailForm = new ActivityDetailForm(activities);
+        this.configOptionService = configOptionService;
+        activityDetailForm = new ActivityDetailForm(activities, configOptionService);
 
         add(createToolbar());
 
@@ -94,12 +97,12 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
         content.removeAll();
         List<Appointment> result;
         if (tabs.getTabAt(0).equals(tab)) {
-            result = activities.findByDateRange(localDateStart, localDateEnd);
+            result = appointmentService.findByDateRange(localDateStart, localDateEnd);
             result.forEach(appointment -> {
                 content.add(createContentLayout(appointment));
             });
         } else {
-            result = activities.findAppointmentByProfileAndDate(Long.valueOf(tab.getId().get()), localDateStart, localDateEnd);
+            result = appointmentService.findAppointmentByProfileAndDate(Long.valueOf(tab.getId().get()), localDateStart, localDateEnd);
             result.forEach(appointment -> {
                 content.add(createContentLayout(appointment));
             });

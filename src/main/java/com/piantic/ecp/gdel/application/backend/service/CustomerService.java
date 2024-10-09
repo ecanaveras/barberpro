@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -68,6 +70,22 @@ public class CustomerService implements GenericService<Customer> {
         return customer.getId();
     }
 
+
+    public List<Appointment> getTenLastAppoimentsByCustomerId(Customer customer){
+        // Obtener el mes y año actual
+        YearMonth currentMonth = YearMonth.now();
+
+        // Fecha de inicio (primer día del mes a las 00:00:00)
+        LocalDateTime startOfMonth = currentMonth.atDay(1).atStartOfDay();
+
+        // Fecha de fin (último día del mes a las 23:59:59)
+        LocalDateTime endOfMonth = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+
+        return appointmentService.findLastTenAppointmentsOfCurrentMonth(customer, startOfMonth, endOfMonth);
+
+    }
+
+
     @Transactional
     public void disableCustomerCascade(Long customerId) {
         Customer customer = customerRepository.findByTenantAndId(Application.getTenant(), customerId);
@@ -85,6 +103,10 @@ public class CustomerService implements GenericService<Customer> {
             cita.setEnabled(false);
             appointmentService.save(cita);
         }
+    }
+
+    public Integer countByCustomerId(Customer customer) {
+        return appointmentService.countByCustomer(Application.getTenant(), customer);
     }
 
 /*

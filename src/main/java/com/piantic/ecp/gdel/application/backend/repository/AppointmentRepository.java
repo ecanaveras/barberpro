@@ -1,8 +1,10 @@
 package com.piantic.ecp.gdel.application.backend.repository;
 
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
+import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.entity.Tenant;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -51,4 +53,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     void deleteByTenantAndId(Tenant tenant, Long id);
 
     List<Appointment> findByTenantAndProfileAndAppointmentTimeBetweenAndEnabledTrueOrderByAppointmentTimeDesc(Tenant tenant, Profile profile, LocalDateTime appointmentTime, LocalDateTime appointmentTime2, Pageable pageable);
+
+    List<Appointment> findByTenantAndCustomerAndAppointmentTimeBetweenAndEnabledTrueOrderByAppointmentTimeDesc(Tenant tenant, Customer customer, LocalDateTime start, LocalDateTime end, PageRequest topTen);
+
+    Integer countByTenantAndCustomerAndEnabledTrue(Tenant tenant, Customer customer);
 }

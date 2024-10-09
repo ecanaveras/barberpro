@@ -6,6 +6,7 @@ import com.piantic.ecp.gdel.application.backend.service.RoleService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.ui.views.details.ProfileViewDetail;
 import com.piantic.ecp.gdel.application.ui.views.forms.ProfileForm;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -99,10 +100,16 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         grid.addClassName("profile-grid");
         grid.setSizeFull();
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.addComponentColumn(profile ->
-                new H5(profile.getNameProfile())
-        ).setKey("name1").setAutoWidth(true).setHeader("Perfil").setSortable(true).setComparator(Profile::getNameProfile).getStyle().set("min-width", "200px");
-//        grid.addColumn(Profile::getStatus).setHeader("Estado").setSortable(true);
+        grid.addComponentColumn(profile -> {
+            HorizontalLayout content = new HorizontalLayout();
+            content.setAlignItems(Alignment.CENTER);
+            VerticalLayout layout = new VerticalLayout();
+            layout.addClassName("work-grid-service");
+            layout.add(new H5(profile.getNameProfile()));
+            content.add(new Avatar(profile.getNameProfile()), layout);
+            return content;
+        }).setAutoWidth(true).setHeader("Servicio").setSortable(true).setComparator(Profile::getNameProfile).getStyle().set("min-width", "200px");
+
         grid.addComponentColumn(profile -> {
             Span span = new Span(profile.getStatus().toString());
             if (profile.getStatus().equals(Profile.Status.Activo)) {
@@ -114,7 +121,16 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         }).setHeader("Estado").setSortable(true).setComparator(Profile::getStatus);
         grid.addColumn(Profile::getPhone).setHeader("Telefono");
         grid.addColumn(Profile::getEmail).setHeader("Email");
-//        grid.addComponentColumn(profile -> getSpanWorkItem(profile.getRoles())).setHeader("Roles Asignados");
+        grid.addComponentColumn(profile -> {
+            Button btnedit = new Button("Editar", LineAwesomeIcon.EDIT.create());
+            btnedit.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_ICON);
+            btnedit.addClickListener(event -> {
+                openFormDialog(profile);
+            });
+            return btnedit;
+        }).setHeader("");
+
+        grid.getColumns().forEach(col -> col.setAutoWidth(true));
 
         createMenu();
 

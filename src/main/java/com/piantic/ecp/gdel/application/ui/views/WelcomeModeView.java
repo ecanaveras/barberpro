@@ -2,21 +2,32 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
+import com.piantic.ecp.gdel.application.backend.service.setting.ConfigOptionService;
 import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PageTitle("Bienvenido | BarberPro")
 @Route("welcome-mode")
-public class WelcomeModeView extends Div {
+public class WelcomeModeView extends Div implements BeforeEnterObserver {
+
+
+    @Autowired
+    private ConfigOptionService configOptionService;
 
     public WelcomeModeView() {
         addClassName("welcome-view");
@@ -84,5 +95,14 @@ public class WelcomeModeView extends Div {
         VaadinSession.getCurrent().setAttribute(Application.SESSION_PROFILE, profile);
         getUI().ifPresent(ui -> ui.navigate(HomeView.class));
         saveLocalSession();
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        configOptionService.findByName(ConfigOptionService.ENABLE_OPTION_ASISTIDO).ifPresent(option -> {
+           if(!option.getConfigvalue().equals("true")){
+               event.forwardTo(WelcomeProfileView.class);
+           }
+        });
     }
 }

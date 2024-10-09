@@ -13,16 +13,16 @@
   "private": true,
   "dependencies": {
     "@polymer/polymer": "3.5.1",
-    "@vaadin/bundles": "24.4.2",
+    "@vaadin/bundles": "24.4.4",
     "@vaadin/common-frontend": "0.0.19",
-    "@vaadin/polymer-legacy-adapter": "24.4.2",
-    "@vaadin/react-components": "24.4.2",
-    "@vaadin/react-components-pro": "24.4.2",
+    "@vaadin/polymer-legacy-adapter": "24.4.4",
+    "@vaadin/react-components": "24.4.4",
+    "@vaadin/react-components-pro": "24.4.4",
     "@vaadin/router": "1.7.5",
     "@vaadin/vaadin-development-mode-detector": "2.0.7",
-    "@vaadin/vaadin-lumo-styles": "24.4.2",
-    "@vaadin/vaadin-material-styles": "24.4.2",
-    "@vaadin/vaadin-themable-mixin": "24.4.2",
+    "@vaadin/vaadin-lumo-styles": "24.4.4",
+    "@vaadin/vaadin-material-styles": "24.4.4",
+    "@vaadin/vaadin-themable-mixin": "24.4.4",
     "@vaadin/vaadin-usage-statistics": "2.1.2",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
@@ -76,16 +76,16 @@
   "vaadin": {
     "dependencies": {
       "@polymer/polymer": "3.5.1",
-      "@vaadin/bundles": "24.4.2",
+      "@vaadin/bundles": "24.4.4",
       "@vaadin/common-frontend": "0.0.19",
-      "@vaadin/polymer-legacy-adapter": "24.4.2",
-      "@vaadin/react-components": "24.4.2",
-      "@vaadin/react-components-pro": "24.4.2",
+      "@vaadin/polymer-legacy-adapter": "24.4.4",
+      "@vaadin/react-components": "24.4.4",
+      "@vaadin/react-components-pro": "24.4.4",
       "@vaadin/router": "1.7.5",
       "@vaadin/vaadin-development-mode-detector": "2.0.7",
-      "@vaadin/vaadin-lumo-styles": "24.4.2",
-      "@vaadin/vaadin-material-styles": "24.4.2",
-      "@vaadin/vaadin-themable-mixin": "24.4.2",
+      "@vaadin/vaadin-lumo-styles": "24.4.4",
+      "@vaadin/vaadin-material-styles": "24.4.4",
+      "@vaadin/vaadin-themable-mixin": "24.4.4",
       "@vaadin/vaadin-usage-statistics": "2.1.2",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.29.3",
@@ -115,7 +115,7 @@
       "workbox-core": "7.1.0",
       "workbox-precaching": "7.1.0"
     },
-    "hash": "584472264251e8b5979538c517aadda7d15de9f68d3df5b9e08a8117dcee95c7"
+    "hash": "470d909d4cb2bb1c37c8253942dcdf0799b0ec70fa0458e86d541867f88e3ff4"
   },
   "type": "module"
 }

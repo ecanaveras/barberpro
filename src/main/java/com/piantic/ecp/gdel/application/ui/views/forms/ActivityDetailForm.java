@@ -2,6 +2,7 @@ package com.piantic.ecp.gdel.application.ui.views.forms;
 
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
+import com.piantic.ecp.gdel.application.backend.service.setting.ConfigOptionService;
 import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
@@ -21,6 +22,8 @@ import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,16 +31,24 @@ public class ActivityDetailForm extends Div {
 
     FormLayout formLayout = new FormLayout();
     Long ID;
+
+
     AppointmentService appointmentService;
+
+    private ConfigOptionService configOptionService;
+
     private Appointment appointment;
 
-    public ActivityDetailForm(AppointmentService appointmentService) {
+
+    public ActivityDetailForm(AppointmentService appointmentService, ConfigOptionService configOptionService) {
         this.appointmentService = appointmentService;
+        this.configOptionService = configOptionService;
         configureView(null);
     }
 
-    public ActivityDetailForm(AppointmentService appointmentService, Long id) {
+    public ActivityDetailForm(AppointmentService appointmentService, ConfigOptionService configOptionService, Long id) {
         this.appointmentService = appointmentService;
+        this.configOptionService = configOptionService;
         configureView(id);
     }
 
@@ -145,6 +156,38 @@ public class ActivityDetailForm extends Div {
         Button btnDelete = new Button("Eliminar Actividad", LineAwesomeIcon.TRASH_ALT.create());
         btnDelete.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
         btnDelete.addClassNames(LumoUtility.Margin.AUTO);
+
+        btnDelete.setEnabled(false);
+
+        AtomicReference<Div> messageInfo =  new AtomicReference<>(MessagesUtil.showWarning("IMPORTANTE: Las actividades eliminadas afectan las cifras y demás datos relacionados, actúe con precaución!"));
+
+        //Eliminar Actividad
+        configOptionService.findByName(ConfigOptionService.ENABLE_OPTION_ACTIVIDAD_DELETE_WORK).ifPresent(o -> {
+            if(o.getConfigvalue().equals("true")) {
+                btnDelete.setEnabled(true);
+            }else{
+                messageInfo.set(MessagesUtil.showTertiary("AVISO: La configuración de borrar actividad no se encuentra habilitada"));
+            }
+        });
+
+
+
+        btnDelete.addClickListener(e -> {
+            Span idactividad = new Span(appointment.getId().toString());
+            idactividad.getElement().getThemeList().add("badge");
+            ConfirmDialog dialog = getConfirmDialog(idactividad);
+            dialog.addConfirmListener(l -> {
+                appointment.setEnabled(false);
+                appointmentService.save(appointment);
+                NotificationUtil.showSuccess("Actividad eliminada");
+                dialog.close();
+                getUI().ifPresent(ui -> ui.navigate(ActivityView.class));
+                UI.getCurrent().refreshCurrentRoute(true);
+                this.removeClassName("visible");
+            });
+            dialog.open();
+        });
+
         btnDelete.addClickListener(e -> {
             Span idactividad = new Span(appointment.getId().toString());
             idactividad.getElement().getThemeList().add("badge");
@@ -163,7 +206,18 @@ public class ActivityDetailForm extends Div {
             dialog.open();
         });
 
-        layout.add(title, MessagesUtil.showWarning("IMPORNTANTE: Las actividades eliminadas afectan las cifras, y demás datos relacionados, actue con precaución!"), btnDelete);
+        //Bloquear Actividad (sí está conigurado)
+        if(appointment!= null && Duration.between(appointment.getAppointmentTime(), LocalDateTime.now()).toHours() > 1) {
+            configOptionService.findByName(ConfigOptionService.ENABLE_OPTION_ACTIVIDAD_BLOQUEO).ifPresent(o -> {
+                if(o.getConfigvalue().equals("true")) {
+                    btnDelete.setEnabled(false);
+                    messageInfo.set(MessagesUtil.showTertiary("AVISO: La actividad se ha bloquedo debido a la configuración, no es posible borrarla."));
+                };
+            });
+        }
+
+        layout.add(title, messageInfo.get(), btnDelete);
+
         return layout;
     }
 

@@ -109,8 +109,14 @@ public class ProfileViewDetail extends VerticalLayout {
                 .setAutoWidth(true).setFlexGrow(1);
         gridlastappoint.addComponentColumn(appointment -> new Span(appointment.getCustomer().getName())).setAutoWidth(true);
         gridlastappoint.addComponentColumn(appointment -> new Span(NumberUtil.formatNumber(appointment.getTotal()))).setAutoWidth(true);
+        if(gridlastappoint.getListDataView().getItemCount()>0){
+            content.add(gridlastappoint);
+        }else {
+            Span span = new Span("No hay registros en este Mes");
+            span.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY, LumoUtility.Padding.SMALL);
+            content.add(span);
+        }
 
-        content.add(gridlastappoint);
 
         add(content);
     }
