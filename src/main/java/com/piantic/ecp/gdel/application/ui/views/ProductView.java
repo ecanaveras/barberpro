@@ -138,26 +138,14 @@ public class ProductView extends HorizontalLayout implements HasUrlParameter<Lon
         }).setHeader("Perfiles");
         grid.addComponentColumn(product -> {
             Button btnedit = new Button("Editar", LineAwesomeIcon.EDIT.create());
-            btnedit.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_ICON);
+            btnedit.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY_INLINE);
             btnedit.addClickListener(event -> {
                 openFormDialog(product);
             });
             return btnedit;
         }).setHeader("");
 
-//        grid.addColumn("observations").setHeader("Observaciones");
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
-
-
-
-        //grid.addColumns("price", "commissions", "description", "observations");
-//        grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
-//        grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
-//        grid.addComponentColumn(customer -> {
-//            SvgIcon star = LineAwesomeIcon.STAR_SOLID.create();
-//            star.addClassName("star-icon");
-//            return customer != null && customer.isFavorite() ? star : null;
-//        }).setHeader("Favorito").setWidth("6rem");
 
         createMenu();
 

@@ -188,12 +188,14 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver, 
         btnLimpiar.addThemeVariants(ButtonVariant.LUMO_ICON);
         btnLimpiar.addClickListener(e -> {
             //Limpiar zona de trabajo
-            ConfirmDialog confirmDialog = new ConfirmDialog("Aviso!", "¿Seguro quieres empezar de Nuevo?", "Cancelar", event -> {
+            ConfirmDialog confirmDialog = new ConfirmDialog("Aviso!", "¿Seguro quieres empezar de Nuevo?", "Sí, Reiniciar", event -> {
             });
             confirmDialog.setCloseOnEsc(true);
             confirmDialog.setRejectable(true);
-            confirmDialog.setRejectText("Sí, Reiniciar");
-            confirmDialog.addRejectListener(ev -> {
+            confirmDialog.setRejectText("Cancelar");
+            confirmDialog.setRejectButtonTheme(ButtonVariant.LUMO_CONTRAST.getVariantName());
+            confirmDialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName());
+            confirmDialog.addConfirmListener(ev -> {
                 resetWorkspace();
             });
             confirmDialog.open();
@@ -214,7 +216,6 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver, 
             itemservice.addClassName("item-service");
             return getIconItem(service.getServicio(), itemservice);
         });
-        gridservices.addComponentColumn(service -> service.getCant() > 0 ? markIcon() : new Span("")).setWidth("60px").setFlexGrow(0);
         gridservices.addColumn(
                 new ComponentRenderer<>(Button::new, (btn, work_item) -> {
                     btn.addClassName("btn-add-item");
@@ -224,7 +225,9 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver, 
                     //Agregar el elemento
                     btn.addClickListener(e -> addServiceGrid(work_item));
                 })
-        ).setAutoWidth(true).setFlexGrow(0);
+        ).setWidth("3.2rem").setFlexGrow(0);
+        gridservices.addComponentColumn(service -> service.getCant() > 0 ? markIcon() : new Span("")).setWidth("3rem").setFlexGrow(0);
+
 
         //Double Touch
         gridservices.addItemDoubleClickListener(e -> addServiceGrid(e.getItem()));
@@ -404,7 +407,7 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver, 
     private Icon markIcon() {
         Icon icon = VaadinIcon.CHECK.create();
         icon.addClassName("check-service");
-        icon.getElement().getThemeList().add("badge success");
+        icon.getElement().getThemeList().add("badge success small");
         icon.getStyle().set("padding", "var(--lumo-space-xs");
         // Accessible label
         icon.getElement().setAttribute("aria-label", "Agregado");
@@ -540,10 +543,10 @@ public class WorkingView extends VerticalLayout implements BeforeEnterObserver, 
             dialog.setHeader("Cambios sin guardar");
             dialog.setText("Tienes cambios sin guardar. ¿Estás seguro de que quieres salir de esta página?");
             dialog.setCancelable(true);
-            dialog.setConfirmText("Salir");
+            dialog.setConfirmText("Sí, Salir");
             dialog.setCancelText("Cancelar");
             dialog.setCancelButtonTheme(ButtonVariant.LUMO_CONTRAST.getVariantName());
-            dialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName());
+            dialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName());
 
             dialog.addConfirmListener(e -> {
                 // Si el usuario confirma, permite la navegación

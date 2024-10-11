@@ -9,6 +9,8 @@ import java.util.Objects;
 @Entity
 public class Tenant {
 
+    public static final String PASSWORD_TENANT_DEFAULT = "0000";
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -35,6 +37,9 @@ public class Tenant {
 
     @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
+
+    @Column(name = "adminpin", nullable = false)
+    private String pin = PASSWORD_TENANT_DEFAULT;
 
     public Tenant() {}
 
@@ -115,6 +120,14 @@ public class Tenant {
         this.enabled = enabled;
     }
 
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -127,5 +140,7 @@ public class Tenant {
     public int hashCode() {
         return Objects.hash(id, email);
     }
+
+
 }
 

@@ -111,9 +111,9 @@
                         </goals>
                     </execution>
                 </executions>
-<!--                <configuration>-->
-<!--                    <frontendHotdeploy>true</frontendHotdeploy>-->
-<!--                </configuration>-->
+                <configuration>
+                    <frontendHotdeploy>true</frontendHotdeploy>
+                </configuration>
             </plugin>
         </plugins>
     </build>

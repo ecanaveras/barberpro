@@ -59,7 +59,8 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        Span appName = new Span("BarberPro");
+        H3 appName = new H3("BarberPro");
+        appName.addClassName("app-name");
         appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
         Header header = new Header(appName);
 

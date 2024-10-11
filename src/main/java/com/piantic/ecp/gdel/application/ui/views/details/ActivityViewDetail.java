@@ -1,4 +1,4 @@
-package com.piantic.ecp.gdel.application.ui.views.forms;
+package com.piantic.ecp.gdel.application.ui.views.details;
 
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ActivityDetailForm extends Div {
+public class ActivityViewDetail extends Div {
 
     FormLayout formLayout = new FormLayout();
     Long ID;
@@ -40,13 +40,13 @@ public class ActivityDetailForm extends Div {
     private Appointment appointment;
 
 
-    public ActivityDetailForm(AppointmentService appointmentService, ConfigOptionService configOptionService) {
+    public ActivityViewDetail(AppointmentService appointmentService, ConfigOptionService configOptionService) {
         this.appointmentService = appointmentService;
         this.configOptionService = configOptionService;
         configureView(null);
     }
 
-    public ActivityDetailForm(AppointmentService appointmentService, ConfigOptionService configOptionService, Long id) {
+    public ActivityViewDetail(AppointmentService appointmentService, ConfigOptionService configOptionService, Long id) {
         this.appointmentService = appointmentService;
         this.configOptionService = configOptionService;
         configureView(id);
@@ -170,8 +170,6 @@ public class ActivityDetailForm extends Div {
             }
         });
 
-
-
         btnDelete.addClickListener(e -> {
             Span idactividad = new Span(appointment.getId().toString());
             idactividad.getElement().getThemeList().add("badge");
@@ -185,24 +183,6 @@ public class ActivityDetailForm extends Div {
                 UI.getCurrent().refreshCurrentRoute(true);
                 this.removeClassName("visible");
             });
-            dialog.open();
-        });
-
-        btnDelete.addClickListener(e -> {
-            Span idactividad = new Span(appointment.getId().toString());
-            idactividad.getElement().getThemeList().add("badge");
-
-            ConfirmDialog dialog = getConfirmDialog(idactividad);
-            dialog.addConfirmListener(l -> {
-                appointment.setEnabled(false);
-                appointmentService.save(appointment);
-                NotificationUtil.showSuccess("Actividad eliminada");
-                dialog.close();
-                getUI().ifPresent(ui -> ui.navigate(ActivityView.class));
-                UI.getCurrent().refreshCurrentRoute(true);
-                this.removeClassName("visible");
-            });
-
             dialog.open();
         });
 

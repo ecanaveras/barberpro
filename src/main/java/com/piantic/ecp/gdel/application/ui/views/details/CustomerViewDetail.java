@@ -7,6 +7,7 @@ import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
 import com.piantic.ecp.gdel.application.ui.views.CustomerView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.*;
@@ -98,7 +99,7 @@ public class CustomerViewDetail extends VerticalLayout {
         gridlastappoint.addComponentColumn(appointment-> new Span(appointment.getAppointmentTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"))))
                 .setAutoWidth(true).setFlexGrow(1);
         gridlastappoint.addComponentColumn(appointment -> new Span(appointment.getCustomer().getName())).setAutoWidth(true);
-        gridlastappoint.addComponentColumn(appointment -> new Span(NumberUtil.formatNumber(appointment.getTotal()))).setAutoWidth(true);
+        gridlastappoint.addComponentColumn(appointment -> new Span(NumberUtil.formatNumber(appointment.getTotal()))).setAutoWidth(true).setTextAlign(ColumnTextAlign.END);
 
         content.add(gridlastappoint);
 

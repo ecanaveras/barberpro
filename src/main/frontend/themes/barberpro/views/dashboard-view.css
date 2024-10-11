@@ -15,8 +15,8 @@
     justify-content: flex-end;
     align-items: end;
     padding-right: var(--lumo-space-s);
-    flex-wrap: wrap;
-    column-gap: var(--lumo-space-s);
+    flex-wrap: nowrap;
+    column-gap: var(--lumo-space-xs);
     row-gap: 0;
 
     > vaadin-date-picker {
@@ -40,7 +40,7 @@
     flex-grow: 1;
     flex-wrap: wrap;
     flex-direction: row;
-    gap: var(--lumo-space-l);
+    gap: var(--lumo-space-m);
     justify-content: center;
     align-content: flex-start;
     /*align-items: flex-start;*/
@@ -53,7 +53,7 @@
     flex: 0 0 32%;
     border-radius: var(--lumo-border-radius-l);
     flex-grow: 1;
-    border: var(--lumo-space-m) solid var(--lumo-base-color);
+    border: var(--lumo-space-xs) solid var(--lumo-base-color);
 }
 
 .div-overview {
@@ -78,14 +78,10 @@
 
 }
 
-
-
-
 .highcharts-container {
-    /*max-width: 500px;*/
-    min-width: 500px;
-    /*padding: var(--lumo-space-l) !important;*/
-    /*flex-grow: 1;*/
+    min-width: 400px;
+    min-height: 280px;
+    height: 320px !important;
 }
 
 @media all and (max-width: 1200px) {
@@ -131,6 +127,24 @@
         flex: 0 0 38%;
         min-width: 100px;
     }
+
+    .dash-toolbar{
+        flex-wrap: nowrap;
+
+        > h2 {
+            font-size: var(--lumo-font-size-l);
+        }
+    }
+
+    .dashboard-visibility{
+        padding: 0;
+    }
+
+    .dashboard-content {
+        padding: var(--lumo-space-s);
+    }
+
+;
 }
 
 @media all and (max-width: 400px) {
@@ -138,6 +152,12 @@
         gap: var(--lumo-space-m);
         padding: var(--lumo-space-s);
         padding-bottom: var(--lumo-space-l);;
+    }
+
+    .dash-toolbar{
+        > h2 {
+            visibility: hidden;
+        }
     }
 
 }

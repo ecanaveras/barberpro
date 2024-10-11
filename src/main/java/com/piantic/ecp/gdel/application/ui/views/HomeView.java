@@ -54,10 +54,11 @@ public class HomeView extends VerticalLayout {
         Div divpreview = new Div();
         divpreview.addClassName("div-preview");
 
-        H5 h5 = new H5("BarberPro");
-        h5.addClassName(LumoUtility.TextColor.TERTIARY);
+        H3 barberPro = new H3("BarberPro");
+        barberPro.addClassName("app-name");
+        barberPro.addClassName(LumoUtility.TextColor.TERTIARY);
 
-        H1 nameTenand = new H1();
+        H2 nameTenand = new H2();
         Image logotenand = new Image();
 
         //LoadInfoTenand
@@ -79,15 +80,19 @@ public class HomeView extends VerticalLayout {
         btnFinish.addClickListener(e -> {
             ConfirmDialog confirmDialog = new ConfirmDialog();
             confirmDialog.setHeader("Configurar");
-            confirmDialog.setText("¿Ir al Asistente de Configuracion?");
+            confirmDialog.setText("¿Ir al Asistente de Configuracion? Requiere PIN de Administración");
             confirmDialog.setConfirmText("Aceptar");
+            confirmDialog.setCancelText("Cancelar");
+            confirmDialog.setCancelable(true);
+            confirmDialog.setCancelButtonTheme(ButtonVariant.LUMO_CONTRAST.getVariantName());
             confirmDialog.addConfirmListener(ev -> {
                 getUI().ifPresent(ui -> ui.navigate(WizardConfigView.class));
             });
+            confirmDialog.addCancelListener(ev -> confirmDialog.close());
             confirmDialog.open();
         });
 
-        divpreview.add(h5, logotenand, nameTenand, vlayout, btnFinish);
+        divpreview.add(barberPro, logotenand, nameTenand, vlayout, btnFinish);
         divmain.add(divpreview);
 
         add(divmain);
@@ -97,7 +102,7 @@ public class HomeView extends VerticalLayout {
     private Div createItemValid(java.lang.String name, Integer count) {
         Div div = new Div();
         div.addClassName("item-validation");
-        div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Gap.MEDIUM);
+        div.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW, LumoUtility.Gap.MEDIUM, LumoUtility.AlignItems.CENTER);
 //        Span icon = new Span();
 //        icon.addClassName(LumoUtility.IconSize.SMALL);
 

@@ -7,10 +7,7 @@ import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.avatar.Avatar;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.WebStorage;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -33,8 +30,9 @@ public class WelcomeModeView extends Div implements BeforeEnterObserver {
         addClassName("welcome-view");
 
         Div divtitle = new Div();
-        H3 welcome = new H3("Bienvenido a BarberPro");
-        H5 h5 = new H5("Selecciona el modo de Trabajo para continuar");
+        H1 barberPro = new H1("BarberPro");
+        barberPro.addClassName("app-name");
+        H4 welcome = new H4("Bienvenido, Selecciona el modo de Trabajo para continuar");
 
         Div divcontent = new Div(welcome);
         divcontent.addClassName("welcome-content");
@@ -47,7 +45,7 @@ public class WelcomeModeView extends Div implements BeforeEnterObserver {
         divcards.add(getCardMode("PERFIL", "Cada perfil registra sus propias operaciones directamente en un dispositivo."));
 
 
-        divtitle.add(welcome, h5);
+        divtitle.add(barberPro, welcome);
         divcontent.add(divtitle);
         divcontent.add(divcards);
         add(divcontent);

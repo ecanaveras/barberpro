@@ -34,3 +34,10 @@ vaadin-side-nav-item vaadin-icon {
     }
 }
 
+.app-name {
+    background-image: linear-gradient(90deg, var(--lumo-contrast-80pct) 0%, var(--lumo-primary-color) 56%, var(--lumo-contrast-80pct) 100%);
+    color: transparent;
+    -webkit-background-clip: text;
+    font-size: var(--lumo-font-size-xl);
+}
+

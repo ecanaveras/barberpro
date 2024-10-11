@@ -26,8 +26,13 @@
     flex-direction: column;
     min-width: 300px;
     border-radius: 10px;
-    flex-grow: 1;
+    flex: 1;
     border: 1px solid var(--lumo-contrast-20pct);
+
+    vaadin-grid vaadin-grid-cell-content {
+        text-overflow: unset;
+    }
+
 }
 
 .div-left {
@@ -242,6 +247,12 @@ div.no-visible {
     }
 }
 
+@media all and (max-width: 800px) {
+    .column-btn-add {
+        display: none;
+    }
+}
+
 /* Mostrar el botón en pantallas menores a 600px de ancho (modo móvil) */
 @media (max-width: 600px) {
     .btn-add-item {
@@ -253,13 +264,34 @@ div.no-visible {
             display: none;
         }
     }
+
+    .working-view-main {
+        padding: 0 var(--lumo-space-s);
+
+        .working-view-content{
+            flex-flow: column nowrap;
+            gap: 0.1rem;
+        }
+
+        .div-left, .div-right {
+            vaadin-grid{
+                height: auto;
+            }
+        }
+
+        .div-right{
+            flex-wrap: nowrap;
+            flex-grow: 1;
+        }
+
+        .div-summary{
+            padding: var(--lumo-space-xs);
+        }
+    }
+
 }
 
-@media all and (max-width: 800px) {
-    .column-btn-add {
-        display: none;
-    }
-}
+
 
 @keyframes highlight {
     0% {

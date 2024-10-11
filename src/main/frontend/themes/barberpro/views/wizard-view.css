@@ -1,35 +1,51 @@
 .wizard-config-view {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
+    height: 100vh;
+    padding: 0;
 
     > vaadin-horizontal-layout {
         justify-content: end;
         padding: var(--lumo-space-s);
+        padding-right: var(--lumo-space-xl);
+    }
+
+    .app-name {
+        padding-top: var(--lumo-space-m);
     }
 
 
 }
 
-.wizard-config-view .tabsheet-wizard > Div {
-    display: flex;
-    flex-direction: column;
-    max-width: 80%;
-    padding: var(--lumo-space-xl);
-    border: 1px solid var(--lumo-contrast-10pct);
-    border-radius: var(--lumo-border-radius-m);
-    margin-top: var(--lumo-space-l);
-    margin-left: auto;
-    margin-right: auto;
+.wizard-config-view .tabsheet-wizard {
+    flex-grow: 1;
+}
 
-    > span > span {
-        /*opacity: .85;*/
-        margin-top: var(--lumo-space-s);
-        justify-content: start;
-        margin-right: var(--lumo-space-xs);
+.wizard-config-view .tabsheet-wizard {
+
+    > div {
+        display: flex;
+        flex-direction: column;
+        max-width: 80%;
+        padding: var(--lumo-space-xl);
+        border: 1px solid var(--lumo-contrast-10pct);
+        border-radius: var(--lumo-border-radius-m);
+        margin-top: var(--lumo-space-l);
+        margin-left: auto;
+        margin-right: auto;
+
+        > span > span {
+            /*opacity: .85;*/
+            margin-top: var(--lumo-space-s);
+            justify-content: start;
+            margin-right: var(--lumo-space-xs);
+        }
     }
 
+    .content-tab-4  vaadin-form-layout {
+        align-self: center;
+        max-width: 300px;
+    }
 }
 
 .wizard-config-view .content-form-preview {
@@ -73,6 +89,25 @@
     }
 }
 
+.app-name {
+    max-width: max-content;
+    margin: auto;
+}
+
+vaadin-dialog-overlay::part(backdrop) {
+    background-color: var(--lumo-contrast-80pct);
+}
+
+vaadin-dialog-overlay > vaadin-form-layout {
+    > a {
+        margin-top: var(--lumo-space-s);
+        text-align: center;
+        color: var(--lumo-primary-color-50pct);
+
+    }
+}
+
+
 /* Mostrar el botón en pantallas menores a 600px de ancho (modo móvil) */
 @media (max-width: 600px) {
     .wizard-config-view .content-form-preview {
@@ -81,15 +116,71 @@
 
         > vaadin-form-layout {
             max-width: 100%;
-            /*gap: var(--lumo-space-xs);*/
+            gap: 0;
+            padding: var(--lumo-space-s);
+
+            > vaadin-text-field {
+                padding-top: var(--lumo-space-xs);
+            }
+
+            > vaadin-upload {
+                margin-top: var(--lumo-space-xs);
+                padding: var(--lumo-space-xs);
+            }
+
         }
     }
 
-    .wizard-config-view .tabsheet-wizard > Div {
-        padding: var(--lumo-space-m);
-        max-width: 100%;
-        margin-top: 0;
+    .wizard-config-view .tabsheet-wizard {
+        padding-left: var(--lumo-space-s);
+        padding-right: var(--lumo-space-s);
+
+        > div {
+            padding: var(--lumo-space-s);
+            max-width: 100%;
+            margin-top: 0;
+            font-size: var(--lumo-font-size-s);
+            /*height: 97%;*/
+
+            > .content-grid > vaadin-grid {
+                font-size: var(--lumo-font-size-s);
+            }
+        }
+
+
     }
+
+    .wizard-config-view .app-name {
+        padding-top: var(--lumo-space-s);
+        font-size: var(--lumo-font-size-m);
+    }
+
+    .wizard-config-view {
+        vaadin-button {
+            font-size: var(--lumo-font-size-s);
+        }
+
+        span, p {
+            font-size: var(--lumo-font-size-xs);
+        }
+
+        h3 {
+            font-size: var(--lumo-font-size-m);
+        }
+    }
+
+    vaadin-tabsheet::part(content) {
+        padding: var(--lumo-space-xs);
+    }
+
+    vaadin-tab {
+        font-size: var(--lumo-font-size-s);
+    }
+
+    .app-name {
+        padding-top: var(--lumo-space-xs);
+    }
+
 }
 
 

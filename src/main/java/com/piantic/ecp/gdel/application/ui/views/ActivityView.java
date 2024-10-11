@@ -5,7 +5,7 @@ import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.setting.ConfigOptionService;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
-import com.piantic.ecp.gdel.application.ui.views.forms.ActivityDetailForm;
+import com.piantic.ecp.gdel.application.ui.views.details.ActivityViewDetail;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.ComboBoxVariant;
 import com.vaadin.flow.component.html.Div;
@@ -36,7 +36,7 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
     private AppointmentService appointmentService;
     private ConfigOptionService configOptionService;
 
-    private ActivityDetailForm activityDetailForm;
+    private ActivityViewDetail activityDetailForm;
 
     private VerticalLayout content;
     private Tabs tabs;
@@ -47,7 +47,7 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
         this.appointmentService = activities;
         this.profileService = profileService;
         this.configOptionService = configOptionService;
-        activityDetailForm = new ActivityDetailForm(activities, configOptionService);
+        activityDetailForm = new ActivityViewDetail(activities, configOptionService);
 
         add(createToolbar());
 

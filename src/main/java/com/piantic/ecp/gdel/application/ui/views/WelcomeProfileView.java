@@ -30,8 +30,9 @@ public class WelcomeProfileView extends Div {
         addClassName("welcome-view");
 
         Div divtitle = new Div();
-        H3 welcome = new H3("Bienvenido a BarberPro");
-        H5 h5 = new H5("Selecciona tu Perfil para continuar");
+        H1 barberPro = new H1("BarberPro");
+        barberPro.addClassName("app-name");
+        H4 welcome = new H4("Selecciona un perfil para continuar...");
 
         Div divcontent = new Div(welcome);
         divcontent.addClassName("welcome-content");
@@ -44,12 +45,12 @@ public class WelcomeProfileView extends Div {
         });
 
         if (!profileService.findAll().isEmpty()) {
-            divtitle.add(welcome, h5);
+            divtitle.add(barberPro, welcome);
             divcontent.add(divtitle);
             divcontent.add(divcards);
             add(divcontent);
         } else {
-            divtitle.add(welcome);
+            divtitle.add(barberPro);
             divcontent.add(divtitle);
             Div div = MessagesUtil.showWarning("No hay perfiles activos en tu cuenta, por favor configura tu Negocio!");
             div.addClassNames(LumoUtility.TextTransform.UPPERCASE);

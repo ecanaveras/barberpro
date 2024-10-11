@@ -2,6 +2,10 @@
     height: 100%;
     /*align-content: center;*/
     background-color: var(--lumo-base-color);
+    padding: var(--lumo-space-m);
+    padding-bottom: 0;
+    padding-top: 0;
+    height: 100vh;
 
 }
 
@@ -37,7 +41,7 @@
     }
 }
 
-.welcome-newprofile{
+.welcome-newprofile {
     display: flex;
     flex-direction: column;
     row-gap: var(--lumo-space-m);
@@ -61,7 +65,7 @@
     align-items: normal;
     justify-content: center;
 
-    > vaadin-vertical-layout{
+    > vaadin-vertical-layout {
         align-items: center;
 
         > vaadin-avatar {
@@ -71,7 +75,6 @@
         }
     }
 }
-
 
 
 .card-profile {
@@ -86,6 +89,7 @@
         min-height: 60px;
         background-color: var(--lumo-contrast);
     }
+
     > vaadin-avatar:first-child {
         color: var(--lumo-base-color);
     }
@@ -100,14 +104,14 @@
     background-image: linear-gradient(to bottom, var(--lumo-primary-color) 0%, var(--lumo-contrast) 98%);
     opacity: 95%;
 
-    > h4  {
+    > h4 {
         color: var(--lumo-base-color);
     }
 
     > vaadin-avatar {
         min-width: 80px;
         min-height: 80px;
-        background-color: var(--lumo-base-color) ;
+        background-color: var(--lumo-base-color);
         opacity: 70%;
     }
 
@@ -136,7 +140,12 @@
     font-size: var(--lumo-font-size-xs);
 }
 
-.welcome-content h3 {
+.app-name {
+    font-size: var(--lumo-font-size-xxl);
+    padding-bottom: var(--lumo-space-s);
+}
+
+#welcome-content h3 {
     background-image: linear-gradient(90deg, var(--lumo-primary-text-color) 0%, var(--lumo-success-text-color) 56%, var(--lumo-warning-color) 100%);
     color: transparent;
     -webkit-background-clip: text;
@@ -145,8 +154,100 @@
     font-size: var(--lumo-font-size-xxxl);
 }
 
+/*WelcomeMain Page Styles*/
+.welcome-main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+
+    .welcome-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        row-gap: var(--lumo-space-s);
+        background-color: var(--lumo-base-color);
+        max-height: min-content;
+        margin-top: 8rem;
+
+        /*background-image: radial-gradient(circle, #020024, #061845, #0b296a, #0e3c91, #0e4fbb, #0d62d2, #0876e8, #008aff, #009fff, #00b2ff, #00c4ff, #00d4ff);*/
+
+        > .app-name {
+            font-size: 60px;
+        }
+
+        > .welcome-title {
+            padding: var(--lumo-space-xl);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            align-items: center;
+            row-gap: var(--lumo-space-s);
+            border-radius: var(--lumo-space-m);
+            border: 1px solid var(--lumo-contrast-10pct);
+            margin: var(--lumo-space-m);
+
+        }
+
+        > vaadin-button {
+            /*margin-bottom: var(--lumo-space-xl);*/
+            width: 220px;
+            margin-top: 2rem;
+
+            > vaadin-icon {
+                margin-left: var(--lumo-space-s);
+            }
+        }
+
+    }
+
+    > .footer {;
+        padding: var(--lumo-space-s);
+        font-size: var(--lumo-font-size-s);
+        max-height: 100px;
+        align-items: center;
+        text-align: center;
+        border-top: 1px solid var(--lumo-contrast-10pct);
+    }
+}
+
+
 @keyframes move {
     50% {
         background-image: linear-gradient(262deg, var(--lumo-warning-color) 0%, var(--lumo-success-color) 56%, var(--lumo-warning-color) 100%);
     }
 }
+
+@media (max-width: 600px) {
+    .welcome-content > div:first-child {
+        padding-top: 1.5rem;
+
+        > .app-name {
+            padding-top: var(--lumo-space-xl);
+        }
+    }
+
+    .welcome-main .welcome-content {
+        margin-top: 4rem;
+
+        > vaadin-button {
+            margin-top: 0;
+        }
+    }
+
+}
+
+@media (max-height: 700px) {
+    .welcome-main .welcome-content {
+        margin-top: 2rem;
+    }
+}
+
+/*Modo Oscuro*/
+/* Estilos para el modo oscuro */
+/*@media (prefers-color-scheme: dark) {*/
+/*    .welcome-main {*/
+/*        background: linear-gradient(to right, #333399, #110022);*/
+/*        color: #fff; !* Texto en color claro *!*/
+/*    }*/
+/*}*/

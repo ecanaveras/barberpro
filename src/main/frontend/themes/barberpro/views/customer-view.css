@@ -79,6 +79,11 @@
     display: none;
 }
 
+.customer-view vaadin-grid vaadin-grid-cell-content {
+    text-overflow: unset;
+}
+
+
 @media all and (max-width: 800px) {
     .content-left.viewing {
         display: none;

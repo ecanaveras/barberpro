@@ -123,7 +123,7 @@ public class ProfileView extends HorizontalLayout implements HasUrlParameter<Lon
         grid.addColumn(Profile::getEmail).setHeader("Email");
         grid.addComponentColumn(profile -> {
             Button btnedit = new Button("Editar", LineAwesomeIcon.EDIT.create());
-            btnedit.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_ICON);
+            btnedit.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_CONTRAST, ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_TERTIARY_INLINE);
             btnedit.addClickListener(event -> {
                 openFormDialog(profile);
             });

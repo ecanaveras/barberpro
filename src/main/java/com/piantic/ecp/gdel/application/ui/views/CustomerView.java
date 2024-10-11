@@ -5,16 +5,21 @@ import com.piantic.ecp.gdel.application.backend.service.CustomerService;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.ui.views.details.CustomerViewDetail;
 import com.piantic.ecp.gdel.application.ui.views.forms.CustomerForm;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H5;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.SvgIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -100,22 +105,27 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         grid.setSizeFull();
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(customer -> {
-            return new H5(customer.getName());
-        }).setAutoWidth(true).setHeader("Nombre")
-                .setSortable(true)
-                .setComparator(Customer::getName)
-                .getStyle().set("min-width", "200px");
-        /*grid.addColumn(Customer::getName).setAutoWidth(true).setHeader("Nombre")
-                .setSortable(true)
-                .getStyle().set("min-width", "200px");
-         */
-        grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
-        grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
-        grid.addComponentColumn(customer -> {
             SvgIcon star = LineAwesomeIcon.STAR_SOLID.create();
             star.addClassName("star-icon");
             return customer != null && customer.isFavorite() ? star : null;
-        }).setHeader("Favorito").setSortable(true).setComparator(Customer::isFavorite).setWidth("6rem");
+        }).setHeader("Favorito")
+                .setSortable(true)
+                .setComparator(Customer::isFavorite)
+                .setWidth("3rem")
+                .setFlexGrow(0)
+                .setTextAlign(ColumnTextAlign.CENTER)
+                .setKey("favorite");
+
+        grid.addComponentColumn(customer -> {
+            return new H5(customer.getName());
+        }).setAutoWidth(true)
+                .setHeader("Nombre")
+                .setSortable(true)
+                .setComparator(Customer::getName)
+                .getStyle().set("min-width", "200px");
+
+        grid.addColumn(Customer::getPhone).setHeader("Teléfono").setSortable(true);
+        grid.addColumn(Customer::getEmail).setHeader("Email").setSortable(true);
 
         createMenu();
 
@@ -130,7 +140,7 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
     public void saveCustomer(Customer customer) {
         customerService.save(customer);
         updateList();
-        Notification.show("Cliente Guardado!");
+        NotificationUtil.showSuccess("Cliente Guardado!");
     }
 
     private void deleteCustomer(Customer customer) {
@@ -143,6 +153,7 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
             getUI().ifPresent(ui -> ui.navigate(CustomerView.class));
         }, "Cancelar", e -> e.getSource().close());
         confirmDialog.setConfirmButtonTheme(ButtonVariant.LUMO_ERROR.getVariantName() + " " + ButtonVariant.LUMO_PRIMARY.getVariantName());
+        confirmDialog.setCancelButtonTheme(ButtonVariant.LUMO_CONTRAST.getVariantName());
         confirmDialog.setCloseOnEsc(true);
         confirmDialog.open();
 
@@ -200,4 +211,13 @@ public class CustomerView extends HorizontalLayout implements HasUrlParameter<Lo
         }
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        //Order by Favorite
+        if(grid.getColumnByKey("favorite") != null){
+            grid.sort(GridSortOrder.desc(grid.getColumnByKey("favorite")).build());
+        }
+
+    }
 }

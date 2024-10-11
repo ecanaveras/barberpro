@@ -2,6 +2,7 @@ package com.piantic.ecp.gdel.application.ui.views.forms;
 
 import com.piantic.ecp.gdel.application.backend.entity.Customer;
 import com.piantic.ecp.gdel.application.ui.views.specials.GenericForm;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -48,4 +49,11 @@ public class CustomerForm extends GenericForm<Customer> {
 
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        if(getEntity() != null && getEntity().getId() != null) {
+            setHeaderTitle("Editando Cliente");
+        }
+    }
 }
