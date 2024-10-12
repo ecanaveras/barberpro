@@ -30,8 +30,7 @@ public class ProfileViewDetail extends VerticalLayout {
     public ProfileViewDetail(ProfileService profileService, Long id) {
         this.profileService = profileService;
         this.id = id;
-        addClassNames("profile-detail-view");
-//        setWidthFull();
+        addClassNames("profile-detail-view", LumoUtility.Gap.XSMALL);
         configInitUI();
         updateUI(id);
     }
@@ -40,7 +39,7 @@ public class ProfileViewDetail extends VerticalLayout {
         //Header
         Header header = new Header();
         header.addClassName("view-header");
-        header.addClassName(LumoUtility.Margin.Bottom.SMALL);
+        header.addClassNames(LumoUtility.Padding.NONE, LumoUtility.Margin.NONE);
         header.setWidthFull();
         H3 title = new H3("Perfil - Detalles");
         title.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
@@ -73,7 +72,7 @@ public class ProfileViewDetail extends VerticalLayout {
         if (content == null)
             content = new Div();
         content.setWidthFull();
-        content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Gap.MEDIUM);
+        content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Gap.XSMALL);
 
         content.add(personalInfo);
 
@@ -94,7 +93,7 @@ public class ProfileViewDetail extends VerticalLayout {
                 , LumoUtility.Gap.XSMALL);
         profileService.getProductsByProfileId(profile).forEach(product -> {
             Span spanrole = new Span(product.getTitle());
-            spanrole.getElement().getThemeList().add("badge warning pill");
+            spanrole.getElement().getThemeList().add("badge warning pill small");
             divservices.add(spanrole);
         });
 

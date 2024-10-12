@@ -1,4 +1,4 @@
-package com.piantic.ecp.gdel.application.backend.utils;
+package com.piantic.ecp.gdel.application.ui.views.components;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.theme.lumo.LumoUtility;

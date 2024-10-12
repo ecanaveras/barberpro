@@ -2,7 +2,7 @@ package com.piantic.ecp.gdel.application.ui.views.admin;
 
 import com.piantic.ecp.gdel.application.backend.entity.setting.ConfigOption;
 import com.piantic.ecp.gdel.application.backend.service.setting.ConfigOptionService;
-import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
+import com.piantic.ecp.gdel.application.ui.views.components.MessagesUtil;
 import com.piantic.ecp.gdel.application.ui.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;

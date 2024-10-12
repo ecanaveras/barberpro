@@ -33,6 +33,7 @@ public class CustomerViewDetail extends VerticalLayout {
         this.customerService = customerService;
         this.id = id;
         addClassNames("customer-detail-view");
+        addClassNames(LumoUtility.Gap.XSMALL);
 //        setWidthFull();
         configInitUI();
         updateUI(id);
@@ -42,7 +43,6 @@ public class CustomerViewDetail extends VerticalLayout {
         //Header
         Header header = new Header();
         header.addClassName("view-header");
-        header.addClassName(LumoUtility.Margin.Bottom.SMALL);
         header.setWidthFull();
         H3 title = new H3("Cliente - Detalles");
         title.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
@@ -76,7 +76,7 @@ public class CustomerViewDetail extends VerticalLayout {
             content = new Div();
         content.setWidthFull();
 
-        content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Gap.MEDIUM);
+        content.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.Gap.XSMALL);
 
         content.add(personalInfo);
 

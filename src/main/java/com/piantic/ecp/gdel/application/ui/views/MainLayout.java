@@ -29,6 +29,7 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 /**
  * The main view is a top-level placeholder for other views.
  */
+//@PWA(name = "BarberPro", shortName = "BarberPro", description = "App para la administración de Negocios", iconPath = "/images/icon.png")
 @Route("main")
 public class MainLayout extends AppLayout {
 
@@ -98,6 +99,7 @@ public class MainLayout extends AppLayout {
     private Footer createFooter() {
         //TODO Controlar el menú según el perfil activo.
         Footer layout = new Footer();
+        layout.addClassNames(LumoUtility.JustifyContent.CENTER);
         Profile profile = (Profile) VaadinSession.getCurrent().getAttribute(Application.SESSION_PROFILE);
         if (profile == null) {
             profile = new Profile();
@@ -122,10 +124,15 @@ public class MainLayout extends AppLayout {
         divencabezado.add(avatarprofile, divprofilename);
 
 
-        Avatar avatarprofile2 = new Avatar(profile.getNameProfile());
+        //Menu de perfil.
         MenuBar menu = new MenuBar();
-        menu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY, MenuBarVariant.LUMO_SMALL);
-        MenuItem avataritem = menu.addItem(avatarprofile2);
+        menu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY);
+
+        Span span = new Span(new Span(profile.getNameProfile()), new Span(LineAwesomeIcon.USER_CIRCLE.create()));
+        span.getElement().getThemeList().add("badge contrast");
+        span.addClassNames(LumoUtility.Display.FLEX, LumoUtility.AlignItems.CENTER, LumoUtility.Gap.XSMALL, LumoUtility.FlexDirection.ROW, LumoUtility.Border.ALL, LumoUtility.BorderColor.CONTRAST);
+
+        MenuItem avataritem = menu.addItem(span);
         SubMenu subMenu = avataritem.getSubMenu();
         subMenu.addItem(divencabezado).setEnabled(false);
         subMenu.add(new Hr());

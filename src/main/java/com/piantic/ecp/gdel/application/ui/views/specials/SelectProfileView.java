@@ -3,7 +3,7 @@ package com.piantic.ecp.gdel.application.ui.views.specials;
 import com.piantic.ecp.gdel.application.Application;
 import com.piantic.ecp.gdel.application.backend.entity.Profile;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
-import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
+import com.piantic.ecp.gdel.application.ui.views.components.MessagesUtil;
 import com.piantic.ecp.gdel.application.ui.views.MainLayout;
 import com.piantic.ecp.gdel.application.ui.views.WizardConfigView;
 import com.piantic.ecp.gdel.application.ui.views.WorkingView;

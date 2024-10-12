@@ -101,38 +101,52 @@
     border-radius: var(--lumo-space-s);
     cursor: pointer;
     /*background-color: var(--lumo-primary-color) ;*/
-    background-image: linear-gradient(to bottom, var(--lumo-primary-color) 0%, var(--lumo-contrast) 98%);
-    opacity: 95%;
+    /*background-image: linear-gradient(to bottom, var(--lumo-primary-color) 0%, var(--lumo-contrast) 98%);*/
+    /*background-image: linear-gradient(to top, var(--lumo-primary-color-50pct), #96d1ff);*/
+    /*opacity: 95%;*/
 
     > h4 {
-        color: var(--lumo-base-color);
+        color: var(--lumo-primary-color);
     }
 
     > vaadin-avatar {
         min-width: 80px;
         min-height: 80px;
-        background-color: var(--lumo-base-color);
-        opacity: 70%;
+        background-color: var(--lumo-primary-color);
+        /*opacity: 70%;*/
+        box-shadow: var(--lumo-primary-color) 0 0 10px;
     }
 
     > vaadin-avatar:first-child {
-        color: var(--lumo-contrast);
+        color: var(--lumo-base-color);
     }
 
     > div {
         height: 100%;
         border-radius: var(--lumo-space-s);
-        background-color: var(--lumo-contrast-20pct);
-        color: var(--lumo-base-color);
+        background-color: var(--lumo-primary-color-10pct);
+
+        color: var(--lumo-primary-color);
     }
 }
 
 .card-welcome-mode:nth-child(2) {
-    background-image: linear-gradient(to bottom, var(--lumo-success-color) 0%, var(--lumo-contrast) 98%);
+    /*background-image: linear-gradient(to top, var(--lumo-success-color-50pct), #00e4d2);*/
 
     > vaadin-avatar {
         min-width: 80px;
         min-height: 80px;
+        background-color: var(--lumo-success-color);
+        box-shadow: var(--lumo-success-color) 0 0 10px;
+    }
+
+    > h4 {
+        color: var(--lumo-success-color);
+    }
+
+    > div {
+        background-color: var(--lumo-success-color-10pct);
+        color: var(--lumo-success-color);
     }
 }
 
@@ -170,22 +184,22 @@
         max-height: min-content;
         margin-top: 8rem;
 
-        /*background-image: radial-gradient(circle, #020024, #061845, #0b296a, #0e3c91, #0e4fbb, #0d62d2, #0876e8, #008aff, #009fff, #00b2ff, #00c4ff, #00d4ff);*/
-
         > .app-name {
             font-size: 60px;
         }
 
         > .welcome-title {
             padding: var(--lumo-space-xl);
+            margin: 0 var(--lumo-space-xl) var(--lumo-space-l) var(--lumo-space-xl);
             display: flex;
             flex-direction: column;
             flex-grow: 1;
             align-items: center;
             row-gap: var(--lumo-space-s);
             border-radius: var(--lumo-space-m);
-            border: 1px solid var(--lumo-contrast-10pct);
-            margin: var(--lumo-space-m);
+            border: 1px solid var(--lumo-primary-color-50pct);
+            /*margin: var(--lumo-space-m);*/
+            /*box-shadow: var(--lumo-primary-color) 0 0 50px;*/
 
         }
 

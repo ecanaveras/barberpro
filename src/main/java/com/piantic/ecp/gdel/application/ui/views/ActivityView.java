@@ -5,10 +5,14 @@ import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.ProfileService;
 import com.piantic.ecp.gdel.application.backend.service.setting.ConfigOptionService;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
+import com.piantic.ecp.gdel.application.ui.views.admin.SettingsView;
+import com.piantic.ecp.gdel.application.ui.views.components.CardItem;
 import com.piantic.ecp.gdel.application.ui.views.details.ActivityViewDetail;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.ComboBoxVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -62,6 +66,26 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
 
     }
 
+    private Component quickActionsNoData() {
+        Div divnodata = new Div();
+        divnodata.addClassName("quick-actions");
+        divnodata.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.COLUMN, LumoUtility.AlignSelf.CENTER, LumoUtility.TextAlignment.CENTER
+                , LumoUtility.Gap.SMALL, LumoUtility.Padding.XLARGE, LumoUtility.Border.ALL, LumoUtility.BorderRadius.MEDIUM, LumoUtility.BorderColor.CONTRAST_30
+        ,LumoUtility.Padding.Top.SMALL, LumoUtility.Padding.Bottom.LARGE);
+
+        Div divactionquick = new Div();
+        divactionquick.addClassNames(LumoUtility.Gap.MEDIUM, LumoUtility.Display.FLEX
+                , LumoUtility.FlexDirection.COLUMN, LumoUtility.FlexWrap.WRAP, LumoUtility.Gap.SMALL);
+        Header header = new Header(new Span("Accesos Directos"));
+        header.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL, LumoUtility.FontWeight.LIGHT);
+        divactionquick.add(new CardItem(LineAwesomeIcon.FIRE_ALT_SOLID.create(), "Area de Trabajo", WorkingView.class));
+        divactionquick.add(new CardItem(LineAwesomeIcon.CHART_AREA_SOLID.create(), "Dashboard", DashboardView.class));
+        divactionquick.add(new CardItem(LineAwesomeIcon.TOILET_SOLID.create(), "Preferencias", SettingsView.class));
+        divnodata.add(header, divactionquick);
+        return divnodata;
+    }
+
+
     private void loadInfoActivity(Tab tab, Integer filterDateOption) {
 //        if(tab!=null && ) {}
         //TODO Aplicar logica de negocio de filtrado en el servicio de Actividades
@@ -108,11 +132,23 @@ public class ActivityView extends Div implements HasUrlParameter<Long> {
             });
         }
         tab.getChildren().forEach(children -> {
-            if (children.getElement().toString().length()>20) {
+            if (children.getElement().toString().length() > 20) {
                 tab.remove(children);
             }
         });
         tab.add(createBadge(result.size()));
+
+        //Quick Actions
+        if (result.isEmpty()) {
+            content.removeAll();
+            content.addClassNames(LumoUtility.Background.BASE);
+            content.setSizeFull();
+            Span message = new Span(new Span(LineAwesomeIcon.FILTER_SOLID.create()),new Span("NO HAY ACTIVIDADES"));
+            message.getElement().getThemeList().add("badge contrast pill small");
+            message.addClassNames(LumoUtility.AlignSelf.CENTER, LumoUtility.Margin.Top.XLARGE, LumoUtility.Margin.Bottom.XLARGE);
+            content.add(message);
+            content.add(quickActionsNoData());
+        }
     }
 
     private Div createToolbar() {

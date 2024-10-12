@@ -2,8 +2,8 @@ package com.piantic.ecp.gdel.application.ui.views;
 
 import com.piantic.ecp.gdel.application.backend.analytic.AnalyticSeries;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
-import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
+import com.piantic.ecp.gdel.application.ui.views.components.MessagesUtil;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -44,6 +44,7 @@ public class DashboardView extends Div {
     private DatePicker dateStart;
     private DatePicker dateEnd;
     private AppointmentService appointmentService;
+    private Button btnOpenDialog;
 
     public DashboardView(AppointmentService appointmentService) {
         addClassName("dashboard-view");
@@ -75,11 +76,24 @@ public class DashboardView extends Div {
         Div divcontent = new Div();
         divcontent.addClassName("dashboard-content");
 
-        divcontent.add(divlinechart);
+        HorizontalLayout charts1 = new HorizontalLayout();
+        charts1.setWidthFull();
+        charts1.addClassNames(LumoUtility.FlexWrap.WRAP, LumoUtility.JustifyContent.BETWEEN);
+        charts1.add(divlinechart);
+        charts1.add(divcolumnchart);
+
+        HorizontalLayout charts2 = new HorizontalLayout();
+        charts2.setWidthFull();
+        charts2.addClassNames(LumoUtility.FlexWrap.WRAP, LumoUtility.JustifyContent.BETWEEN);
+        charts2.add(divpiechart);
+        charts2.add(divpietwochart);
+
+        divcontent.add(charts1, charts2);
+        /*divcontent.add(divlinechart);
         divcontent.add(divcolumnchart);
         divcontent.add(divpiechart);
         divcontent.add(divpietwochart);
-
+*/
         add(divcontent);
 
     }
@@ -111,7 +125,7 @@ public class DashboardView extends Div {
         Dialog infoFilter = new Dialog("Filtro");
         infoFilter.addClassNames(LumoUtility.MaxWidth.SCREEN_SMALL);
         infoFilter.setCloseOnEsc(true);
-        infoFilter.add(new Span("La información de la comparativa es de acuerdo al rango seleccionado."));
+        infoFilter.add(new Span("La información de la comparativa es de acuerdo al rango de fechas seleccionado."));
         Div contentDialog = new Div();
         contentDialog.addClassNames(LumoUtility.FontWeight.BOLD, LumoUtility.Padding.SMALL);
         infoFilter.add(contentDialog);
@@ -129,13 +143,11 @@ public class DashboardView extends Div {
         aceptFilter.addClickListener(event -> infoFilter.close());
         infoFilter.getFooter().add(aceptFilter);
 
-        Button btnOpenDialog = new Button(VaadinIcon.INFO_CIRCLE.create());
+        btnOpenDialog = new Button(VaadinIcon.INFO_CIRCLE.create());
         btnOpenDialog.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_CONTRAST);
         btnOpenDialog.addClickListener(e -> infoFilter.open());
 
         H2 titleDash = new H2("Vista General");
-
-
 
         toolbar.add(titleDash, btnOpenDialog, dateStart, dateEnd, btnFilter);
 
@@ -249,10 +261,16 @@ public class DashboardView extends Div {
             spananterior.addClassNames(LumoUtility.TextColor.SECONDARY);
         }
         spananterior.setText(String.format(format, NumberUtil.formatNumber(Math.abs(diff.doubleValue()))));
-        Span spanlabel = new Span("que el mes anterior");
+        Span spanlabel = new Span(LineAwesomeIcon.INFO_CIRCLE_SOLID.create());
+        spanlabel.getElement().getThemeList().add("bagde contrast small pill");
+        spanlabel.getStyle().set("cursor", "pointer");
+        spanlabel.addClickListener(e ->{
+            btnOpenDialog.click();
+        });
         spanlabel.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.XXSMALL, LumoUtility.FontWeight.BOLD, LumoUtility.Padding.Left.XSMALL);
 
         Span spanout = new Span(spananterior, spanlabel);
+        spanout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.FlexDirection.ROW);
 
         card.add(spanincrement);
 
@@ -419,7 +437,7 @@ public class DashboardView extends Div {
     }
 
     private String getLineChart(Div divrender, ArrayList<String> categorias, ArrayList<AnalyticSeries> series) {
-
+        divrender.addClassNames("highcharts-dark");
         return "Highcharts.chart('" + divrender.getId().get() + "', {" +
                 "    chart: {" +
                 "        type: 'spline'" +

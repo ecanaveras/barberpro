@@ -95,15 +95,13 @@
 
 }
 
-.view-header {
+.customer-detail-view .view-header {
     flex: none;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: var(--lumo-space-m);
-    padding: var(--lumo-space-s);
-    padding-left: 0;
-    min-height: var(--lumo-size-m);
+    padding: 0;
 }
 
 .customer-detail-view H4 {

@@ -41,7 +41,7 @@ public class WelcomeMain extends Div {
 
         divtitle.add(welcome, h5, info, info2);
 
-        Div footer = new Div(new Span("© " + LocalDate.now().getYear() + ". BarberPro. Todos los derechos reservados."), new Html("<p>Una idea de <b>Piantic S.A.S</b>. Powered by <b>Vaadin</b>.</p>"));
+        Div footer = new Div(new Html("<p>© " + LocalDate.now().getYear() + ". <b>BarberPro</b>. Todos los derechos reservados. <br>Una idea de <b>Piantic S.A.S</b>. Powered by <b>Vaadin</b>.</p>"));
         footer.addClassName("footer");
 
         divcontent.add(barberPro, divtitle, continueButton);

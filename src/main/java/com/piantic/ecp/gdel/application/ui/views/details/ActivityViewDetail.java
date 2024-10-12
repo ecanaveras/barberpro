@@ -3,7 +3,7 @@ package com.piantic.ecp.gdel.application.ui.views.details;
 import com.piantic.ecp.gdel.application.backend.entity.Appointment;
 import com.piantic.ecp.gdel.application.backend.service.AppointmentService;
 import com.piantic.ecp.gdel.application.backend.service.setting.ConfigOptionService;
-import com.piantic.ecp.gdel.application.backend.utils.MessagesUtil;
+import com.piantic.ecp.gdel.application.ui.views.components.MessagesUtil;
 import com.piantic.ecp.gdel.application.backend.utils.NotificationUtil;
 import com.piantic.ecp.gdel.application.backend.utils.NumberUtil;
 import com.piantic.ecp.gdel.application.ui.views.ActivityView;
@@ -176,6 +176,7 @@ public class ActivityViewDetail extends Div {
             ConfirmDialog dialog = getConfirmDialog(idactividad);
             dialog.addConfirmListener(l -> {
                 appointment.setEnabled(false);
+                appointment.getAppointmentWorks().forEach(appointmentWork -> appointmentWork.setEnabled(false));
                 appointmentService.save(appointment);
                 NotificationUtil.showSuccess("Actividad eliminada");
                 dialog.close();
